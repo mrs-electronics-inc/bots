@@ -1,18 +1,19 @@
-FROM paulgauthier/aider AS aid-core
+# Use the official Python 3.9 slim image as the base
+FROM python:3.12-slim
 
-WORKDIR /app
-
-# Switch to root to install extra dependencies (if needed)
-USER root
-
-# Example: install additional tools
+# Install Git and clean up to reduce image size
 RUN apt-get update && \
-    apt-get install -y curl && \
+    apt-get install -y git && \
     rm -rf /var/lib/apt/lists/*
 
-# Revert to the standard entrypoint user
-USER 1000
+# Set the working directory
+WORKDIR /app
 
-# Define default entry command
-ENTRYPOINT ["bash"]
-CMD ["aider", "--version"]
+# Install aider
+RUN python -m pip install uv \
+    && uv tool install --force --python python3.12 --with pip aider-chat@latest
+
+# Make sure aider is in the path
+ENV PATH="/root/.local/bin:${PATH}" 
+
+CMD ["/bin/bash"]
