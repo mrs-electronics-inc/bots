@@ -6,8 +6,11 @@ RUN apt-get update && \
     apt-get install -y git && \
     rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
-WORKDIR /app
+# Set the working directory - this is where the git repo will be mounted
+WORKDIR /repo
+
+# Tell git to rust the directory
+RUN git config --global --add safe.directory /repo
 
 # Install aider
 RUN python -m pip install uv \

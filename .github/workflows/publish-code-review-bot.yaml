@@ -1,4 +1,4 @@
-name: Create and publish the code review Docker image
+name: Create and publish the Docker image for each bot
 
 on:
   push:
@@ -10,13 +10,12 @@ on:
     branches:
       - 'main'
 
-env:
-  BOT_NAME: code-review
-
-# There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
 jobs:
-  build-and-push-code-review-image:
+  build-and-push-images:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        bot: [code-review]
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
@@ -38,7 +37,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ghcr.io/${{ github.repository }}/${{ env.BOT_NAME }}
+          images: ghcr.io/${{ github.repository }}/${{ matrix.bot }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -52,7 +51,7 @@ jobs:
         id: push
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: ${{ env.BOT_NAME }}
+          context: ${{ matrix.bot }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -61,6 +60,6 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ghcr.io/${{ github.repository }}/${{ env.BOT_NAME }}
+          subject-name: ghcr.io/${{ github.repository }}/${{ matrix.bot }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
