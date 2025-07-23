@@ -1,13 +1,16 @@
-# Code Review Bot 🤖
+# Bots 🤖
 
-This repository contains the code for a friendly bot designed to assist with code reviews! 🚀
+This repository contains various bots that assist us in our software development process.
 
-## Purpose ✨
+## Code Review 🧐💻
 
-The main goal of this bot is to streamline the code review process by providing automated feedback and suggestions. It aims to:
+The initial goal for this bot is to inspect a `git` repo and write a `.bots/summary.md` file based on the diffs with the main branch.
 
-*   **Improve Code Quality**: By catching common issues early. 🐛➡️🦋
-*   **Speed Up Reviews**: By automating repetitive checks. ⚡
-*   **Educate Developers**: By offering explanations and best practices. 📚
+You can test the current iteration of the bot locally using the following:
+```
+docker run --pull always -it -v .:/app ghcr.io/mrs-electronics-inc/bots/code-review:main
+```
 
-We hope this bot makes your development workflow smoother and more enjoyable! 😊
+This will open an interactive `bash` shell with access to `git` and `aider`.
+
+Soon we should have a script built that automatically generates the `.bots/summary.md` file.
