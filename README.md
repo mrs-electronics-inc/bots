@@ -8,7 +8,7 @@ The initial goal for this bot is to inspect a `git` repo and write a `.bots/summ
 
 You can test the current iteration of the bot locally using the following:
 ```
-docker run --pull always -it -v .:/app ghcr.io/mrs-electronics-inc/bots/code-review:main
+docker run --pull always -it -v .:/repo ghcr.io/mrs-electronics-inc/bots/code-review:main
 ```
 
 This will open an interactive `bash` shell with access to `git` and `aider`.
