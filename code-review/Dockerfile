@@ -12,11 +12,17 @@ WORKDIR /repo
 # Tell git to rust the directory
 RUN git config --global --add safe.directory /repo
 
-# Install aider
+# Install tools
 RUN python -m pip install uv \
-    && uv tool install --force --python python3.12 --with pip aider-chat@latest
+    && uv tool install --force --python python3.12 --with pip aider-chat@latest \
+    && uv tool install llm
 
-# Make sure aider is in the path
+# Make sure tools installed by UV are in the path
 ENV PATH="/root/.local/bin:${PATH}" 
+
+# Set up llm tool for openrouter
+RUN llm install llm-openrouter \
+    && llm aliases set summary-model openrouter/google/gemini-2.5-flash-lite
+
 
 CMD ["/bin/bash"]
