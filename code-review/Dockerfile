@@ -1,9 +1,7 @@
 # Use the official Python 3.9 slim image as the base
 FROM python:3.12-slim
 
-# Set the working directory - this is where the git repo will be mounted
-RUN mkdir /repo
-WORKDIR /repo
+SHELL ["/bin/bash", "-c"]
 
 # Install core packages
 RUN apt update \
@@ -21,10 +19,13 @@ RUN apt update \
 RUN rm -rf /var/lib/apt/lists/*
 
 # Install Mise tools
-COPY mise.toml /repo
-RUN echo 'eval "$(mise activate bash)"' >> /root/.bashrc
-RUN mise trust
-RUN mise install
+# We must use shims since we aren't using mise in an interactive shell
+ENV PATH="/root/.local/share/mise/shims:${PATH}"
+RUN mise use -g glab@1.64.0
+
+# Set the working directory - this is where the git repo will be mounted
+RUN mkdir /repo
+WORKDIR /repo
 
 # Tell git to trust the directory
 RUN git config --global --add safe.directory /repo
