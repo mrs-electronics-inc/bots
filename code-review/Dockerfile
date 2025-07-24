@@ -1,4 +1,3 @@
-# Use the official Python 3.9 slim image as the base
 FROM python:3.12-slim
 
 SHELL ["/bin/bash", "-c"]
@@ -23,24 +22,19 @@ RUN rm -rf /var/lib/apt/lists/*
 ENV PATH="/root/.local/share/mise/shims:${PATH}"
 RUN mise use -g glab@1.64.0
 
-# Set the working directory - this is where the git repo will be mounted
-RUN mkdir /repo
-WORKDIR /repo
-
-# Tell git to trust the directory
-RUN git config --global --add safe.directory /repo
-
-# Install tools
+# Install UV tools
+ENV PATH="/root/.local/bin:${PATH}" 
 RUN python -m pip install uv \
     && uv tool install --force --python python3.12 --with pip aider-chat@latest \
     && uv tool install llm
-
-# Make sure tools installed by UV are in the path
-ENV PATH="/root/.local/bin:${PATH}" 
 
 # Set up llm tool for openrouter
 RUN llm install llm-openrouter \
     && llm aliases set summary-model openrouter/google/gemini-2.5-flash-lite
 
+# Set the working directory - this is where the git repo will be mounted
+RUN mkdir /repo
+WORKDIR /repo
+RUN git config --global --add safe.directory /repo
 
 CMD ["/bin/bash"]
