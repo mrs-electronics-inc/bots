@@ -1,15 +1,32 @@
 # Use the official Python 3.9 slim image as the base
 FROM python:3.12-slim
 
-# Install Git and clean up to reduce image size
-RUN apt-get update && \
-    apt-get install -y git && \
-    rm -rf /var/lib/apt/lists/*
-
 # Set the working directory - this is where the git repo will be mounted
+RUN mkdir /repo
 WORKDIR /repo
 
-# Tell git to rust the directory
+# Install core packages
+RUN apt update \
+    && apt install -y git wget gpg curl
+
+# Prep for Mise
+RUN wget -qO - https://mise.jdx.dev/gpg-key.pub | gpg --dearmor | tee /etc/apt/keyrings/mise-archive-keyring.gpg 1> /dev/null \
+    && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.gpg arch=amd64] https://mise.jdx.dev/deb stable main" | tee /etc/apt/sources.list.d/mise.list
+
+# Install Mise
+RUN apt update \
+    && apt install -y mise
+
+# Clean up to reduce image size
+RUN rm -rf /var/lib/apt/lists/*
+
+# Install Mise tools
+COPY mise.toml /repo
+RUN echo 'eval "$(mise activate bash)"' >> /root/.bashrc
+RUN mise trust
+RUN mise install
+
+# Tell git to trust the directory
 RUN git config --global --add safe.directory /repo
 
 # Install tools
