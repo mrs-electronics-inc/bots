@@ -13,7 +13,7 @@ Here is a minimal example of using the Code Review Bot in a GitLab job. It is se
 ```yaml
 run_code_review_bot:
   stage: bot
-  image: ghcr.io/mrs-electronics-inc/bots/code-review:0.1
+  image: ghcr.io/mrs-electronics-inc/bots/code-review:0.2
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: manual
