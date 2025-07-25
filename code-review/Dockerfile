@@ -37,4 +37,7 @@ RUN mkdir /repo
 WORKDIR /repo
 RUN git config --global --add safe.directory /repo
 
+# Add scripts
+COPY gitlab_code_review.sh /bin
+
 CMD ["/bin/bash"]
