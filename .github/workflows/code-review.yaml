@@ -58,9 +58,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Move repo to container workdir
+      - name: Copy repo to container workdir
         run: |
-          mv $GITHUB_WORKSPACE/* /repo/
+          ls -lah $GITHUB_WORKSPACE
+          cp -r $GITHUB_WORKSPACE /repo
           cd /repo
           ls -lah
       - name: debug stuff
