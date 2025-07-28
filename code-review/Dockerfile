@@ -21,7 +21,6 @@ RUN rm -rf /var/lib/apt/lists/*
 # We must use shims since we aren't using mise in an interactive shell
 ENV PATH="/root/.local/share/mise/shims:${PATH}"
 RUN mise use -g glab@1.64.0
-RUN mise use -g gh@2.76.1
 
 # Install UV tools
 ENV PATH="/root/.local/bin:${PATH}" 
@@ -32,6 +31,12 @@ RUN python -m pip install uv \
 # Set up llm tool for openrouter
 RUN llm install llm-openrouter \
     && llm aliases set summary-model openrouter/google/gemini-2.5-flash-lite
+
+# Install github CLI (for some reason GitHub Actions don't play nice with
+# mise shims).
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt update && apt install -y gh;
 
 # Set the working directory - this is where the git repo will be mounted
 RUN mkdir /repo

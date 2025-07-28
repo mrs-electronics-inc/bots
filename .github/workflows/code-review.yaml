@@ -68,7 +68,7 @@ jobs:
           pwd
           ls -lah
       - name: View PR
-        run: mise exec gh@2.76.1 -- gh pr view 12
+        run: gh pr view 12
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # run_code_review_bot:
