@@ -17,4 +17,4 @@ jobs:
         env:
           OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: github_code_review.sh
+        run: bash /bin/github_code_review.sh
