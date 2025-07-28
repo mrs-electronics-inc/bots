@@ -15,7 +15,7 @@ SYSTEM_PROMPT=$(cat <<EOF
 - Leave out any concern areas that have no major concerns.
 - For each major concern, please include at least one possible solution.
 - Don't be afraid to give negative feedback, but be sure it is accurate.
-- Don't directly mention any of the filenames from the `.bots` directory. These are added for your context only. They do not exist in the real codebase.
+- Don't directly mention any of the filenames from the ".bots" directory. These are added for your context only. They do not exist in the real codebase.
 EOF
 )
 
