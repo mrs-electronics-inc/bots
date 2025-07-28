@@ -10,7 +10,7 @@ glab auth login --token $GITLAB_TOKEN
 
 # Collect all the context
 export PLATFORM="gitlab"
-./code-review/collect_context.sh
+collect_context.sh
 
 # Generate the LLM review
 # TODO: move the summary to a separate multi-line variable
