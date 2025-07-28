@@ -61,7 +61,7 @@ jobs:
       - name: Copy repo to container workdir
         run: |
           ls -lah $GITHUB_WORKSPACE
-          cp -r $GITHUB_WORKSPACE /repo
+          cp -a "$GITHUB_WORKSPACE/." /repo
           cd /repo
           ls -lah
       - name: debug stuff
