@@ -29,8 +29,7 @@ RUN python -m pip install uv \
     && uv tool install llm
 
 # Set up llm tool for openrouter
-RUN llm install llm-openrouter \
-    && llm aliases set summary-model openrouter/google/gemini-2.5-flash-lite
+RUN llm install llm-openrouter
 
 # Install github CLI (for some reason GitHub Actions doesn't play nice with
 # Mise shims).
