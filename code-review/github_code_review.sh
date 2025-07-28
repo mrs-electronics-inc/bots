@@ -10,10 +10,10 @@ gh auth login --with-token <<< "$GITHUB_TOKEN"
 
 # Collect all the context
 export PLATFORM="github"
-./code-review/collect_context.sh
+collect_context.sh
 
 # Generate the LLM review
-./code-review/generate_llm_review.sh
+generate_llm_review.sh
 
 # Leave the comment
 gh pr comment $GITHUB_HEAD_REF -F .bots/summary.md

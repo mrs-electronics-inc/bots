@@ -21,6 +21,7 @@ RUN rm -rf /var/lib/apt/lists/*
 # We must use shims since we aren't using mise in an interactive shell
 ENV PATH="/root/.local/share/mise/shims:${PATH}"
 RUN mise use -g glab@1.64.0
+RUN mise use -g gh@2.76.1
 
 # Install UV tools
 ENV PATH="/root/.local/bin:${PATH}" 
@@ -39,5 +40,8 @@ RUN git config --global --add safe.directory /repo
 
 # Add scripts
 COPY gitlab_code_review.sh /bin
+COPY github_code_review.sh /bin
+COPY collect_context.sh /bin
+COPY generate_llm_review.sh /bin
 
 CMD ["/bin/bash"]

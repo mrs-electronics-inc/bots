@@ -10,10 +10,10 @@ glab auth login --token $GITLAB_TOKEN
 
 # Collect all the context
 export PLATFORM="gitlab"
-./code-review/collect_context.sh
+collect_context.sh
 
 # Generate the LLM review
-./code-review/generate_llm_review.sh
+generate_llm_review.sh
 
 # Leave the comment
 # NOTE: The "|| true" is because `glab mr note` has an unhandled error,
