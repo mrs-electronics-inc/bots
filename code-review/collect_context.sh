@@ -17,13 +17,9 @@ if [ "$PLATFORM" == "gitlab" ]; then
     # TODO: include merge request comments in the context
 
 elif [ "$PLATFORM" == "github" ]; then
-    echo "Gathering pull request details"
-    echo $GITHUB_HEAD_REF
-    gh pr view $GITHUB_HEAD_REF
-    echo "piping to file..."
     # Collect the pull request details
     gh pr view $GITHUB_HEAD_REF > .bots/context/pull-request.md
-    echo "Gathering diffs"
+     
     # Collect the diffs
     gh pr diff $GITHUB_HEAD_REF > .bots/context/diffs.md
 
