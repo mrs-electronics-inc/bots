@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       # TODO: pin specific version
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:${{ GITHUB_SHA }}
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:${{ github.sha }}
     permissions:
       pull-requests: write
     steps:
