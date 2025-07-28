@@ -25,4 +25,4 @@ EOF
 llm keys set openrouter --value "$OPENROUTER_KEY"
 
 # Generate the LLM review
-cat .bots/context.md | llm -m $SUMMARY_MODEL -s "$SYSTEM_PROMPT" -o > .bots/summary.md
+cat .bots/context.md | llm -m $SUMMARY_MODEL -s "$SYSTEM_PROMPT" > .bots/summary.md
