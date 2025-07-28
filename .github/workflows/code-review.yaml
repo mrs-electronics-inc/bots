@@ -61,6 +61,8 @@ jobs:
           echo $PATH
           whereis gh
           whereis glab
+          gh --version
+        shell: bash
       # - name: GitHub version
       #   run: gh --version
       # - name: View PR
