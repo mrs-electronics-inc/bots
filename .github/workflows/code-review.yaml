@@ -58,9 +58,11 @@ jobs:
       - name: debug stuff
         run: |
           echo $0
+          cat $0
           echo $PATH
           whereis gh
           whereis glab
+          mise exec gh@2.76.1 -- gh --version
           gh --version
         shell: bash
       # - name: GitHub version
