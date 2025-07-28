@@ -32,14 +32,15 @@ RUN python -m pip install uv \
 RUN llm install llm-openrouter \
     && llm aliases set summary-model openrouter/google/gemini-2.5-flash-lite
 
-# Install github CLI (for some reason GitHub Actions don't play nice with
-# mise shims).
+# Install github CLI (for some reason GitHub Actions doesn't play nice with
+# Mise shims).
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
     && apt update && apt install -y gh;
 
-# Set the working directory - this is where the git repo will be mounted
-RUN mkdir /repo
+# Set the working directory - this is where the git repo will be
+# mounted in GitLab.
+# GitHub sets its own working directory.
 WORKDIR /repo
 RUN git config --global --add safe.directory /repo
 

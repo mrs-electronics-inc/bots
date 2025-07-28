@@ -5,6 +5,7 @@
 #    - GITLAB_TOKEN
 # The others are automatically included in GitLab merge request pipelines.
 
+
 # Authenticate with GitLab
 glab auth login --token $GITLAB_TOKEN
 
