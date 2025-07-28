@@ -55,6 +55,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: ls /bin
+        run: ls /bin
       - name: GitHub version
         run: gh --version
       - name: View PR
