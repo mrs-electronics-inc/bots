@@ -61,10 +61,12 @@ jobs:
         uses: actions/checkout@v4
       - name: View PR
         run: gh pr view 12
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Code Review Bot
         env:
           OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ACTIONS_STEP_DEBUG: true
           ACTIONS_RUNNER_DEBUG: true
         run: github_code_review.sh
