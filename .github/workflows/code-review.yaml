@@ -47,11 +47,16 @@ jobs:
           subject-name: ghcr.io/${{ github.repository }}/${{ matrix.bot }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+  # TODO: remove this
   test_with_gh_cli:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:pr-12
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: GitHub version
+        run: gh --version
       - name: View PR
         run: gh pr view 12
         env:
@@ -68,7 +73,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: View PR
+      # TODO: remove this
+      - name: GH test
         run: gh --version
         env: 
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
