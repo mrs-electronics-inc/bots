@@ -17,8 +17,10 @@ if [ "$PLATFORM" == "gitlab" ]; then
     # TODO: include merge request comments in the context
 
 elif [ "$PLATFORM" == "github" ]; then
+    echo "Gathering pull request details"
     # Collect the pull request details
-    gh pr view $GITHUB_HEAD_REF --json body,title,number,url,author,state,createdAt,updatedAt |jq -r '. | to_entries[] | "\(.key): \(.value)"'  > .bots/context/pull-request.md
+    gh pr view $GITHUB_HEAD_REF --json body,title,number,url,author,state,createdAt,updatedAt | jq -r '. | to_entries[] | "\(.key): \(.value)"'  > .bots/context/pull-request.md
+    echo "Gathering diffs"
     # Collect the diffs
     gh pr diff $GITHUB_HEAD_REF > .bots/context/diffs.md
 
@@ -28,6 +30,7 @@ else
     exit 1
 fi
 
+echo "Combining context"
 # Combine context into a single `.bots/context.md` file
 for f in .bots/context/*; do
     echo -e "\n===== BEGIN FILE: $f =====\n"; cat "$f";
