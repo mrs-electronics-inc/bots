@@ -5,9 +5,6 @@
 #    - GITHUB_TOKEN
 # The others are automatically automatically included in GitHub pull request pipelines.
 
-# Trust the current directory
-git config --global --add safe.directory "$(pwd)"
-
 # Collect all the context
 export PLATFORM="github"
 collect_context.sh
