@@ -47,6 +47,12 @@ jobs:
           subject-name: ghcr.io/${{ github.repository }}/${{ matrix.bot }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+  test_with_gh_cli:
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh pr view 12
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   run_code_review_bot:
     needs: build_and_push_image
     runs-on: ubuntu-latest
@@ -60,13 +66,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: View PR
-        run: gh pr view 12 --json title
+        run: gh --version
         env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Code Review Bot
         env:
           OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ACTIONS_STEP_DEBUG: true
           ACTIONS_RUNNER_DEBUG: true
         run: github_code_review.sh
