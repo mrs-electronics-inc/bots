@@ -67,6 +67,7 @@ jobs:
         run: |
           pwd
           ls -lah
+          whereis gh
       - name: View PR
         run: gh pr view 12
         env:
