@@ -8,7 +8,8 @@ jobs:
   run_code_review_bot:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.2
+      # TODO: pin specific version
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:pr-5
     permissions:
       pull-requests: write
     steps:
