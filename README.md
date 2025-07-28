@@ -28,4 +28,30 @@ run_code_review_bot:
 
 ### GitHub Action
 
-Coming soon...
+Here is a minimal example of using the Code Review Bot in a GitHub workflow.
+
+```yaml
+name: Code Review Bot
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  run_code_review_bot:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.3
+      volumes:
+        - ${{ github.workspace }}:/repo
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Code Review Bot
+        env:
+          OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: github_code_review.sh
+```

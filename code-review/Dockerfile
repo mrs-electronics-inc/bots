@@ -29,15 +29,22 @@ RUN python -m pip install uv \
     && uv tool install llm
 
 # Set up llm tool for openrouter
-RUN llm install llm-openrouter \
-    && llm aliases set summary-model openrouter/google/gemini-2.5-flash-lite
+RUN llm install llm-openrouter
 
-# Set the working directory - this is where the git repo will be mounted
-RUN mkdir /repo
+# Install github CLI (for some reason GitHub Actions doesn't play nice with
+# Mise shims).
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt update && apt install -y gh;
+
+# This is where the git repo will be mounted.
 WORKDIR /repo
 RUN git config --global --add safe.directory /repo
 
 # Add scripts
 COPY gitlab_code_review.sh /bin
+COPY github_code_review.sh /bin
+COPY collect_context.sh /bin
+COPY generate_llm_review.sh /bin
 
 CMD ["/bin/bash"]
