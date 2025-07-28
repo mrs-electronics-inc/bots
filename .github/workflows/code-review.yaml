@@ -7,7 +7,8 @@ on:
 jobs:
   run_code_review_bot:
     runs-on: ubuntu-latest
-    container: ghcr.io/mrs-electronics-inc/bots/code-review:0.2
+    container:
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.2
     permissions:
       pull-requests: write
     steps:
@@ -17,4 +18,7 @@ jobs:
         env:
           OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash /bin/github_code_review.sh
+        run: |
+          pwd
+          ls /bin
+          bash /bin/github_code_review.sh
