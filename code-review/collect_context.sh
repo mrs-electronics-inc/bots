@@ -18,8 +18,11 @@ if [ "$PLATFORM" == "gitlab" ]; then
 
 elif [ "$PLATFORM" == "github" ]; then
     echo "Gathering pull request details"
+    echo $GITHUB_HEAD_REF
+    gh pr view $GITHUB_HEAD_REF
+    echo "piping to file..."
     # Collect the pull request details
-    gh pr view $GITHUB_HEAD_REF --json body,title,number,url,author,state,createdAt,updatedAt | jq -r '. | to_entries[] | "\(.key): \(.value)"'  > .bots/context/pull-request.md
+    gh pr view $GITHUB_HEAD_REF > .bots/context/pull-request.md
     echo "Gathering diffs"
     # Collect the diffs
     gh pr diff $GITHUB_HEAD_REF > .bots/context/diffs.md
