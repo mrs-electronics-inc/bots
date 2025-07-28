@@ -63,14 +63,10 @@ jobs:
           whereis gh
           whereis glab
           mise exec gh@2.76.1 -- gh --version
-          gh --version
-        shell: bash
-      # - name: GitHub version
-      #   run: gh --version
-      # - name: View PR
-      #   run: gh pr view 12
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: View PR
+        run: mise exec gh@2.76.1 -- gh pr view 12
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # run_code_review_bot:
   #   needs: build_and_push_image
   #   runs-on: ubuntu-latest
