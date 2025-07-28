@@ -55,35 +55,39 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: ls /bin
-        run: ls /bin
-      - name: GitHub version
-        run: gh --version
-      - name: View PR
-        run: gh pr view 12
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  run_code_review_bot:
-    needs: build_and_push_image
-    runs-on: ubuntu-latest
-    container:
-      # We use the image to specific to this commit to review this PR.
-      # This allows the code review bot to review itself :)
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:${{ github.sha }}
-    permissions:
-      pull-requests: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      # TODO: remove this
-      - name: GH test
-        run: gh --version
-        env: 
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run Code Review Bot
-        env:
-          OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ACTIONS_STEP_DEBUG: true
-          ACTIONS_RUNNER_DEBUG: true
-        run: github_code_review.sh
+      - name: debug stuff
+        run: |
+          echo $0
+          echo $PATH
+          whereis gh
+          whereis glab
+      # - name: GitHub version
+      #   run: gh --version
+      # - name: View PR
+      #   run: gh pr view 12
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # run_code_review_bot:
+  #   needs: build_and_push_image
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     # We use the image to specific to this commit to review this PR.
+  #     # This allows the code review bot to review itself :)
+  #     image: ghcr.io/mrs-electronics-inc/bots/code-review:${{ github.sha }}
+  #   permissions:
+  #     pull-requests: write
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     # TODO: remove this
+  #     - name: GH test
+  #       run: gh --version
+  #       env: 
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Run Code Review Bot
+  #       env:
+  #         OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         ACTIONS_STEP_DEBUG: true
+  #         ACTIONS_RUNNER_DEBUG: true
+  #       run: github_code_review.sh
