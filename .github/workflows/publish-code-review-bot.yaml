@@ -1,4 +1,4 @@
-name: Create and publish the Docker image for each bot
+name: Publish Bot Images
 
 on:
   push:

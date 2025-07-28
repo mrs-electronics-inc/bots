@@ -1,12 +1,17 @@
 name: Code Review
 
 on:
+  workflow_run:
+    workflows: ["Publish Bot Images"]
+    types:
+      - completed
   pull_request:
     types: [opened, reopened, synchronize]
 
 jobs:
   run_code_review_bot:
-    needs: build_and_push_images
+    # Only run the bot after the bot image is published for this pull request.
+    if: github.event_name == 'workflow_run' && contains(github.event.workflow_run.event, 'pull_request')
     runs-on: ubuntu-latest
     container:
       # We use the image to specific to this commit to review this PR. This allows the code review bot to review itself :)
