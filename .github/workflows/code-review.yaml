@@ -60,7 +60,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: View PR
-        run: gh pr view 12
+        run: gh pr view 12 --json title
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Code Review Bot
