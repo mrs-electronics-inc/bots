@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       # TODO: pin specific version
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:pr-12
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:${{ GITHUB_SHA }}
     permissions:
       pull-requests: write
     steps:
@@ -19,4 +19,4 @@ jobs:
         env:
           OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: github_code_review.sh
+        run: cat /bin/github_code_review.sh
