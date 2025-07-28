@@ -52,23 +52,24 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/mrs-electronics-inc/bots/code-review:pr-12
-    defaults:
-      run:
-        working-directory: /repo
+    # defaults:
+    #   run:
+    #     working-directory: /repo
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Copy repo to container workdir
-        run: |
-          ls -lah $GITHUB_WORKSPACE
-          cp -a "$GITHUB_WORKSPACE/." /repo
-          cd /repo
-          ls -lah
-      - name: debug stuff
-        run: |
-          pwd
-          ls -lah
-          whereis gh
+      # - name: Copy repo to container workdir
+      #   run: |
+      #     ls -lah $GITHUB_WORKSPACE
+      #     cp -a "$GITHUB_WORKSPACE/." /repo
+      #     cd /repo
+      #     ls -lah
+      #     git config --global --add safe.directory /repo
+      # - name: debug stuff
+      #   run: |
+      #     pwd
+      #     ls -lah
+      #     whereis gh
       - name: View PR
         run: gh pr view 12
         env:
