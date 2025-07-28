@@ -5,15 +5,18 @@
 #    - GITHUB_TOKEN
 # The others are automatically automatically included in GitHub pull request pipelines.
 
-# Authenticate with GitHub
-gh auth login --with-token <<< "$GITHUB_TOKEN"
+echo "Hello world!"
 
 # Collect all the context
 export PLATFORM="github"
 collect_context.sh
 
+echo "Context collected!"
+
 # Generate the LLM review
 generate_llm_review.sh
+
+echo "Code review generated!"
 
 # Leave the comment
 gh pr comment $GITHUB_HEAD_REF -F .bots/summary.md
