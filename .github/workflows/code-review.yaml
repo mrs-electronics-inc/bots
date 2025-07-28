@@ -1,0 +1,27 @@
+name: Code Review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  run_code_review_bot:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # Required to post comments on pull requests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Code Review Bot
+        id: code_review
+        # Use the Docker image directly and run the script
+        # The image ghcr.io/mrs-electronics-inc/bots/code-review:0.2
+        # is expected to contain github_code_review.sh
+        uses: docker://ghcr.io/mrs-electronics-inc/bots/code-review:0.2
+        with:
+          args: /usr/bin/github_code_review.sh # Assuming the script is in /usr/bin inside the image
+        env:
+          OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The following environment variable is used by collect_context.sh to determine the platform
+          PLATFORM: github
