@@ -9,17 +9,8 @@
 glab auth login --token $GITLAB_TOKEN
 
 # Collect all the context
-mkdir -p .bots/context
-# Collect the merge request details
-glab mr view $CI_MERGE_REQUEST_IID > .bots/context/merge-request.md
-# Collect the diffs
-glab mr diff $CI_MERGE_REQUEST_IID > .bots/context/diffs.md
-# TODO: include merge request comments in the context
-
-# Combine context into a single `.bots/context.md` file
-for f in .bots/context/*; do
-    echo -e "\n===== BEGIN FILE: $f =====\n"; cat "$f";
-done > .bots/context.md
+export PLATFORM="gitlab"
+./code-review/collect_context.sh
 
 # Generate the LLM review
 # TODO: move the summary to a separate multi-line variable

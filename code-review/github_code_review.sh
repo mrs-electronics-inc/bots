@@ -9,19 +9,8 @@
 gh auth login --with-token <<< "$GITHUB_TOKEN"
 
 # Collect all the context
-mkdir -p .bots/context
-# Collect the pull request details
-gh pr view $GITHUB_HEAD_REF --json body,title,number,url,author,state,createdAt,updatedAt > .bots/context/pull-request.json
-# Collect the diffs
-gh pr diff $GITHUB_HEAD_REF > .bots/context/diffs.md
-# TODO: include pull request comments in the context
-
-# Combine context into a single `.bots/context.md` file
-# For GitHub, we'll convert the JSON pull request details to a more readable format
-echo "Pull Request Details:" > .bots/context.md
-jq -r '. | to_entries[] | "\(.key): \(.value)"' .bots/context/pull-request.json >> .bots/context.md
-echo -e "\n===== BEGIN FILE: .bots/context/diffs.md =====\n" >> .bots/context.md
-cat .bots/context/diffs.md >> .bots/context.md
+export PLATFORM="github"
+./code-review/collect_context.sh
 
 # Generate the LLM review
 # TODO: move the summary to a separate multi-line variable
