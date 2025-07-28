@@ -62,15 +62,11 @@ jobs:
         run: |
           mv $GITHUB_WORKSPACE/* /repo/
           cd /repo
-          ls
+          ls -lah
       - name: debug stuff
         run: |
-          echo $0
-          cat $0
-          echo $PATH
-          whereis gh
-          whereis glab
-          mise exec gh@2.76.1 -- gh --version
+          pwd
+          ls -lah
       - name: View PR
         run: mise exec gh@2.76.1 -- gh pr view 12
         env:
