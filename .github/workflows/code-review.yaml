@@ -6,9 +6,10 @@ on:
 
 jobs:
   run_code_review_bot:
+    needs: build_and_push_images
     runs-on: ubuntu-latest
     container:
-      # TODO: pin specific version
+      # We use the image to specific to this commit to review this PR. This allows the code review bot to review itself :)
       image: ghcr.io/mrs-electronics-inc/bots/code-review:${{ github.sha }}
     permissions:
       pull-requests: write

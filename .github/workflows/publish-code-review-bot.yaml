@@ -11,7 +11,7 @@ on:
       - 'main'
 
 jobs:
-  build-and-push-images:
+  build_and_push_images:
     runs-on: ubuntu-latest
     strategy:
       matrix:
