@@ -52,6 +52,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/mrs-electronics-inc/bots/code-review:pr-12
+    defaults:
+      run:
+        working-directory: /repo
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
