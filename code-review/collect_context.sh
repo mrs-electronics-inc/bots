@@ -19,11 +19,10 @@ if [ "$PLATFORM" == "gitlab" ]; then
 elif [ "$PLATFORM" == "github" ]; then
     # Collect the pull request details
     gh pr view $GITHUB_HEAD_REF > .bots/context/pull-request.md
-     
+    # Collect the pull request comments
+    gh pr view $GITHUB_HEAD_REF --comments > .bots/context/pull-request-comments.md
     # Collect the diffs
     gh pr diff $GITHUB_HEAD_REF > .bots/context/diffs.md
-
-    # TODO: include pull request comments in the context
 else
     echo "Error: PLATFORM environment variable must be 'gitlab' or 'github'."
     exit 1
