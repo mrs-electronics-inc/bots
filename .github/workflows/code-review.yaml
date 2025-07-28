@@ -50,7 +50,10 @@ jobs:
   test_with_gh_cli:
     runs-on: ubuntu-latest
     steps:
-      - run: gh pr view 12
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: View PR
+        run: gh pr view 12
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   run_code_review_bot:
