@@ -20,7 +20,8 @@ RUN rm -rf /var/lib/apt/lists/*
 # Install Mise tools
 # We must use shims since we aren't using mise in an interactive shell
 ENV PATH="/root/.local/share/mise/shims:${PATH}"
-RUN mise use -g glab@1.64.0
+RUN mise use -g glab@1.65.0
+RUN mise use -g jq@1.8.1
 
 # Install UV tools
 ENV PATH="/root/.local/bin:${PATH}" 
