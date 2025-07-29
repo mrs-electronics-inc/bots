@@ -3,6 +3,7 @@
 # This script collects context for the code review.
 # It expects the following environment variables to be set:
 # - PLATFORM: 'gitlab' or 'github'
+# - CI_MERGE_REQUEST_PROJECT_ID (if PLATFORM is gitlab)
 # - CI_MERGE_REQUEST_IID (if PLATFORM is gitlab)
 # - GITHUB_HEAD_REF (if PLATFORM is github)
 
@@ -12,7 +13,7 @@ if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
     glab mr view $CI_MERGE_REQUEST_IID > .bots/context/details
     # Collect the merge request comments
-    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" > .bots/context/comments
+    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq '.[] | {username: .author.username, timestamp: .created_at, body: .body}' > .bots/context/comments
     # Collect the diffs
     glab mr diff $CI_MERGE_REQUEST_IID > .bots/context/diffs
 elif [ "$PLATFORM" == "github" ]; then
@@ -28,7 +29,8 @@ else
 fi
 
 echo "Combining context"
+context_files=("details", "diffs", "coments")
 # Combine context into a single `.bots/context.md` file
-for f in .bots/context/*; do
-    echo -e "\n===== BEGIN FILE: $f =====\n"; cat "$f";
+for f in context_files; do
+    echo -e "\n\n===== BEGIN CONTEXT: $f =====\n\n"; cat ".bots/context/$f"; echo -e "\n\n===== END CONTEXT: $f =====\n\n"
 done > .bots/context.md
