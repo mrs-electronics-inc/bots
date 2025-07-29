@@ -19,4 +19,4 @@ generate_llm_review.sh
 # Leave the comment
 # NOTE: The "|| true" is because `glab mr note` has an unhandled error,
 #       even when the comment posts successfully
-glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/summary.md)" || true
+glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/review.md)" || true

@@ -1,0 +1,4 @@
+- Make sure that the pull request title follows the conventional commit style.
+	- Alert the developer if the title is in the wrong format.
+	- Example of a correct title: fix: some bug
+	- Example of an incorrect title: Resolves "#18 - some bug"
