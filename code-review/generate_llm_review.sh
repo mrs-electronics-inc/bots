@@ -31,15 +31,15 @@ EOF
 
 # Include .bots/instructions.md at the end of the system prompt if it exists
 if [[ -f .bots/instructions.md ]]; then
-    SYSTEM_PROMPT+="\n\n # Repo-specific Instructions\n\n"
-    SYSTEM_PROMPT+=$(<.bots/instructions.md)
+    SYSTEM_PROMPT+=$'\n\n# Repo-specific Instructions\n\n'
+    SYSTEM_PROMPT+=$(cat .bots/instructions.md)
 fi
 
 # These are for debugging
 echo "================================"
-echo "System Prompt:\n$SYSTEM_PROMPT"
+echo -e "System Prompt:\n$SYSTEM_PROMPT"
 echo "================================"
-echo "Context:\n$(cat .bots/context.md)"
+echo -e "Context:\n$(cat .bots/context.md)"
 echo "================================"
 
 # This shouldn't be necessary, but without it the `llm` tool won't
