@@ -4,31 +4,13 @@ This repository contains various bots that assist us in our software development
 
 ## Code Review 🧐💻
 
-This is a Docker image with built-in tools and scripts for code review. It is designed to be run in a GitLab pipeline. We plan to add GitHub Action support in the future.
+This is a Docker image with built-in tools and scripts for code review. It is designed to be run in CI/CD in either GitHub or GitLab.
 
-### GitLab Pipeline
+### Set Up
 
-Here is a minimal example of using the Code Review Bot in a GitLab job. It is set up to run on every merge request event, but requires a manual trigger to avoid filling up the merge request comments.
+#### GitHub Workflow
 
-```yaml
-run_code_review_bot:
-  stage: bot
-  image: ghcr.io/mrs-electronics-inc/bots/code-review:0.2
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
-      allow_failure: true # Necessary so that Gitlab doesn't block the pipeline
-  variables:
-     OPENROUTER_KEY: $API_KEY_CODE_REVIEW_BOT
-     GITLAB_TOKEN: $TOKEN_CODE_REVIEW_BOT
-  script:
-    # Run the built-in script for GitLab code review
-    - gitlab_code_review.sh
-```
-
-### GitHub Action
-
-Here is a minimal example of using the Code Review Bot in a GitHub workflow.
+Here is a minimal example of using the Code Review Bot in a GitHub workflow. It is set up to run on every pull request event.
 
 ```yaml
 name: Code Review Bot
@@ -58,3 +40,29 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: github_code_review.sh
 ```
+
+#### GitLab Pipeline
+
+Here is a minimal example of using the Code Review Bot in a GitLab job. It is set up to run on every merge request event, but requires a manual trigger to avoid filling up the merge request comments.
+
+```yaml
+run_code_review_bot:
+  stage: bot
+  image: ghcr.io/mrs-electronics-inc/bots/code-review:0.2
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true # Necessary so that Gitlab doesn't block the pipeline
+  variables:
+     OPENROUTER_KEY: $API_KEY_CODE_REVIEW_BOT
+     GITLAB_TOKEN: $TOKEN_CODE_REVIEW_BOT
+  script:
+    # Run the built-in script for GitLab code review
+    - gitlab_code_review.sh
+```
+
+### Configuration
+
+You can add additional instructions to the bot's system prompt by including a `.bots/instructions.md` file in your repository.
+
+See an example [here](/.bots/instructions.md).
