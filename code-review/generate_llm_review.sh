@@ -4,12 +4,12 @@
 # It expects the .bots/context.md file to exist.
 
 REVIEW_MODEL=openrouter/google/gemini-2.5-flash
-CHANGE_NAME=$([$PLATFORM = "GITHUB"] && echo "pull request" || echo "merge request")
+CHANGE_NAME=$(["$PLATFORM" = "github"] && echo "pull request" || echo "merge request")
 SYSTEM_PROMPT=$(cat <<EOF
 - You are a helpful and experienced software engineer who will review this $PLATFORM $CHANGE_NAME.
-  - The $CHANGE_NAME description and details are available in `.bots/context/details`.
-  - The $CHANGE_NAME comments are available in `.bots/context/comments`.
-  - The git diffs are available in `.bots/context/diffs`.
+  - The $CHANGE_NAME description and details are available in ".bots/context/details".
+  - The $CHANGE_NAME comments are available in ".bots/context/comments".
+  - The git diffs are available in ".bots/context/diffs".
   - Don't directly mention any of the filenames from the ".bots" directory. These are added for your context only. They do not exist in the real codebase.
 - Give a basic summary of the changes, but ONLY if none of the previous comments include a summary of the changes.
   - Be sure to highlight any changes mentioned in the description that seem to be missing from the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
