@@ -7,7 +7,7 @@
 
 ## v0.3
 
-- [#12](https://github.com/mrs-electronics-inc/bots/pull/12) - GitHub code review
+- [#12](https://github.com/mrs-electronics-inc/bots/pull/12) - add GitHub code review script
 
 ## v0.2
 
