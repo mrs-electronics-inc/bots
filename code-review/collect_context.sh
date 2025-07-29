@@ -12,7 +12,7 @@ if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
     glab mr view $CI_MERGE_REQUEST_IID > .bots/context/details
     # Collect the merge request comments
-    glab api "https://gitlab.com/api/v4/projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" > .bots/context/comments
+    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" > .bots/context/comments
     # Collect the diffs
     glab mr diff $CI_MERGE_REQUEST_IID > .bots/context/diffs
 elif [ "$PLATFORM" == "github" ]; then
