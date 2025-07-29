@@ -17,4 +17,4 @@ collect_context.sh
 generate_llm_review.sh
 
 # Leave the comment
-gh pr comment $GITHUB_HEAD_REF -F .bots/summary.md
+gh pr comment $GITHUB_HEAD_REF -F .bots/response/review.md

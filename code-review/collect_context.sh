@@ -11,11 +11,10 @@ mkdir -p .bots/context
 if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
     glab mr view $CI_MERGE_REQUEST_IID > .bots/context/merge-request.md
+    # Collect the merge request comments
+    glab api "https://gitlab.com/api/v4/projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" > .bots/context/merge-request-comments.json
     # Collect the diffs
     glab mr diff $CI_MERGE_REQUEST_IID > .bots/context/diffs.md
-
-    # TODO: include merge request comments in the context
-
 elif [ "$PLATFORM" == "github" ]; then
     # Collect the pull request details
     gh pr view $GITHUB_HEAD_REF > .bots/context/pull-request.md
