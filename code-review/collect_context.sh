@@ -31,6 +31,6 @@ fi
 echo "Combining context"
 context_files=("details", "diffs", "comments")
 # Combine context into a single `.bots/context.md` file
-for f in context_files; do
+for f in "${context_files[@]}"; do
     echo -e "\n\n===== BEGIN CONTEXT: $f =====\n\n"; cat ".bots/context/$f"; echo -e "\n\n===== END CONTEXT: $f =====\n\n"
 done > .bots/context.md
