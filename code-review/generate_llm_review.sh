@@ -4,7 +4,7 @@
 # It expects the .bots/context.md file to exist.
 
 REVIEW_MODEL=openrouter/google/gemini-2.5-flash
-CHANGE_NAME=$(["$PLATFORM" = "github"] && echo "pull request" || echo "merge request")
+CHANGE_NAME=$([ "$PLATFORM" = "github" ] && echo "pull request" || echo "merge request")
 SYSTEM_PROMPT=$(cat <<EOF
 - You are a helpful and experienced software engineer who will review this $PLATFORM $CHANGE_NAME.
   - The $CHANGE_NAME description and details are available in ".bots/context/details".
