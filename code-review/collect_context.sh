@@ -41,6 +41,9 @@ for f in "${context_files[@]}"; do
 done > .bots/context.md
 
 echo "changed files: $changed_files"
+if [ -z "$changed_files" ]; then
+    echo "Warning: No changed files detected."
+fi
 count=0
 max_count=10
 # Iterate through each changed file
@@ -51,9 +54,9 @@ while IFS= read -r file; do
         line_count=$(wc -l < "$file")
         # Check if the line count is less than 400
         if (( line_count < 400 )); then
-            echo -e "===== BEGIN FILE: $file =====" >> .bots/context.md;
+            echo "===== BEGIN FILE: $file =====" >> .bots/context.md;
             cat "$file" >> .bots/context.md;
-            echo -e "===== END FILE: $file =====" >> .bots/context.md
+            echo "===== END FILE: $file =====" >> .bots/context.md
             ((count++))
             # Exit early if max_count reached
             if (( count >= max_count )); then
