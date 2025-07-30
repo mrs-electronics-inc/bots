@@ -16,7 +16,9 @@ collect_context.sh
 # Generate the LLM review
 generate_llm_review.sh
 
-# Leave the comment
 # NOTE: The "|| true" is because `glab mr note` has an unhandled error,
 #       even when the comment posts successfully
-glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/review.md)" || true
+# Leave the summary comment if it exists
+[ -f .bots/response/summary.md ] && glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/summary.md)" || true
+# Leave the feedback comment
+glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/feedback.md)" || true

@@ -17,23 +17,20 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Follow the given JSON schema for your output.
     - A post-processing tool will convert each field into its own Markdown section in the final output.
     - Use an empty string for any fields where appropriate.
-
-## Avoid Repetition
 - Any comments authored by "github-actions" or "Code Review Bot" should be considered comments that you gave, do not repeat these comments.
-- BE SURE not to repeat feedback given in any of the existing comments.
-  - Double check all of your new feedback to make sure it DOES NOT repeat information from the existing comments.
-  - DO NOT repeat any details that were already discussed in the comments.
-- It is better to be short and concise than to repeat old information.
 
 ## Style
 - Use a friendly and concise style.
+- It is better to be short and concise than to repeat old information.
 - Tag the $CHANGE_NAME author directly when it is helpful to get their attention about something.
   - Example of tagging someone: @username, some comment here.
 - Avoid being overly wordy.
   - Remember that engineers greatly appreciate succintness and conciseness.
 - Don't be afraid to give negative feedback, but be sure it is accurate.
 
-## Summarize Changes
+## Response Keys
+
+### summary and previous_summary
 - Give a basic summary of the changes in the "summary" field of the JSON.
   - Set "previous_summary" to true if there is already a summary given in the comments.
   - Use an empty string for the "summary" field if "previous_summary" is true.
@@ -41,19 +38,23 @@ SYSTEM_PROMPT=$(cat <<EOF
     - Be sure to highlight any changes mentioned in the description that seem to be missing from the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
     - Be sure to highlight any TODO comments added in the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
 
-## Major Concerns
-- Please note any major concerns in the following areas:
+### checklist
+ 
+- Create a Markdown checklist of all the feedback action items mentioned in all of the comments
+- Use the "- [x] " prefix for all concerns that have been addressed
+- Use the "- [ ] " prefix for all remaining concerns
+
+### new_feedback
+
+- Use this field for any NEW major concerns you might have in any of the following areas:
   - Best Practices
   - Security
   - Performance
   - Potential Bugs
-- Leave out any concern areas that have no major concerns.
 - For each major concern, please include at least one possible solution.
 - For any code change suggestions, use the approprate $PLATFORM $CHANGE_NAME proposed change format with backticks.
+- If all of your concerns have already been mentioned in previous comments, please use "No new feedback." for the "new_feedback" field.
 
-## Resolved Concerns
-- Briefly mention concerns that were mentioned in previous comments but now appear to be resolved in the current version of the $CHANGE_NAME under a "## Resolved Concerns" section at the end of your response.
-- Leave this section out if it doesn't apply.
 EOF
 )
 
@@ -63,7 +64,7 @@ if [[ -f .bots/instructions.md ]]; then
     SYSTEM_PROMPT+=$(cat .bots/instructions.md)
 fi
 
-SCHEMA="review string, summary string, previous_summary bool"
+SCHEMA="summary string, previous_summary bool, new_feedback string, checklist string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
@@ -78,11 +79,17 @@ mkdir .bots/response
 # Generate the LLM review
 cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.1 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
 
-# TODO: pull out different fields from the response JSON into different MD files
+# Add the summary, if necessary
 if [ "$(cat .bots/response/review.json | jq -r ".previous_summary")" = "false" ]; then
-    cat .bots/response/review.json | jq -r ".summary" >> .bots/response/review.md
+    echo "## Summary of Changes" > .bots/reponse/summary.md
+    cat .bots/response/review.json | jq -r ".summary" >> .bots/response/summary.md
+    echo "---" >> .bots/response/summary.md
 fi
-cat .bots/response/review.json | jq -r ".review" >> .bots/response/review.md
+# Add the feedback
+echo "## New Feedback" >> .bots/response/feedback.md
+cat .bots/response/review.json | jq -r ".new_feedback" >> .bots/response/feedback.md
+echo "## Checklist" >> .bots/response/feedback.md
+cat .bots/response/review.json | jq -r ".checklist" >> .bots/response/feedback.md
 
 # These are for debugging
 echo "================================"
@@ -91,8 +98,10 @@ echo "================================"
 echo -e "Context:\n$(cat .bots/context.md)"
 echo "================================"
 echo -e "Review JSON:\n$(cat .bots/response/review.json)"
+[ -f .bots/response/summary.md ] && echo "================================"
+[ -f .bots/response/summary.md ] && echo -e "Summary Markdown:\n$(cat .bots/response/summary.md)"
 echo "================================"
-echo -e "Review Markdown:\n$(cat .bots/response/review.md)"
+echo -e "Feedback Markdown:\n$(cat .bots/response/feedback.md)"
 echo "================================"
  
 # TODO: respond to comments and pipe to .bots/response/comments.md
