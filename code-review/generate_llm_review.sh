@@ -35,7 +35,7 @@ SYSTEM_PROMPT=$(cat <<EOF
 
 ## Summarize Changes
 - Give a basic summary of the changes in the "summary" field of the JSON.
-  - Set "previous_summary" to "true" if there is already a summary given in the comments.
+  - Set "previous_summary" to true if there is already a summary given in the comments.
   - Use an empty string for the "summary" field if "previous_summary" is true.
   - Otherwise:
     - Be sure to highlight any changes mentioned in the description that seem to be missing from the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
