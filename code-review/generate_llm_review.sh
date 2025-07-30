@@ -35,9 +35,11 @@ SYSTEM_PROMPT=$(cat <<EOF
 
 ## Summarize Changes
 - Give a basic summary of the changes in the "summary" field of the JSON.
-  - Use an empty string for the "summary" field if a previous comment gave a summary of changes.
-  - Be sure to highlight any changes mentioned in the description that seem to be missing from the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
-  - Be sure to highlight any TODO comments added in the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
+  - Set "previous_summary" to "true" if there is already a summary given in the comments.
+  - Use an empty string for the "summary" field if "previous_summary" is true.
+  - Otherwise:
+    - Be sure to highlight any changes mentioned in the description that seem to be missing from the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
+    - Be sure to highlight any TODO comments added in the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
 
 ## Major Concerns
 - Please note any major concerns in the following areas:
@@ -61,7 +63,7 @@ if [[ -f .bots/instructions.md ]]; then
     SYSTEM_PROMPT+=$(cat .bots/instructions.md)
 fi
 
-SCHEMA="review string, summary string"
+SCHEMA="review string, summary string, previous_summary bool"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
@@ -74,7 +76,7 @@ llm keys set openrouter --value "$OPENROUTER_KEY"
 mkdir .bots/response
 
 # Generate the LLM review
-cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.0 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
+cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.1 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
 
 # TODO: pull out different fields from the response JSON into different MD files
 cat .bots/response/review.json | jq -r ".review" >> .bots/response/review.md
