@@ -4,7 +4,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Install core packages
 RUN apt update \
-    && apt install -y git wget gpg curl
+    && apt install -y git wget gpg curl jq
 
 # Prep for Mise
 RUN wget -qO - https://mise.jdx.dev/gpg-key.pub | gpg --dearmor | tee /etc/apt/keyrings/mise-archive-keyring.gpg 1> /dev/null \
@@ -21,7 +21,6 @@ RUN rm -rf /var/lib/apt/lists/*
 # We must use shims since we aren't using mise in an interactive shell
 ENV PATH="/root/.local/share/mise/shims:${PATH}"
 RUN mise use -g glab@1.65.0
-RUN mise use -g jq@1.8.1
 
 # Install UV tools
 ENV PATH="/root/.local/bin:${PATH}" 
