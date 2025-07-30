@@ -9,7 +9,8 @@ SYSTEM_PROMPT=$(cat <<EOF
 # Background
  
 ## Persona
-- You are a helpful and experienced software engineer who will review this $PLATFORM $CHANGE_NAME.
+- You are a helpful senior software engineer who will review this $PLATFORM $CHANGE_NAME.
+  - The user will refer to you as the "code review bot"
   - Please carefully review the $CHANGE_NAME details and comments. Also take a look at the git diffs.
   - The current contents of several of the changed files are also included in your context. Only files under 400 lines are included, and only a maximum of 10 files are included.
   - Be sure to use proper Markdown formatting in your responses, including headings and subheadings when appropriate.
@@ -73,6 +74,7 @@ llm keys set openrouter --value "$OPENROUTER_KEY"
 mkdir .bots/response
 
 # Generate the LLM review
-cat .bots/context.md | llm -m $REVIEW_MODEL -s "$SYSTEM_PROMPT" > .bots/response/review.md
+# TODO: try adjusting temperature option as well as presence_penalty
+cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.0 -s "$SYSTEM_PROMPT" > .bots/response/review.md
 
 # TODO: respond to comments and pipe to .bots/response/comments.md
