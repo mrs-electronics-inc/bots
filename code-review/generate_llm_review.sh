@@ -57,12 +57,6 @@ if [[ -f .bots/instructions.md ]]; then
     SYSTEM_PROMPT+=$(cat .bots/instructions.md)
 fi
 
-# These are for debugging
-echo "================================"
-echo -e "System Prompt:\n$SYSTEM_PROMPT"
-echo "================================"
-echo -e "Context:\n$(cat .bots/context.md)"
-echo "================================"
 
 # This shouldn't be necessary, but without it the `llm` tool won't
 # recognize openrouter models.
@@ -76,4 +70,13 @@ mkdir .bots/response
 # Generate the LLM review
 cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.0 -o temperature 1.1 -s "$SYSTEM_PROMPT" > .bots/response/review.md
 
+# These are for debugging
+echo "================================"
+echo -e "System Prompt:\n$SYSTEM_PROMPT"
+echo "================================"
+echo -e "Context:\n$(cat .bots/context.md)"
+echo "================================"
+echo -e "Review:\n$(cat .bots/response/review.md)"
+echo "================================"
+ 
 # TODO: respond to comments and pipe to .bots/response/comments.md
