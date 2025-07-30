@@ -5,23 +5,7 @@ SHELL ["/bin/bash", "-c"]
 # Install core packages
 RUN apt update \
     && apt install -y git wget gpg curl jq
-
-# Prep for Mise
-RUN wget -qO - https://mise.jdx.dev/gpg-key.pub | gpg --dearmor | tee /etc/apt/keyrings/mise-archive-keyring.gpg 1> /dev/null \
-    && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.gpg arch=amd64] https://mise.jdx.dev/deb stable main" | tee /etc/apt/sources.list.d/mise.list
-
-# Install Mise
-RUN apt update \
-    && apt install -y mise
-
-# Clean up to reduce image size
-RUN rm -rf /var/lib/apt/lists/*
-
-# Install Mise tools
-# We must use shims since we aren't using mise in an interactive shell
-ENV PATH="/root/.local/share/mise/shims:${PATH}"
-RUN mise use -g glab@1.65.0
-
+ 
 # Install UV tools
 ENV PATH="/root/.local/bin:${PATH}" 
 RUN python -m pip install uv \
@@ -31,11 +15,17 @@ RUN python -m pip install uv \
 # Set up llm tool for openrouter
 RUN llm install llm-openrouter
 
-# Install github CLI (for some reason GitHub Actions doesn't play nice with
-# Mise shims).
+# Install GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
     && apt update && apt install -y gh;
+
+# Install GitLab CLI
+RUN wget https://gitlab.com/gitlab-org/cli/-/releases/v1.65.0/downloads/glab_1.65.0_linux_amd64.deb \
+    && dpkg -i glab_1.65.0_linux_amd64.deb
+
+# Clean up to reduce image size
+RUN rm -rf /var/lib/apt/lists/*
 
 # This is where the git repo will be mounted.
 WORKDIR /repo
