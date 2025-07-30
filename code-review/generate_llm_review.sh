@@ -48,7 +48,7 @@ SYSTEM_PROMPT=$(cat <<EOF
   - DO NOT include testing steps or anything else from the $CHANGE_NAME details in your checklist. The user will be SEVERELY disappointed if you do.
 - Use the "- [x] " prefix for all addressed feedback items
 - Use the "- [ ] " prefix for all unaddressed feedback items
-- Set this field to an empty string if there are no unaddressed feedback items
+- Set this field to "No further changes required. Nice work! 🎉" or some other positive feedback if there are no unaddressed feedback items.
 
 ### old_feedback
 - Use this field to summarize the feedback given in existing comments.
@@ -100,7 +100,7 @@ fi
 # Add the feedback
 echo "## New Feedback" > .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".new_feedback" >> .bots/response/feedback.md
-echo "## Checklist" >> .bots/response/feedback.md
+echo "## To Do" >> .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".checklist" >> .bots/response/feedback.md
 
 # These are for debugging
