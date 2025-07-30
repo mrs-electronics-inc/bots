@@ -79,6 +79,7 @@ mkdir .bots/response
 cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.1 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
 
 # TODO: pull out different fields from the response JSON into different MD files
+# AI!: add ".summary" field from JSON to review.md, if ".previous_summary" field is false
 cat .bots/response/review.json | jq -r ".review" >> .bots/response/review.md
 
 # These are for debugging
