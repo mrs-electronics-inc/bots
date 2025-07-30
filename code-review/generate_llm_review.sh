@@ -111,4 +111,4 @@ echo "================================"
 echo -e "Feedback Markdown:\n$(cat .bots/response/feedback.md)"
 echo "================================"
  
-# TODO: respond to comments and pipe to .bots/response/comments.md (#18)
+# TODO: respond to comments and pipe to .bots/response/comments.md (#15)
