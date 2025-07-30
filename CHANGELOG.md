@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.1
+
+- [#21](https://github.com/mrs-electronics-inc/bots/pull/21) - fix: missing summary title and incorrect checklist
+
 ## v0.6.0
 
 - [#20](https://github.com/mrs-electronics-inc/bots/pull/20) - fix: bot repeats itself
