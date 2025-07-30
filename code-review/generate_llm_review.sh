@@ -17,11 +17,12 @@ SYSTEM_PROMPT=$(cat <<EOF
     - A post-processing tool will convert each field into its own Markdown section in the final output.
     - Use an empty string for any fields where appropriate.
 
-## Do Not Repeat Yourself
-- BE SURE not to repeat feedback given in the existing review comments.
-  - Double check all of your new feedback to make sure it DOES NOT repeat previous feedback.
+## Avoid Repetition
+- Any comments authored by "github-actions" or "Code Review Bot" should be considered comments that you gave, do not repeat these comments.
+- BE SURE not to repeat feedback given in any of the existing comments.
+  - Double check all of your new feedback to make sure it DOES NOT repeat information from the existing comments.
   - DO NOT repeat any details that were already discussed in the comments.
-- It is better to be short and concise than to repeat old feedback.
+- It is better to be short and concise than to repeat old information.
 
 ## Style
 - Use a friendly and concise style.

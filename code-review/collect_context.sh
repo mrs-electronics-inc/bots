@@ -15,7 +15,7 @@ if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
     glab mr view $CI_MERGE_REQUEST_IID > .bots/context/details
     # Collect the merge request comments
-    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq '.[] | {username: .author.username, timestamp: .created_at, body: .body}' > .bots/context/comments
+    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq '.[] | {username: .author.username, name: .author.name, timestamp: .created_at, body: .body}' > .bots/context/comments
     # Collect the diffs
     glab mr diff $CI_MERGE_REQUEST_IID --raw > .bots/context/diffs
     # Collect the names of the changed files
