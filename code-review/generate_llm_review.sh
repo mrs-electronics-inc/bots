@@ -2,6 +2,7 @@
 
 # This script generates the LLM review.
 # It expects the .bots/context.md file to exist.
+echo "Generating LLM review..."
 
 REVIEW_MODEL=openrouter/google/gemini-2.5-flash
 CHANGE_NAME=$([ "$PLATFORM" = "github" ] && echo "pull request" || echo "merge request")

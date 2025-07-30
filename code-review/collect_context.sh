@@ -6,6 +6,7 @@
 # - CI_MERGE_REQUEST_PROJECT_ID (if PLATFORM is gitlab)
 # - CI_MERGE_REQUEST_IID (if PLATFORM is gitlab)
 # - GITHUB_HEAD_REF (if PLATFORM is github)
+echo "Collecting context..."
 
 mkdir -p .bots/context
 
