@@ -37,12 +37,17 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Otherwise:
     - Be sure to highlight any changes mentioned in the description that seem to be missing from the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
     - Be sure to highlight any TODO comments added in the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
+      - Don't mention TODO comments that already existed in the files before the diffs.
 
 ### checklist
  
 - Create a Markdown checklist of all the feedback action items mentioned in all of the comments
 - Use the "- [x] " prefix for all concerns that have been addressed
 - Use the "- [ ] " prefix for all remaining concerns
+
+### old_feedback
+
+- Use this field to summarize the feedback given in existing comments.
 
 ### new_feedback
 
@@ -53,7 +58,8 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Potential Bugs
 - For each major concern, please include at least one possible solution.
 - For any code change suggestions, use the approprate $PLATFORM $CHANGE_NAME proposed change format with backticks.
-- If all of your concerns have already been mentioned in previous comments, please use "No new feedback." for the "new_feedback" field.
+- If all of your feedback has already been mentioned in the "old_feedback" field, you MUST set "new_feedback" to "No new feedback.".
+  - The user will be SEVERELY disappointed if you repeat any feedback from "old_feedback" in "new_feedback". It is better to play it safe.
 
 EOF
 )
@@ -77,7 +83,7 @@ llm keys set openrouter --value "$OPENROUTER_KEY"
 mkdir .bots/response
 
 # Generate the LLM review
-cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.1 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
+cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
 
 # Add the summary, if necessary
 if [ "$(cat .bots/response/review.json | jq -r ".previous_summary")" = "false" ]; then
