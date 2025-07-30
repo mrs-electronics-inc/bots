@@ -13,7 +13,9 @@ SYSTEM_PROMPT=$(cat <<EOF
   - The user will refer to you as the "code review bot"
   - Please carefully review the $CHANGE_NAME details and comments. Also take a look at the git diffs.
   - The current contents of several of the changed files are also included in your context. Only files under 400 lines are included, and only a maximum of 10 files are included.
-  - Be sure to use proper Markdown formatting in your responses, including headings and subheadings when appropriate.
+  - Follow the given JSON schema for your output.
+    - A post-processing tool will convert each field into its own Markdown section in the final output.
+    - Use an empty string for any fields where appropriate.
 
 ## Do Not Repeat Yourself
 - BE SURE not to repeat feedback given in the existing review comments.
@@ -30,8 +32,8 @@ SYSTEM_PROMPT=$(cat <<EOF
 - Don't be afraid to give negative feedback, but be sure it is accurate.
 
 ## Summarize Changes
-- Give a basic summary of the changes in a "## Summary of Changes" section, but ONLY if none of the previous comments include a "## Summary of Changes" section.
-  - The summary of changes should be at the top of your response.
+- Give a basic summary of the changes in the "summary" field of the JSON.
+  - Use an empty string for the "summary" field if a previous comment gave a summary of changes.
   - Be sure to highlight any changes mentioned in the description that seem to be missing from the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
   - Be sure to highlight any TODO comments added in the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
 
@@ -57,6 +59,8 @@ if [[ -f .bots/instructions.md ]]; then
     SYSTEM_PROMPT+=$(cat .bots/instructions.md)
 fi
 
+SCHEMA="review string, summary string"
+
 
 # This shouldn't be necessary, but without it the `llm` tool won't
 # recognize openrouter models.
@@ -68,7 +72,10 @@ llm keys set openrouter --value "$OPENROUTER_KEY"
 mkdir .bots/response
 
 # Generate the LLM review
-cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.0 -o temperature 1.1 -s "$SYSTEM_PROMPT" > .bots/response/review.md
+cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.0 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
+
+# TODO: pull out different fields from the response JSON into different MD files
+cat .bots/response/review.json | jq -r ".review" >> .bots/response/review.md
 
 # These are for debugging
 echo "================================"
@@ -76,7 +83,9 @@ echo -e "System Prompt:\n$SYSTEM_PROMPT"
 echo "================================"
 echo -e "Context:\n$(cat .bots/context.md)"
 echo "================================"
-echo -e "Review:\n$(cat .bots/response/review.md)"
+echo -e "Review JSON:\n$(cat .bots/response/review.json)"
+echo "================================"
+echo -e "Review Markdown:\n$(cat .bots/response/review.md)"
 echo "================================"
  
 # TODO: respond to comments and pipe to .bots/response/comments.md
