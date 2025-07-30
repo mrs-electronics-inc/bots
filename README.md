@@ -23,7 +23,7 @@ jobs:
   run_code_review_bot:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.3
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:main
       volumes:
         - ${{ github.workspace }}:/repo
     defaults:
@@ -48,7 +48,7 @@ Here is a minimal example of using the Code Review Bot in a GitLab job. It is se
 ```yaml
 run_code_review_bot:
   stage: bot
-  image: ghcr.io/mrs-electronics-inc/bots/code-review:0.2
+  image: ghcr.io/mrs-electronics-inc/bots/code-review:main
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: manual
