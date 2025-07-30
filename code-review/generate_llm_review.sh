@@ -28,34 +28,36 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Remember that engineers greatly appreciate succintness and conciseness.
 - Don't be afraid to give negative feedback, but be sure it is accurate.
 
-## Response Keys
+## Response Fields
 
-### summary and previous_summary
-- Give a basic summary of the changes in the "summary" field of the JSON.
-  - Set "previous_summary" to true if there is already a summary given in the comments.
-  - Use an empty string for the "summary" field if "previous_summary" is true.
-  - Otherwise:
-    - Be sure to highlight any changes mentioned in the description that seem to be missing from the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
-    - Be sure to highlight any TODO comments added in the diffs. Perhaps the developer forgot to do some of the changes that they intended to do.
-      - Don't mention TODO comments that already existed in the files before the diffs.
+### is_draft
+- Set this to true if the $CHANGE_NAME is in draft
+
+### has_previous_summary
+- Set this to true if there is already a summary given in the comments.
+
+### summary
+- Set this field to an empty string if "is_draft" or "has_previous_summary" is true
+- Otherwise:
+  - Set this field to a basic summary of the $CHANGE_NAME in bullet-point list form.
+    - Keep it short and concise.
 
 ### checklist
- 
 - Create a Markdown checklist of all the feedback action items mentioned in all of the comments
 - Use the "- [x] " prefix for all concerns that have been addressed
 - Use the "- [ ] " prefix for all remaining concerns
 
 ### old_feedback
-
 - Use this field to summarize the feedback given in existing comments.
 
 ### new_feedback
-
 - Use this field for any NEW major concerns you might have in any of the following areas:
   - Best Practices
   - Security
   - Performance
   - Potential Bugs
+  - Changes mentioned in the description that seem to be missing from the diffs
+  - TODO comments added to the diffs that don't include an issue number
 - For each major concern, please include at least one possible solution.
 - For any code change suggestions, use the approprate $PLATFORM $CHANGE_NAME proposed change format with backticks.
 - If all of your feedback has already been mentioned in the "old_feedback" field, you MUST set "new_feedback" to "No new feedback.".
@@ -70,7 +72,7 @@ if [[ -f .bots/instructions.md ]]; then
     SYSTEM_PROMPT+=$(cat .bots/instructions.md)
 fi
 
-SCHEMA="summary string, previous_summary bool, new_feedback string, checklist string"
+SCHEMA="is_draft bool, has_previous_summary bool, summary string, old_feedback string, new_feedback string, checklist string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
@@ -86,13 +88,12 @@ mkdir .bots/response
 cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
 
 # Add the summary, if necessary
-if [ "$(cat .bots/response/review.json | jq -r ".previous_summary")" = "false" ]; then
+if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
     echo "## Summary of Changes" > .bots/reponse/summary.md
     cat .bots/response/review.json | jq -r ".summary" >> .bots/response/summary.md
-    echo "---" >> .bots/response/summary.md
 fi
 # Add the feedback
-echo "## New Feedback" >> .bots/response/feedback.md
+echo "## New Feedback" > .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".new_feedback" >> .bots/response/feedback.md
 echo "## Checklist" >> .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".checklist" >> .bots/response/feedback.md
@@ -110,4 +111,4 @@ echo "================================"
 echo -e "Feedback Markdown:\n$(cat .bots/response/feedback.md)"
 echo "================================"
  
-# TODO: respond to comments and pipe to .bots/response/comments.md
+# TODO: respond to comments and pipe to .bots/response/comments.md (#18)
