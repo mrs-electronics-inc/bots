@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.0
+
+- [#20](https://github.com/mrs-electronics-inc/bots/pull/20) - fix: bot repeats itself
+
 ## v0.5.0
 
 - [#19](https://github.com/mrs-electronics-inc/bots/pull/19) - add current file contents
