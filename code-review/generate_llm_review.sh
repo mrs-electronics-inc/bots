@@ -74,7 +74,6 @@ llm keys set openrouter --value "$OPENROUTER_KEY"
 mkdir .bots/response
 
 # Generate the LLM review
-# TODO: try adjusting temperature option as well as presence_penalty
-cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.0 -s "$SYSTEM_PROMPT" > .bots/response/review.md
+cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.0 -o temperature 1.1 -s "$SYSTEM_PROMPT" > .bots/response/review.md
 
 # TODO: respond to comments and pipe to .bots/response/comments.md
