@@ -43,10 +43,12 @@ SYSTEM_PROMPT=$(cat <<EOF
     - Keep it short and concise.
 
 ### checklist
-- Create a Markdown checklist of all the feedback action items mentioned in all of the comments
-  - DO NOT include testing steps in your checklist
-- Use the "- [x] " prefix for all concerns that have been addressed
-- Use the "- [ ] " prefix for all remaining concerns
+- Create a Markdown checklist of all the feedback items mentioned in the comments
+  - ONLY include items from the "BEGIN CONTEXT: comments" section
+  - DO NOT include testing steps or anything else from the $CHANGE_NAME details in your checklist. The user will be SEVERELY disappointed if you do.
+- Use the "- [x] " prefix for all addressed feedback items
+- Use the "- [ ] " prefix for all unaddressed feedback items
+- Set this field to an empty string if there are no unaddressed feedback items
 
 ### old_feedback
 - Use this field to summarize the feedback given in existing comments.
@@ -57,6 +59,8 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Security
   - Performance
   - Potential Bugs
+  - Inconsistencies
+  - Incorrect grammar
   - Changes mentioned in the description that seem to be missing from the diffs
   - TODO comments added to the diffs that don't include an issue number
 - For each major concern, please include at least one possible solution.
