@@ -44,6 +44,7 @@ SYSTEM_PROMPT=$(cat <<EOF
 
 ### checklist
 - Create a Markdown checklist of all the feedback action items mentioned in all of the comments
+  - DO NOT include testing steps in your checklist
 - Use the "- [x] " prefix for all concerns that have been addressed
 - Use the "- [ ] " prefix for all remaining concerns
 
@@ -89,7 +90,7 @@ cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperatu
 
 # Add the summary, if necessary
 if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
-    echo "## Summary of Changes" > .bots/reponse/summary.md
+    echo "## Summary of Changes" > .bots/response/summary.md
     cat .bots/response/review.json | jq -r ".summary" >> .bots/response/summary.md
 fi
 # Add the feedback
