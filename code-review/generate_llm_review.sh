@@ -43,9 +43,12 @@ SYSTEM_PROMPT=$(cat <<EOF
     - Keep it short and concise.
 
 ### checklist
-- Create a Markdown checklist of all the feedback action items mentioned in all of the comments
-- Use the "- [x] " prefix for all concerns that have been addressed
-- Use the "- [ ] " prefix for all remaining concerns
+- Create a Markdown checklist of all the feedback items mentioned in the comments
+  - ONLY include items from the "BEGIN CONTEXT: comments" section
+  - DO NOT include testing steps or anything else from the $CHANGE_NAME details in your checklist. The user will be SEVERELY disappointed if you do.
+- Use the "- [x] " prefix for all addressed feedback items
+- Use the "- [ ] " prefix for all unaddressed feedback items
+- Set this field to "No further changes required. Nice work! 🎉" or some other positive feedback if there are no unaddressed feedback items.
 
 ### old_feedback
 - Use this field to summarize the feedback given in existing comments.
@@ -56,6 +59,8 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Security
   - Performance
   - Potential Bugs
+  - Inconsistencies
+  - Incorrect grammar
   - Changes mentioned in the description that seem to be missing from the diffs
   - TODO comments added to the diffs that don't include an issue number
 - For each major concern, please include at least one possible solution.
@@ -89,13 +94,13 @@ cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperatu
 
 # Add the summary, if necessary
 if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
-    echo "## Summary of Changes" > .bots/reponse/summary.md
+    echo "## Summary of Changes" > .bots/response/summary.md
     cat .bots/response/review.json | jq -r ".summary" >> .bots/response/summary.md
 fi
 # Add the feedback
 echo "## New Feedback" > .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".new_feedback" >> .bots/response/feedback.md
-echo "## Checklist" >> .bots/response/feedback.md
+echo "## To Do" >> .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".checklist" >> .bots/response/feedback.md
 
 # These are for debugging
