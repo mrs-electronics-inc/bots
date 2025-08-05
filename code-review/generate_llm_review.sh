@@ -100,7 +100,7 @@ if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
 fi
 # Add the feedback
 echo "## Feedback" > .bots/response/feedback.md
-cat .bots/response/review.json | jq -r ".new_feedback" >> .bots/response/feedback.md
+cat .bots/response/review.json | jq -r ".feedback" >> .bots/response/feedback.md
 echo "## To Do" >> .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".checklist" >> .bots/response/feedback.md
 
