@@ -19,5 +19,4 @@ generate_llm_review.sh
 # Leave the summary comment if it exists
 [ -f .bots/response/summary.md ] && gh pr comment $GITHUB_HEAD_REF -F .bots/response/summary.md
 # Leave the feedback comment
-# TODO: update the existing comment if it exists
-# gh pr comment $GITHUB_HEAD_REF -F .bots/response/feedback.md
+gh pr comment $GITHUB_HEAD_REF --edit-last --create-if-none -F .bots/response/feedback.md
