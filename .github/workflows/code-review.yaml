@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       # TODO: use latest tag
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.7.0-rc4
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.7.0-rc5
       volumes:
         - ${{ github.workspace }}:/repo
     defaults:
