@@ -58,20 +58,6 @@ SYSTEM_PROMPT=$(cat <<EOF
 - Please include a star rating for each concern (⭐ to ⭐⭐⭐⭐⭐) indicating how important/severe it is.
 - Don't worry about being concise in the "feedback" field.
 - You should ALWAYS include at least one piece of feedback, no matter how small.
-
-### new_feedback
-- Use this field to mention points from "feedback" that ARE NOT in "old_feedback".
-- If all the points in "feedback" are already in "old_feedback", you MUST set "new_feedback" to "No new feedback.".
-
-### checklist
-- Create a Markdown checklist for all the items mentioned in "old_feedback" and "new_feedback" that need addressed by the $CHANGE_NAME author.
-  - DO NOT include testing steps or anything else from the $CHANGE_NAME details in your checklist. The user will be SEVERELY disappointed if you do.
-- Use the "- [x] " prefix for all addressed feedback items
-- Use the "- [ ] " prefix for all unaddressed feedback items
-- Set this field to something similar to "No further changes required. Nice work! 🎉" if there are no unaddressed feedback items.
-  - Be creative with the variety of this response
-  - DO NOT use the phrase "No further changes required".
-
 EOF
 )
 
@@ -83,7 +69,7 @@ else
     SYSTEM_PROMPT+="None."
 fi
 
-SCHEMA="is_draft bool, has_previous_summary bool, summary string, old_feedback string, feedback string, new_feedback string, checklist string"
+SCHEMA="is_draft bool, has_previous_summary bool, summary string, old_feedback string, feedback string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
@@ -98,6 +84,8 @@ mkdir .bots/response
 # Generate the LLM review
 cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
 
+# Determine which feedback is new
+
 # Add the summary, if necessary
 if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
     echo "## Summary of Changes" > .bots/response/summary.md
@@ -105,9 +93,9 @@ if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
 fi
 # Add the feedback
 echo "## New Feedback" > .bots/response/feedback.md
-cat .bots/response/review.json | jq -r ".new_feedback" >> .bots/response/feedback.md
+cat .bots/response/review.json | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "Copy verbatim the items from \"feedback\" that are not mentioned in \"old_feedback\". If everything in \"feedback\" is mentioned in \"old_feedback\", respond with \"Nothing new to add.\"" >> .bots/response/feedback.md
 echo "## To Do" >> .bots/response/feedback.md
-cat .bots/response/review.json | jq -r ".checklist" >> .bots/response/feedback.md
+cat .bots/response/review.json | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "Create a markdown checklist for the items from \"old_feedback\" and \"feedback\" that need addressed. Use - [x] for addressed items and - [ ] for unaddressed items." >> .bots/response/feedback.md
 
 # These are for debugging
 echo "================================"
