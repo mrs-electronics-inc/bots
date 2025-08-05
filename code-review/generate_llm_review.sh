@@ -48,7 +48,7 @@ SYSTEM_PROMPT=$(cat <<EOF
   - DO NOT include testing steps or anything else from the $CHANGE_NAME details in your checklist. The user will be SEVERELY disappointed if you do.
 - Use the "- [x] " prefix for all addressed feedback items
 - Use the "- [ ] " prefix for all unaddressed feedback items
-- Set this field to "No further changes required. Nice work! 🎉" or some other positive feedback if there are no unaddressed feedback items.
+- Set this field to "No further changes required. Nice work! 🎉" or some other positive feedback if there are no unaddressed feedback items. Be creative with the variety of this response.
 
 ### old_feedback
 - Use this field to summarize the feedback given in existing comments.
