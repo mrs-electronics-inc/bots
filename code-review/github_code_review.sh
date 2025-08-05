@@ -3,6 +3,7 @@
 # GitHub Actions job definition:
 #    - OPENROUTER_KEY
 #    - GITHUB_TOKEN
+#    - PULL_REQUEST_NUMBER
 # The others are automatically automatically included in GitHub pull request pipelines.
 
 # I don't know why we need this when it is already in the Dockerfile
@@ -20,7 +21,19 @@ generate_llm_review.sh
 [ -f .bots/response/summary.md ] && gh pr comment $GITHUB_HEAD_REF -F .bots/response/summary.md
 # Leave the feedback comment
 COMMENT_ID="$(cat .bots/response/review.json | jq -r .previous_comment_id)"
-# TODO: create new comment if comment ID is null
-gh pr comment $GITHUB_HEAD_REF -F .bots/response/feedback.md
-# TODO: update previous comment based on COMMENT_ID
+echo "Comment ID:"
+echo $COMMENT_ID
+if [ -z "$COMMENT_ID" ] || [ "$COMMENT_ID" == "null" ]; then
+  # Create new comment
+  gh pr comment $GITHUB_HEAD_REF -F .bots/response/feedback.md
+else
+  echo "PR number:"
+  echo $PULL_REQUEST_NUMBER
+  # Update existing comment
+  gh api \
+    --method PATCH \
+    -H "Accept: application/vnd.github+json" \
+    "/repos/${GITHUB_REPOSITORY}/pulls/${PULL_REQUEST_NUMBER}/comments/${COMMENT_ID}" \
+    -f body="$(cat ".bots/response/feedback.md")"
+fi
 
