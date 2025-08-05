@@ -17,10 +17,11 @@ collect_context.sh
 # Generate the LLM review
 generate_llm_review.sh
 
+echo "leaving comments..."
 # Leave the summary comment if it exists
 [ -f .bots/response/summary.md ] && gh pr comment $GITHUB_HEAD_REF -F .bots/response/summary.md
 # Leave the feedback comment
-COMMENT_ID="$(cat .bots/response/review.json | jq -r .previous_comment_id)"
+COMMENT_ID="$(cat .bots/response/review.json | jq -r '.previous_comment_id')"
 echo "Comment ID:"
 echo $COMMENT_ID
 if [ -z "$COMMENT_ID" ] || [ "$COMMENT_ID" == "null" ]; then

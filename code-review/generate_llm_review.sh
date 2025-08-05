@@ -117,4 +117,5 @@ echo "================================"
 echo -e "Feedback Markdown:\n$(cat .bots/response/feedback.md)"
 echo "================================"
  
+echo "done generating review!"
 # TODO: respond to comments and pipe to .bots/response/comments.md (#15)
