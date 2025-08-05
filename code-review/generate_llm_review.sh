@@ -53,7 +53,7 @@ SYSTEM_PROMPT=$(cat <<EOF
 ### old_feedback
 - Use this field to summarize the feedback given in existing comments.
 
-### new_feedback
+### feedback
 - Use this field for any NEW major concerns you might have in any of the following areas:
   - Best Practices
   - Security
@@ -63,21 +63,27 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Incorrect grammar
   - Changes mentioned in the description that seem to be missing from the diffs
   - TODO comments added to the diffs that don't include an issue number
+  - Anything mentioned in the repo-specific instructions.
 - For each major concern, please include at least one possible solution.
 - For any code change suggestions, use the approprate $PLATFORM $CHANGE_NAME proposed change format with backticks.
-- If all of your feedback has already been mentioned in the "old_feedback" field, you MUST set "new_feedback" to "No new feedback.".
+
+### new_feedback
+- Use this field to mention things from "feedback" that ARE NOT in "old_feedback".
+- If everything in "feedback" is already in "old_feedback", you MUST set "new_feedback" to "No new feedback.".
   - The user will be SEVERELY disappointed if you repeat any feedback from "old_feedback" in "new_feedback". It is better to play it safe.
 
 EOF
 )
 
 # Include .bots/instructions.md at the end of the system prompt if it exists
+SYSTEM_PROMPT+=$'\n\n# Repo-specific Instructions\n\n'
 if [[ -f .bots/instructions.md ]]; then
-    SYSTEM_PROMPT+=$'\n\n# Repo-specific Instructions\n\n'
     SYSTEM_PROMPT+=$(cat .bots/instructions.md)
+else
+    SYSTEM_PROMPT+="None."
 fi
 
-SCHEMA="is_draft bool, has_previous_summary bool, summary string, old_feedback string, new_feedback string, checklist string"
+SCHEMA="is_draft bool, has_previous_summary bool, summary string, old_feedback string, feedback string, new_feedback string, checklist string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
