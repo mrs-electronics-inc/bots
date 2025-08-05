@@ -39,10 +39,6 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Set this field to a basic summary of the $CHANGE_NAME in bullet-point list form.
     - Keep it short and concise.
 
-### old_feedback
-- Use this field to summarize the feedback given in existing comments.
-- Use a concise markdown bullet-point list.
-
 ### feedback
 - Use this field for all feedback you have in the following areas:
   - Best Practices
@@ -60,28 +56,17 @@ SYSTEM_PROMPT=$(cat <<EOF
 - Don't worry about being concise in the "feedback" field.
 - You should ALWAYS include at least one piece of feedback, no matter how small.
 
-### new_feedback
-- Carefully compare "feedback" with "old_feedback", then respond with the items that are new and unique in "feedback" - things that are NOT mentioned in ANY way in "feedback".
-  - If you are unsure if a piece of feedback was already included in "old_feedback", then assume that it has been and don't include it in "new_feedback".
-
-#### Example
-
-{
-  "old_feedback": "The PR title `fix: give actual feedback` follows the conventional commit style, which is great! Additionally, the TODO comment `# TODO: use latest tag` lacks an associated issue number.",
-  "feedback": "The title correctly follows the conventional commit style. Additionally, the TODO comment `# TODO: use latest tag` lacks an associated issue number.",
-  "new_feedback: "The TODO comment `# TODO: use latest tag` lacks an associated issue number."
-}
-
-Notice how the "new_feedback" does NOT mention the PR title, because that was covered by "old_feedback".
-
 ### checklist
-- Create a markdown checklist for the items from "old_feedback" and "feedback" that need addressed.
-- Use `- [x]` for items addressed by the diffs
-- Use `- [ ]` for unaddressed items
+- Create a markdown checklist for the items from "feedback" and previous comments that need addressed.
+- Use "- [x]" for items addressed by the diffs
+- Use "- [ ]" for unaddressed items
 
 #### Example
 - [x] Fix the $CHANGE_NAME title to follow the correct format
 - [ ] Resolve the security concern by upgrading your packages
+
+### previous_comment_id
+- Set this to the ID of the previous comment left by the code review bot.
 EOF
 )
 
@@ -93,7 +78,7 @@ else
     SYSTEM_PROMPT+="None."
 fi
 
-SCHEMA="is_draft bool, has_previous_summary bool, summary string, old_feedback string, feedback string, new_feedback string, checklist string"
+SCHEMA="is_draft bool, has_previous_summary bool, summary string, feedback string, checklist string, previous_comment_id string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
@@ -114,7 +99,7 @@ if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
     cat .bots/response/review.json | jq -r ".summary" >> .bots/response/summary.md
 fi
 # Add the feedback
-echo "## New Feedback" > .bots/response/feedback.md
+echo "## Feedback" > .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".new_feedback" >> .bots/response/feedback.md
 echo "## To Do" >> .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".checklist" >> .bots/response/feedback.md
