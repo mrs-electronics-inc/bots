@@ -19,4 +19,8 @@ generate_llm_review.sh
 # Leave the summary comment if it exists
 [ -f .bots/response/summary.md ] && gh pr comment $GITHUB_HEAD_REF -F .bots/response/summary.md
 # Leave the feedback comment
-gh pr comment $GITHUB_HEAD_REF --edit-last --create-if-none -F .bots/response/feedback.md
+COMMENT_ID="$(cat .bots/response/review.json | jq -r .previous_comment_id)"
+# TODO: create new comment if comment ID is null
+gh pr comment $GITHUB_HEAD_REF -F .bots/response/feedback.md
+# TODO: update previous comment based on COMMENT_ID
+
