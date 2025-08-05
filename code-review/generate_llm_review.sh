@@ -41,6 +41,7 @@ SYSTEM_PROMPT=$(cat <<EOF
 
 ### old_feedback
 - Use this field to summarize the feedback given in existing comments.
+- Use a concise markdown bullet-point list.
 
 ### feedback
 - Use this field for all feedback you have in the following areas:
@@ -58,6 +59,29 @@ SYSTEM_PROMPT=$(cat <<EOF
 - Please include a star rating for each concern (⭐ to ⭐⭐⭐⭐⭐) indicating how important/severe it is.
 - Don't worry about being concise in the "feedback" field.
 - You should ALWAYS include at least one piece of feedback, no matter how small.
+
+### new_feedback
+- Carefully compare "feedback" with "old_feedback", then respond with the items that are new and unique in "feedback" - things that are NOT mentioned in ANY way in "feedback".
+  - If you are unsure if a piece of feedback was already included in "old_feedback", then assume that it has been and don't include it in "new_feedback".
+
+#### Example
+
+{
+  "old_feedback": "The PR title `fix: give actual feedback` follows the conventional commit style, which is great! Additionally, the TODO comment `# TODO: use latest tag` lacks an associated issue number.",
+  "feedback": "The title correctly follows the conventional commit style. Additionally, the TODO comment `# TODO: use latest tag` lacks an associated issue number.",
+  "new_feedback: "The TODO comment `# TODO: use latest tag` lacks an associated issue number."
+}
+
+Notice how the "new_feedback" does NOT mention the PR title, because that was covered by "old_feedback".
+
+### checklist
+- Create a markdown checklist for the items from "old_feedback" and "feedback" that need addressed.
+- Use `- [x]` for items addressed by the diffs
+- Use `- [ ]` for unaddressed items
+
+#### Example
+- [x] Fix the $CHANGE_NAME title to follow the correct format
+- [ ] Resolve the security concern by upgrading your packages
 EOF
 )
 
@@ -69,7 +93,7 @@ else
     SYSTEM_PROMPT+="None."
 fi
 
-SCHEMA="is_draft bool, has_previous_summary bool, summary string, old_feedback string, feedback string"
+SCHEMA="is_draft bool, has_previous_summary bool, summary string, old_feedback string, feedback string, new_feedback string, checklist string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
@@ -84,8 +108,6 @@ mkdir .bots/response
 # Generate the LLM review
 cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
 
-# Determine which feedback is new
-
 # Add the summary, if necessary
 if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
     echo "## Summary of Changes" > .bots/response/summary.md
@@ -93,9 +115,9 @@ if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
 fi
 # Add the feedback
 echo "## New Feedback" > .bots/response/feedback.md
-cat .bots/response/review.json | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "Copy verbatim the items from \"feedback\" that are not mentioned in \"old_feedback\". If everything in \"feedback\" is mentioned in \"old_feedback\", respond with \"Nothing new to add.\"" >> .bots/response/feedback.md
+cat .bots/response/review.json | jq -r ".new_feedback" >> .bots/response/feedback.md
 echo "## To Do" >> .bots/response/feedback.md
-cat .bots/response/review.json | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "Create a markdown checklist for the items from \"old_feedback\" and \"feedback\" that need addressed. Use - [x] for addressed items and - [ ] for unaddressed items." >> .bots/response/feedback.md
+cat .bots/response/review.json | jq -r ".checklist" >> .bots/response/feedback.md
 
 # These are for debugging
 echo "================================"
