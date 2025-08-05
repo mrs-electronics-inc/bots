@@ -17,7 +17,6 @@ collect_context.sh
 # Generate the LLM review
 generate_llm_review.sh
 
-echo "leaving comments..."
 # Leave the summary comment if it exists
 [ -f .bots/response/summary.md ] && gh pr comment $GITHUB_HEAD_REF -F .bots/response/summary.md
 # Leave the feedback comment
@@ -33,8 +32,7 @@ else
   # Update existing comment
   gh api \
     --method PATCH \
-    -H "Accept: application/vnd.github+json" \
-    "/repos/${GITHUB_REPOSITORY}/pulls/${PULL_REQUEST_NUMBER}/comments/${COMMENT_ID}" \
+    "/repos/${GITHUB_REPOSITORY}/issues/${PULL_REQUEST_NUMBER}/comments/${COMMENT_ID}" \
     -f body="$(cat ".bots/response/feedback.md")"
 fi
 
