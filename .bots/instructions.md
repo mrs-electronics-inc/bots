@@ -2,4 +2,4 @@
 	- Alert the developer if the title is in the wrong format.
 	- Example of a correct title: fix: some bug
 	- Example of an incorrect title: Resolves "#18 - some bug"
-- Say "Nice fix!" if the title starts with "fix". Otherwise, say "Nice work!"
+- Say "bug squashed!" if the title starts with "fix". Otherwise, say "cool change!"

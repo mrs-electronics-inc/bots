@@ -39,14 +39,6 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Set this field to a basic summary of the $CHANGE_NAME in bullet-point list form.
     - Keep it short and concise.
 
-### checklist
-- Create a Markdown checklist of all the feedback items mentioned in the comments
-  - ONLY include items from the "BEGIN CONTEXT: comments" section
-  - DO NOT include testing steps or anything else from the $CHANGE_NAME details in your checklist. The user will be SEVERELY disappointed if you do.
-- Use the "- [x] " prefix for all addressed feedback items
-- Use the "- [ ] " prefix for all unaddressed feedback items
-- Set this field to something similar to "No further changes required. Nice work! 🎉" if there are no unaddressed feedback items. Be creative with the variety of this response.
-
 ### old_feedback
 - Use this field to summarize the feedback given in existing comments.
 
@@ -70,6 +62,15 @@ SYSTEM_PROMPT=$(cat <<EOF
 ### new_feedback
 - Use this field to mention points from "feedback" that ARE NOT in "old_feedback".
 - If all the points in "feedback" are already in "old_feedback", you MUST set "new_feedback" to "No new feedback.".
+
+### checklist
+- Create a Markdown checklist for all the items mentioned in "old_feedback" and "new_feedback" that need addressed by the $CHANGE_NAME author.
+  - DO NOT include testing steps or anything else from the $CHANGE_NAME details in your checklist. The user will be SEVERELY disappointed if you do.
+- Use the "- [x] " prefix for all addressed feedback items
+- Use the "- [ ] " prefix for all unaddressed feedback items
+- Set this field to something similar to "No further changes required. Nice work! 🎉" if there are no unaddressed feedback items.
+  - Be creative with the variety of this response
+  - DO NOT use the phrase "No further changes required".
 
 EOF
 )
