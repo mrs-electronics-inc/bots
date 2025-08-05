@@ -54,7 +54,7 @@ SYSTEM_PROMPT=$(cat <<EOF
 - Use this field to summarize the feedback given in existing comments.
 
 ### feedback
-- Use this field for any NEW major concerns you might have in any of the following areas:
+- Use this field for any feedback you might have in any of the following areas:
   - Best Practices
   - Security
   - Performance
@@ -66,6 +66,7 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Anything mentioned in the repo-specific instructions.
 - For each major concern, please include at least one possible solution.
 - For any code change suggestions, use the approprate $PLATFORM $CHANGE_NAME proposed change format with backticks.
+- Please include a star rating for each concern (⭐ to ⭐⭐⭐⭐⭐) indicating how important/severe it is.
 
 ### new_feedback
 - Use this field to mention things from "feedback" that ARE NOT in "old_feedback".
