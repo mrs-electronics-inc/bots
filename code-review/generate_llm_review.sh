@@ -52,8 +52,6 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Anything mentioned in the repo-specific instructions
 - For each concern, please include at least one possible solution.
 - For any code change suggestions, use the approprate $PLATFORM $CHANGE_NAME proposed change format with backticks.
-- Please include a star rating for each concern (⭐ to ⭐⭐⭐⭐⭐) indicating how important/severe it is.
-- Don't worry about being concise in the "feedback" field.
 - You should ALWAYS include at least one piece of feedback, no matter how small.
 EOF
 )
