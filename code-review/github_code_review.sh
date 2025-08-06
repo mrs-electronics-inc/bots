@@ -27,8 +27,6 @@ if [ -z "$COMMENT_ID" ] || [ "$COMMENT_ID" == "null" ]; then
   # Create new comment
   gh pr comment $GITHUB_HEAD_REF -F .bots/response/feedback.md
 else
-  echo "PR number:"
-  echo $PULL_REQUEST_NUMBER
   # Update existing comment
   gh api \
     --method PATCH \
