@@ -16,7 +16,7 @@ if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
     glab mr view $CI_MERGE_REQUEST_IID > .bots/context/details
     # Collect the merge request comments
-    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq '.[] | {username: .author.username, name: .author.name, timestamp: .created_at, body: .body}' > .bots/context/comments
+    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq '.[] | {username: .author.username, name: .author.name, timestamp: .created_at, body: .body, id: .id}' > .bots/context/comments
     # Collect the diffs
     glab mr diff $CI_MERGE_REQUEST_IID --raw > .bots/context/diffs
     # Collect the names of the changed files
@@ -25,7 +25,7 @@ elif [ "$PLATFORM" == "github" ]; then
     # Collect the pull request details
     gh pr view $GITHUB_HEAD_REF > .bots/context/details
     # Collect the pull request comments
-    gh pr view $GITHUB_HEAD_REF --comments > .bots/context/comments
+    gh api "repos/$GITHUB_REPOSITORY/issues/$PULL_REQUEST_NUMBER/comments" | jq '.[] | {username: .user.login, timestamp: .created_at, body: .body, id: .id}' > .bots/context/comments
     # Collect the diffs
     gh pr diff $GITHUB_HEAD_REF > .bots/context/diffs
     # Collect the names of the changed files

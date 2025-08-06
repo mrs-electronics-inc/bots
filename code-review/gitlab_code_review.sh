@@ -21,4 +21,14 @@ generate_llm_review.sh
 # Leave the summary comment if it exists
 [ -f .bots/response/summary.md ] && glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/summary.md)" || true
 # Leave the feedback comment
-glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/feedback.md)" || true
+# TODO: get comment ID using correct username
+COMMENT_ID="$(cat .bots/context/comments | jq -r 'select(.username == "github-actions[bot]") | .id' | tail -n 1)"
+echo "Comment ID:"
+echo $COMMENT_ID
+if [ -z "$COMMENT_ID" ] || [ "$COMMENT_ID" == "null" ]; then
+  # Create new comment
+  glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/feedback.md)" || true
+else 
+  # Update existing comment
+  glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_ID/notes/$COMMENT_ID" -X PUT -F "$(cat .bots/response/feedback.md)"
+fi
