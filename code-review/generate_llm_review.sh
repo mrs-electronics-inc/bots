@@ -17,7 +17,7 @@ SYSTEM_PROMPT=$(cat <<EOF
   - Follow the given JSON schema for your output.
     - A post-processing tool will convert each field into its own Markdown section in the final output.
     - Use an empty string for any fields where appropriate.
-- Any comments authored by "github-actions" or "Code Review Bot" should be considered comments that you gave, do not repeat these comments.
+- Any comments authored by "github-actions[bot]" or "Code Review Bot" should be considered comments that you gave.
 
 ## Style
 - Use a friendly and concise style.
@@ -56,17 +56,8 @@ SYSTEM_PROMPT=$(cat <<EOF
 - Don't worry about being concise in the "feedback" field.
 - You should ALWAYS include at least one piece of feedback, no matter how small.
 
-### checklist
-- Create a markdown checklist for the items from "feedback" and previous comments that need addressed.
-- Use "- [x]" for items addressed by the diffs
-- Use "- [ ]" for unaddressed items
-
-#### Example
-- [x] Fix the $CHANGE_NAME title to follow the correct format
-- [ ] Resolve the security concern by upgrading your packages
-
 ### previous_comment_id
-- Set this to the ID of the previous comment left by the code review bot.
+- Set this to the ID of the previous comment left by the code review bot (the most recent comment authored by "github-actions[bot]" or "Code Review Bot")
 EOF
 )
 
@@ -78,7 +69,7 @@ else
     SYSTEM_PROMPT+="None."
 fi
 
-SCHEMA="is_draft bool, has_previous_summary bool, summary string, feedback string, checklist string, previous_comment_id string"
+SCHEMA="is_draft bool, has_previous_summary bool, summary string, feedback string, previous_comment_id string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
@@ -98,11 +89,10 @@ if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
     echo "## Summary of Changes" > .bots/response/summary.md
     cat .bots/response/review.json | jq -r ".summary" >> .bots/response/summary.md
 fi
+
 # Add the feedback
 echo "## Feedback" > .bots/response/feedback.md
 cat .bots/response/review.json | jq -r ".feedback" >> .bots/response/feedback.md
-echo "## To Do" >> .bots/response/feedback.md
-cat .bots/response/review.json | jq -r ".checklist" >> .bots/response/feedback.md
 
 # These are for debugging
 echo "================================"
@@ -117,5 +107,4 @@ echo "================================"
 echo -e "Feedback Markdown:\n$(cat .bots/response/feedback.md)"
 echo "================================"
  
-echo "done generating review!"
 # TODO: respond to comments and pipe to .bots/response/comments.md (#15)
