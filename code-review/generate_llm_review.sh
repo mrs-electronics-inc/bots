@@ -55,9 +55,6 @@ SYSTEM_PROMPT=$(cat <<EOF
 - Please include a star rating for each concern (⭐ to ⭐⭐⭐⭐⭐) indicating how important/severe it is.
 - Don't worry about being concise in the "feedback" field.
 - You should ALWAYS include at least one piece of feedback, no matter how small.
-
-### previous_comment_id
-- Set this to the ID of the previous comment left by the code review bot (the most recent comment authored by "github-actions[bot]" or "Code Review Bot")
 EOF
 )
 
@@ -69,7 +66,7 @@ else
     SYSTEM_PROMPT+="None."
 fi
 
-SCHEMA="is_draft bool, has_previous_summary bool, summary string, feedback string, previous_comment_id string"
+SCHEMA="is_draft bool, has_previous_summary bool, summary string, feedback string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't

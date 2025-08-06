@@ -21,7 +21,8 @@ generate_llm_review.sh
 # Leave the summary comment if it exists
 [ -f .bots/response/summary.md ] && glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/summary.md)" || true
 # Leave the feedback comment
-COMMENT_ID="$(cat .bots/response/review.json | jq -r .previous_comment_id)"
+# TODO: get comment ID from comments
+COMMENT_ID=""
 echo "Comment ID:"
 echo $COMMENT_ID
 if [ -z "$COMMENT_ID" ] || [ "$COMMENT_ID" == "null" ]; then
