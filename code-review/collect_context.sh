@@ -25,8 +25,7 @@ elif [ "$PLATFORM" == "github" ]; then
     # Collect the pull request details
     gh pr view $GITHUB_HEAD_REF > .bots/context/details
     # Collect the pull request comments
-    gh api "repos/$GITHUB_REPOSITORY/issues/$PULL_REQUEST_NUMBER/comments" | jq '.[] | {username: .user.login, timestamp: .created_at, body: .body, id: .id}'
-     > .bots/context/comments
+    gh api "repos/$GITHUB_REPOSITORY/issues/$PULL_REQUEST_NUMBER/comments" | jq '.[] | {username: .user.login, timestamp: .created_at, body: .body, id: .id}' > .bots/context/comments
     # Collect the diffs
     gh pr diff $GITHUB_HEAD_REF > .bots/context/diffs
     # Collect the names of the changed files
