@@ -16,11 +16,14 @@ if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
     glab mr view $CI_MERGE_REQUEST_IID > .bots/context/details
     # Collect the merge request comments
-    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq '.[] | {username: .author.username, name: .author.name, timestamp: .created_at, body: .body, id: .id} | reverse' > .bots/context/comments
+    # For some reason the API returns them newest to oldest, so we have to
+    # reverse them with jq
+    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq 'reverse | .[] | {username: .author.username, name: .author.name, timestamp: .created_at, body: .body, id: .id}' > .bots/context/comments
     # Collect the diffs
     glab mr diff $CI_MERGE_REQUEST_IID --raw > .bots/context/diffs
     # Collect the names of the changed files
-    changed_files=$(git diff $CI_MERGE_REQUEST_TARGET_BRANCH_NAME --name-only)
+    git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    changed_files=$(git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME --name-only)
 elif [ "$PLATFORM" == "github" ]; then
     # Collect the pull request details
     gh pr view $GITHUB_HEAD_REF > .bots/context/details
