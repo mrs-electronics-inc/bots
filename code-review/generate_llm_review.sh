@@ -6,7 +6,7 @@ echo "Generating LLM review..."
 
 REVIEW_MODEL=openrouter/openai/gpt-5-mini
 CHANGE_NAME=$([ "$PLATFORM" = "github" ] && echo "pull request" || echo "merge request")
-SYSTEM_PROMPT=$(cat <<EOF
+SYSTEM_PROMPT=$(cat << 'EOF'
 # Background
  
 You are a helpful senior software engineer who will review this $PLATFORM $CHANGE_NAME.
