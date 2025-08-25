@@ -28,6 +28,9 @@ if [ -z "$COMMENT_ID" ] || [ "$COMMENT_ID" == "null" ]; then
   # No old comment to delete
   echo "No old comment to delete"
 else 
+  echo "Deleting old comment..."
+  echo "PROJECT ID: $CI_MERGE_REQUEST_PROJECT_ID"    
+  echo "MERGE REQUEST ID: $CI_MERGE_REQUEST_ID"
   # Delete existing comment
   glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_ID/notes/$COMMENT_ID" -X DELETE
 fi
