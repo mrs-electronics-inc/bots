@@ -4,7 +4,7 @@
 # It expects the .bots/context.md file to exist.
 echo "Generating LLM review..."
 
-REVIEW_MODEL=openrouter/google/gemini-2.5-flash
+REVIEW_MODEL=openrouter/openai/gpt-5-mini
 CHANGE_NAME=$([ "$PLATFORM" = "github" ] && echo "pull request" || echo "merge request")
 SYSTEM_PROMPT=$(cat <<EOF
 # Background
