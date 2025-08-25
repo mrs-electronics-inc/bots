@@ -30,9 +30,9 @@ if [ -z "$COMMENT_ID" ] || [ "$COMMENT_ID" == "null" ]; then
 else 
   echo "Deleting old comment..."
   echo "PROJECT ID: $CI_MERGE_REQUEST_PROJECT_ID"    
-  echo "MERGE REQUEST ID: $CI_MERGE_REQUEST_ID"
+  echo "MERGE REQUEST ID: $CI_MERGE_REQUEST_IID"
   # Delete existing comment
-  glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_ID/notes/$COMMENT_ID" -X DELETE
+  glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes/$COMMENT_ID" -X DELETE
 fi
 # Create new comment
 glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/feedback.md)" || true
