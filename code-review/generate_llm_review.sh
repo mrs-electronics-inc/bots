@@ -6,7 +6,7 @@ echo "Generating LLM review..."
 
 REVIEW_MODEL=openrouter/qwen/qwen3-coder
 export CHANGE_NAME=$([ "$PLATFORM" = "github" ] && echo "pull request" || echo "merge request")
-envsubst < system-prompts/generate-feedback.md > .bots/system-prompt.md
+envsubst < /bots/system-prompts/generate-feedback.md > .bots/system-prompt.md
 
 # Include .bots/instructions.md at the end of the system prompt if it exists
 echo $'\n\n# Repo-specific Instructions\n\n' >> .bots/system-prompt.md
