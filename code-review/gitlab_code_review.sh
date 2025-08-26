@@ -28,6 +28,7 @@ if [ -z "$COMMENT_ID" ] || [ "$COMMENT_ID" == "null" ]; then
   # No old comment to delete
   echo "No old comment to delete"
 else 
+  # TODO: replace the following with a call to a python script that uses the gitlab API to update the existing comment
   echo "Deleting old comment..."
   echo "PROJECT ID: $CI_MERGE_REQUEST_PROJECT_ID"    
   echo "MERGE REQUEST ID: $CI_MERGE_REQUEST_IID"
