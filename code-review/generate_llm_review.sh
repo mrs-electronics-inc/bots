@@ -19,7 +19,7 @@ fi
 # Read the system prompt while preserving newlines
 SYSTEM_PROMPT=$(cat .bots/system-prompt.md)
 
-SCHEMA="is_draft bool, has_previous_summary bool, summary string, feedback string"
+SCHEMA="is_draft bool, has_previous_summary bool, summary string, raw_feedback string, feedback string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
