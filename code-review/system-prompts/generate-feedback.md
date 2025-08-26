@@ -94,6 +94,7 @@ Use this field for all feedback you have in the following areas:
 - Anything mentioned in the repo-specific instructions 
 
 #### TODO Format
+
 Example of correct TODO format (no need to leave feedback on this kind):
 ```diff
 + # TODO(#274) - this diff correctly includes an issue number
@@ -102,15 +103,14 @@ Example of correct TODO format (no need to leave feedback on this kind):
 Example of incorrect TODO format (it should be flagged to the author):
 ```diff
 + # TODO - this diff does not include an issue number, it should be flagged
-```diff
+```
 
 #### Important Notes
 - For each concern, please include at least one possible solution.
-- ONLY mention concerns that should be addressed
-- Do **not** mention concerns that are already resolved and/or don't require changes.
+- ONLY mention feedback that should be addressed
+- DO NOT mention feedback that are already resolved and/or don't require changes.
 - All code should be surrounded by the proper Markdown backticks, both inline and block style.
 - You should ALWAYS include at least one piece of feedback, no matter how small.
-
 
 #### Feedback Examples
  
@@ -130,6 +130,8 @@ Emulate the helpfulness of these examples in your feedback.
 Be VERY CAREFUL to avoid making these mistakes.
 
 ###### No Change Required Feedback
+
+These feedback examples mention points that require no changes. They SHOULD NOT have been included in the feedback.
 
 <feedback>
 - MR title format
