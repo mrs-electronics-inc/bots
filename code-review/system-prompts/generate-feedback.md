@@ -52,6 +52,10 @@ If you want, @user, I can re-run a targeted repo search for girix_code_gauge/GxR
 If helpful, I can provide a short checklist you can paste into the postdeploy hook to: (1) write the per-process check process block, (2) monit -t the config, and (3) enable/start monit and reload only on success. I won’t create patches here, but can paste the checklist for you to adapt. Let me know.
 </feedback>
 
+<feedback>
+If you want, I can prepare a concrete patch for the postdeploy hook that implements: per-process check (with matching or pidfile), start/stop programs, temp-file validation, idempotent mv, chown/chmod, use command -v, and safer monit enabling/reloading. Tell me whether web produces a pidfile and its path (or provide the process command to match) and I’ll draft the hook.
+</feedback>
+
 ## Style
 
 Use a friendly and concise style.
@@ -63,7 +67,7 @@ Tag the $CHANGE_NAME author directly when it is helpful to get their attention a
 
 Don't be afraid to give negative feedback, but be sure it is accurate.
 
-Prefer bullet point lists, rather than numbered lists.
+Don't used numbered lists. Use bullet point lists instead.
 
 Organize your bullet points under Markdown headings to make the output easier to read.
 
@@ -81,7 +85,7 @@ Otherwise:
   - Set this field to a basic summary of the $CHANGE_NAME in bullet-point list form.
     - Keep it short and concise.
 
-### feedback
+### raw_feedback
 Use this field for all feedback you have in the following areas:
 - Best Practices
 - Security
@@ -105,12 +109,17 @@ Example of incorrect TODO format (it should be flagged to the author):
 + # TODO - this diff does not include an issue number, it should be flagged
 ```
 
-#### Important Notes
+### feedback
+
+Use this field to clean up `raw_feedback` to follow the following rules.
+
+#### Important Rules
 - For each concern, please include at least one possible solution.
 - ONLY mention feedback that should be addressed
 - DO NOT mention feedback that are already resolved and/or don't require changes.
 - All code should be surrounded by the proper Markdown backticks, both inline and block style.
 - You should ALWAYS include at least one piece of feedback, no matter how small.
+- Compare `raw_feedback` with the following examples and remove anything that should be avoided.
 
 #### Feedback Examples
  
@@ -141,4 +150,8 @@ These feedback examples mention points that require no changes. They SHOULD NOT 
 <feedback>
 - MR title format (repo rule)
   - The title `Draft: feat: remove custom gauge` follows conventional commit style and is acceptable (the Draft prefix is allowed). No change needed.
+</feedback>
+
+<feedback>
+- Title: ok — "Draft: feat: ..." follows conventional-commit style with the draft prefix allowed.
 </feedback>
