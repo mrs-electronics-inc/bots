@@ -4,7 +4,7 @@
 # It expects the .bots/context.md file to exist.
 echo "Generating LLM review..."
 
-REVIEW_MODEL=openrouter/openai/gpt-5-mini
+REVIEW_MODEL=openrouter/qwen/qwen3-coder
 export CHANGE_NAME=$([ "$PLATFORM" = "github" ] && echo "pull request" || echo "merge request")
 envsubst < system-prompts/generate-feedback.md > .bots/system-prompt.md
 
