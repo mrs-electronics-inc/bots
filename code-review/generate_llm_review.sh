@@ -19,9 +19,6 @@ fi
 # Read the system prompt while preserving newlines
 SYSTEM_PROMPT=$(cat .bots/system-prompt.md)
 
-# Preserve newlines when echoing by using double quotes
-echo "$SYSTEM_PROMPT"
-
 SCHEMA="is_draft bool, has_previous_summary bool, summary string, feedback string"
 
 
