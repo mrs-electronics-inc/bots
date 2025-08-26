@@ -5,16 +5,23 @@
 echo "Generating LLM review..."
 
 REVIEW_MODEL=openrouter/openai/gpt-5-mini
-CHANGE_NAME=$([ "$PLATFORM" = "github" ] && echo "pull request" || echo "merge request")
-SYSTEM_PROMPT=$(envsubst system-prompts/generate-feedback.md)
+export CHANGE_NAME=$([ "$PLATFORM" = "github" ] && echo "pull request" || echo "merge request")
+envsubst < system-prompts/generate-feedback.md > .bots/system-prompt.md
 
 # Include .bots/instructions.md at the end of the system prompt if it exists
-SYSTEM_PROMPT+=$'\n\n# Repo-specific Instructions\n\n'
+echo $'\n\n# Repo-specific Instructions\n\n' >> .bots/system-prompt.md
 if [[ -f .bots/instructions.md ]]; then
-    SYSTEM_PROMPT+=$(cat .bots/instructions.md)
+    cat .bots/instructions.md >> .bots/system-prompt.md
 else
-    SYSTEM_PROMPT+="None."
+    echo 'None.' >> .bots/system-prompt.md
 fi
+
+# AI!: fix this so that it does not strip newlines
+SYSTEM_PROMPT="$(<.bots/system-prompt.md)"
+
+echo $SYSTEM_PROMPT
+
+exit
 
 SCHEMA="is_draft bool, has_previous_summary bool, summary string, feedback string"
 
