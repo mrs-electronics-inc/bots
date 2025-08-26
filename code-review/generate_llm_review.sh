@@ -16,8 +16,8 @@ else
     echo 'None.' >> .bots/system-prompt.md
 fi
 
-# AI!: fix this so that it does not strip newlines
-SYSTEM_PROMPT="$(<.bots/system-prompt.md)"
+# Read the system prompt while preserving newlines
+SYSTEM_PROMPT=$(cat .bots/system-prompt.md)
 
 echo $SYSTEM_PROMPT
 
