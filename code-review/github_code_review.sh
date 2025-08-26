@@ -3,6 +3,7 @@
 # GitHub Actions job definition:
 #    - OPENROUTER_KEY
 #    - GITHUB_TOKEN
+#    - PULL_REQUEST_NUMBER
 # The others are automatically automatically included in GitHub pull request pipelines.
 
 # I don't know why we need this when it is already in the Dockerfile
@@ -19,4 +20,4 @@ generate_llm_review.sh
 # Leave the summary comment if it exists
 [ -f .bots/response/summary.md ] && gh pr comment $GITHUB_HEAD_REF -F .bots/response/summary.md
 # Leave the feedback comment
-gh pr comment $GITHUB_HEAD_REF -F .bots/response/feedback.md
+gh pr comment $GITHUB_HEAD_REF --edit-last --create-if-none -F .bots/response/feedback.md
