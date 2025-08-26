@@ -36,5 +36,6 @@ COPY gitlab_code_review.sh /bin
 COPY github_code_review.sh /bin
 COPY collect_context.sh /bin
 COPY generate_llm_review.sh /bin
+COPY system-prompts /bin/system-prompts
 
 CMD ["/bin/bash"]
