@@ -31,7 +31,7 @@ def main():
         mr = project.mergerequests.get(merge_request_iid)
 
         # Get all notes (comments)
-        notes = mr.notes.list()
+        notes = mr.notes.list(iterator=True)
 
         # Look for an existing comment from "Code Review Bot"
         comment_id = None
