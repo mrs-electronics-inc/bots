@@ -34,8 +34,6 @@ mkdir .bots/response
 # Generate the LLM review
 cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
 
-touch bots/response/review.md
-
 # Add the change requests, if necessary
 if [ "$(cat .bots/response/review.json | jq -r '.change_requests')" != "" ]; then
     echo "# Changes Requested" >> .bots/response/review.md
