@@ -22,6 +22,7 @@ generate_llm_review.sh
 COMMENT_ID="$(cat .bots/context/comments | jq -r 'select(.name == "Code Review Bot") | .id' | tail -n 1)"
 echo "Comment ID:"
 echo $COMMENT_ID
+# AI!: replace this with a python script that uses the gitlab python package to create or update the comment with the contents of .bots/response/review.md
 if [ -z "$COMMENT_ID" ] || [ "$COMMENT_ID" == "null" ]; then
   # No old comment to delete
   echo "No old comment to delete"
