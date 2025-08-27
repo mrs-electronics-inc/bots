@@ -6,9 +6,10 @@ SHELL ["/bin/bash", "-c"]
 RUN apt update \
     && apt install -y git wget gpg curl jq gettext
  
-# Install UV tools
+# Install UV packages and tools
 ENV PATH="/root/.local/bin:${PATH}" 
 RUN python -m pip install uv \
+    && uv pip install --system python-gitlab \
     && uv tool install --force --python python3.12 --with pip aider-chat@latest \
     && uv tool install llm
 
@@ -36,6 +37,7 @@ COPY gitlab_code_review.sh /bin
 COPY github_code_review.sh /bin
 COPY collect_context.sh /bin
 COPY generate_llm_review.sh /bin
+COPY post_gitlab_review_comment.py /bin
 COPY system-prompts /bots/system-prompts
 
 CMD ["/bin/bash"]

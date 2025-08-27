@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.9.0
+
+- [#33](https://github.com/mrs-electronics-inc/bots/pull/33) - feat: update gitlab comments
+
+## v0.8.0
+
+- [#29](https://github.com/mrs-electronics-inc/bots/pull/29) - feat: improve system prompt
+
+## v0.7.0
+
+- [#27](https://github.com/mrs-electronics-inc/bots/pull/27) - fix: give actual feedback
+
 ## v0.6.1
 
 - [#21](https://github.com/mrs-electronics-inc/bots/pull/21) - fix: missing summary title and incorrect checklist
