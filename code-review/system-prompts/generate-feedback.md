@@ -81,6 +81,8 @@ Set this field to a basic summary of the changes made in the $CHANGE_NAME.
 
 BE ABSOLUTELY SURE to use bullet-point list form.
 
+This field should be formatted as a newline-separated string.
+
 ### raw_change_requests
 
 Use this field for all change requests you have in the following areas:
@@ -93,6 +95,8 @@ Use this field for all change requests you have in the following areas:
 - Changes mentioned in the description that seem to be missing from the diffs
 - TODO comments added to the diffs that don't include an issue number
 - Anything mentioned in the repo-specific instructions 
+
+This field should be formatted as a newline-separated string.
 
 #### TODO Format
 
@@ -110,7 +114,10 @@ Example of incorrect TODO format (it should be flagged to the author):
 
 Use this field to clean up `raw_change_requests` to follow the following rules.
 
+
 #### Important Rules
+- This field should be formatted as a newline-separated string.
+- Set this field to an empty string if there are no change requests.
 - For each request, please include at least one possible solution.
 - ONLY mention feedback that should be addressed
 - DO NOT mention feedback that are already resolved and/or don't require changes.
