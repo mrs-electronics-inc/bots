@@ -44,7 +44,7 @@ for f in "${context_files[@]}"; do
     echo -e "\n\n===== BEGIN CONTEXT: $f =====\n\n"; cat ".bots/context/$f"; echo -e "\n\n===== END CONTEXT: $f =====\n\n"
 done > .bots/context.md
 
-echo "changed files: $changed_files"
+echo -e "changed files:\n$changed_files"
 if [ -z "$changed_files" ]; then
     echo "Warning: No changed files detected."
 fi

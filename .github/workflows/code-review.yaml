@@ -8,8 +8,7 @@ jobs:
   run_code_review_bot:
     runs-on: ubuntu-latest
     container:
-      # TODO: use latest tag
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.7.0-rc14
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.8.0-rc10
       volumes:
         - ${{ github.workspace }}:/repo
     defaults:

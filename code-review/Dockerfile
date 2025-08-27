@@ -4,7 +4,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Install core packages
 RUN apt update \
-    && apt install -y git wget gpg curl jq
+    && apt install -y git wget gpg curl jq gettext
  
 # Install UV tools
 ENV PATH="/root/.local/bin:${PATH}" 
@@ -36,5 +36,6 @@ COPY gitlab_code_review.sh /bin
 COPY github_code_review.sh /bin
 COPY collect_context.sh /bin
 COPY generate_llm_review.sh /bin
+COPY system-prompts /bots/system-prompts
 
 CMD ["/bin/bash"]
