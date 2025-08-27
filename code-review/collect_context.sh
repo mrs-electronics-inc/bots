@@ -53,6 +53,7 @@ max_count=10
 # Iterate through each changed file
 while IFS= read -r file; do
     # Check if the file exists
+    # AI!: also check if the file is text or binary - only include text files
     if [[ -f "$file" ]]; then
         # Count the number of lines in the file
         line_count=$(wc -l < "$file")
