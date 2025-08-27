@@ -16,5 +16,5 @@ collect_context.sh
 # Generate the LLM review
 generate_llm_review.sh
 
-# Handle the comment using Python script
-python3 gitlab_comment_handler.py
+# Create or update the review comment
+./post_gitlab_review_comment.py
