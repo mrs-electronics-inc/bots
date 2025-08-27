@@ -19,7 +19,7 @@ fi
 # Read the system prompt while preserving newlines
 SYSTEM_PROMPT=$(cat .bots/system-prompt.md)
 
-SCHEMA="is_draft bool, has_previous_summary bool, summary string, raw_change_requests string, change_requests string"
+SCHEMA="summary string, raw_change_requests string, change_requests string, feedback string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
@@ -34,15 +34,26 @@ mkdir .bots/response
 # Generate the LLM review
 cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperature 1.1 -s "$SYSTEM_PROMPT" --schema "$SCHEMA" > .bots/response/review.json
 
-# Add the summary, if necessary
+touch bots/response/review.md
+
+# Add the change requests, if necessary
 if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
-    echo "## Summary of Changes" > .bots/response/summary.md
-    cat .bots/response/review.json | jq -r ".summary" >> .bots/response/summary.md
+    echo "# Changes Requested" >> .bots/response/review.md
+    cat .bots/response/review.json | jq -r ".change_requests" >> .bots/response/review.md
+    echo -e "\n\n" >> .bots/response/review.md
 fi
 
-# Add the change requests
-echo "# Changes Requested" > .bots/response/change_requests.md
-cat .bots/response/review.json | jq -r ".change_requests" >> .bots/response/change_requests.md
+# Add the summary, if necessary
+if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
+    echo "## Summary of Changes" >> .bots/response/review.md
+    cat .bots/response/review.json | jq -r ".summary" >> .bots/response/review.md
+    echo -e "\n\n" >> .bots/response/review.md
+fi
+
+# Add the overall feedback
+echo "## Overall Feedback" >> .bots/response/review.md
+cat .bots/response/review.json | jq -r ".feedback" >> .bots/response/review.md
+echo -e "\n\n" >> .bots/response/review.md
 
 # These are for debugging
 echo "================================"
@@ -51,10 +62,8 @@ echo "================================"
 echo -e "Context:\n$(cat .bots/context.md)"
 echo "================================"
 echo -e "Review JSON:\n$(cat .bots/response/review.json)"
-[ -f .bots/response/summary.md ] && echo "================================"
-[ -f .bots/response/summary.md ] && echo -e "Summary Markdown:\n$(cat .bots/response/summary.md)"
 echo "================================"
-echo -e "Change Requests Markdown:\n$(cat .bots/response/change_requests.md)"
+echo -e "Review Markdown:\n$(cat .bots/response/review.md)"
 echo "================================"
  
 # TODO: respond to comments and pipe to .bots/response/comments.md (#15)

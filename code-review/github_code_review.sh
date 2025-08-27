@@ -17,7 +17,5 @@ collect_context.sh
 # Generate the LLM review
 generate_llm_review.sh
 
-# Leave the summary comment if it exists
-[ -f .bots/response/summary.md ] && gh pr comment $GITHUB_HEAD_REF -F .bots/response/summary.md
-# Leave the change requests comment
-gh pr comment $GITHUB_HEAD_REF --edit-last --create-if-none -F .bots/response/change_requests.md
+# Leave the review comment
+gh pr comment $GITHUB_HEAD_REF --edit-last --create-if-none -F .bots/response/review.md

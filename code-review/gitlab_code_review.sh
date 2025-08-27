@@ -18,9 +18,7 @@ generate_llm_review.sh
 
 # NOTE: The "|| true" is because `glab mr note` has an unhandled error,
 #       even when the comment posts successfully
-# Leave the summary comment if it exists
-[ -f .bots/response/summary.md ] && glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/summary.md)" || true
-# Leave the change requests comment
+# Leave the review comment
 COMMENT_ID="$(cat .bots/context/comments | jq -r 'select(.name == "Code Review Bot") | .id' | tail -n 1)"
 echo "Comment ID:"
 echo $COMMENT_ID
@@ -36,4 +34,4 @@ else
   glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes/$COMMENT_ID" -X DELETE
 fi
 # Create new comment
-glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/change_requests.md)" || true
+glab mr note $CI_MERGE_REQUEST_IID -m "$(cat .bots/response/review.md)" || true
