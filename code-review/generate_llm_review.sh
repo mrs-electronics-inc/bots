@@ -66,4 +66,4 @@ echo "================================"
 echo -e "Review Markdown:\n$(cat .bots/response/review.md)"
 echo "================================"
  
-# TODO: respond to comments and pipe to .bots/response/comments.md (#15)
+# TODO(#15): respond to comments and pipe to .bots/response/comments.md
