@@ -3,4 +3,4 @@
 	- Example of a correct title: fix: some bug
 	- Example of an incorrect title: Resolves "#18 - some bug"
 - Make sure that the `CHANGELOG.md` file is included in the diffs.
-	- It must be updated with each pull request.
+	- Remind the PR author that the changelog must be updated with each PR.

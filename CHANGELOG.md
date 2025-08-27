@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.1
+
+- [#34](https://github.com/mrs-electronics-inc/bots/pull/34) - fix: do not include binary files in context
+
 ## v0.9.0
 
 - [#33](https://github.com/mrs-electronics-inc/bots/pull/33) - feat: update gitlab comments
