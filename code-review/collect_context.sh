@@ -54,7 +54,7 @@ max_count=10
 while IFS= read -r file; do
     # Check if the file exists
     if [[ -f "$file" ]]; then
-        # Check if the file is text or binary
+        # Only include text files
         mime_type=$(file -b --mime-type "$file")
         if [[ $mime_type == text/* ]]; then
             # Count the number of lines in the file
