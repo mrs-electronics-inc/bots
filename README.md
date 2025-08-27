@@ -45,6 +45,8 @@ jobs:
 
 Here is a minimal example of using the Code Review Bot in a GitLab job. It is set up to run on every merge request event, but requires a manual trigger to avoid filling up the merge request comments.
 
+Be sure to use the name "Code Review Bot" for your code review bot's token.
+
 ```yaml
 run_code_review_bot:
   stage: bot
