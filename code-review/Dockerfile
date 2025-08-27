@@ -4,7 +4,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Install core packages
 RUN apt update \
-    && apt install -y git wget gpg curl jq gettext
+    && apt install -y git wget gpg curl jq gettext file
  
 # Install UV packages and tools
 ENV PATH="/root/.local/bin:${PATH}" 

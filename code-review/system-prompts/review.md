@@ -8,7 +8,7 @@ YOU MUST strictly adhere to the "Style" and "Response Fields" instructions menti
 
 Please carefully review the $CHANGE_NAME details and comments. Also take a look at the git diffs.
 
-The current contents of several of the changed files are also included in your context. Only files under 400 lines are included, and only a maximum of 10 files are included.
+The current contents of several of the changed files are also included in your context. Only non-binary files under 400 lines are included, and only a maximum of 10 files are included.
 
 Follow the given JSON schema for your output.
   - A post-processing tool will convert each field into its own Markdown section in the final output.

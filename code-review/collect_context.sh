@@ -54,17 +54,21 @@ max_count=10
 while IFS= read -r file; do
     # Check if the file exists
     if [[ -f "$file" ]]; then
-        # Count the number of lines in the file
-        line_count=$(wc -l < "$file")
-        # Check if the line count is less than 400
-        if (( line_count < 400 )); then
-            echo "===== BEGIN FILE: $file =====" >> .bots/context.md;
-            cat "$file" >> .bots/context.md;
-            echo "===== END FILE: $file =====" >> .bots/context.md
-            ((count++))
-            # Exit early if max_count reached
-            if (( count >= max_count )); then
-                break
+        # Only include text files
+        mime_type=$(file -b --mime-type "$file")
+        if [[ $mime_type == text/* ]]; then
+            # Count the number of lines in the file
+            line_count=$(wc -l < "$file")
+            # Check if the line count is less than 400
+            if (( line_count < 400 )); then
+                echo "===== BEGIN FILE: $file =====" >> .bots/context.md;
+                cat "$file" >> .bots/context.md;
+                echo "===== END FILE: $file =====" >> .bots/context.md
+                ((count++))
+                # Exit early if max_count reached
+                if (( count >= max_count )); then
+                    break
+                fi
             fi
         fi
     fi
