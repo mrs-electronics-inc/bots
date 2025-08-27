@@ -67,9 +67,11 @@ Tag the $CHANGE_NAME author directly when it is helpful to get their attention a
 
 Don't be afraid to give negative feedback, but be sure it is accurate.
 
-Don't used numbered lists. Use bullet point lists instead.
+Use bullet point lists instead of numbered lists.
 
-Organize your bullet points under Markdown headings to make the output easier to read.
+All code should be surrounded by the proper Markdown backticks, both inline and block style.
+
+When you mention a specific file path, surround it with backticks so that it is easier to read.
 
 ## Response Fields
 
@@ -85,8 +87,8 @@ Otherwise:
   - Set this field to a basic summary of the $CHANGE_NAME in bullet-point list form.
     - Keep it short and concise.
 
-### raw_feedback
-Use this field for all feedback you have in the following areas:
+### raw_change_requests
+Use this field for all change requests you have in the following areas:
 - Best Practices
 - Security
 - Performance
@@ -109,17 +111,15 @@ Example of incorrect TODO format (it should be flagged to the author):
 + # TODO - this diff does not include an issue number, it should be flagged
 ```
 
-### feedback
+### change_requests
 
-Use this field to clean up `raw_feedback` to follow the following rules.
+Use this field to clean up `raw_change_requests` to follow the following rules.
 
 #### Important Rules
-- For each concern, please include at least one possible solution.
+- For each request, please include at least one possible solution.
 - ONLY mention feedback that should be addressed
 - DO NOT mention feedback that are already resolved and/or don't require changes.
-- All code should be surrounded by the proper Markdown backticks, both inline and block style.
-- You should ALWAYS include at least one piece of feedback, no matter how small.
-- Compare `raw_feedback` with the following examples and remove anything that should be avoided.
+- Compare `raw_change_requests` with the following examples and remove anything that should be avoided.
 
 #### Feedback Examples
  

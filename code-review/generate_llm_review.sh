@@ -19,7 +19,7 @@ fi
 # Read the system prompt while preserving newlines
 SYSTEM_PROMPT=$(cat .bots/system-prompt.md)
 
-SCHEMA="is_draft bool, has_previous_summary bool, summary string, raw_feedback string, feedback string"
+SCHEMA="is_draft bool, has_previous_summary bool, summary string, raw_change_requests string, change_requests string"
 
 
 # This shouldn't be necessary, but without it the `llm` tool won't
@@ -40,9 +40,9 @@ if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
     cat .bots/response/review.json | jq -r ".summary" >> .bots/response/summary.md
 fi
 
-# Add the feedback
-echo "## Feedback" > .bots/response/feedback.md
-cat .bots/response/review.json | jq -r ".feedback" >> .bots/response/feedback.md
+# Add the change requests
+echo "# Changes Requested" > .bots/response/change_requests.md
+cat .bots/response/review.json | jq -r ".change_requests" >> .bots/response/change_requests.md
 
 # These are for debugging
 echo "================================"
@@ -54,7 +54,7 @@ echo -e "Review JSON:\n$(cat .bots/response/review.json)"
 [ -f .bots/response/summary.md ] && echo "================================"
 [ -f .bots/response/summary.md ] && echo -e "Summary Markdown:\n$(cat .bots/response/summary.md)"
 echo "================================"
-echo -e "Feedback Markdown:\n$(cat .bots/response/feedback.md)"
+echo -e "Change Requests Markdown:\n$(cat .bots/response/change_requests.md)"
 echo "================================"
  
 # TODO: respond to comments and pipe to .bots/response/comments.md (#15)
