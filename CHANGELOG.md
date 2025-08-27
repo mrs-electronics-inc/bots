@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.0
+
+- [#33](https://github.com/mrs-electronics-inc/bots/pull/33) - feat: update gitlab comments
+
 ## v0.8.0
 
 - [#29](https://github.com/mrs-electronics-inc/bots/pull/29) - feat: improve system prompt
