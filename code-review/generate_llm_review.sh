@@ -37,7 +37,7 @@ cat .bots/context.md | llm -m $REVIEW_MODEL -o presence_penalty 1.5 -o temperatu
 touch bots/response/review.md
 
 # Add the change requests, if necessary
-if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
+if [ "$(cat .bots/response/review.json | jq -r '.change_requests')" != "" ]; then
     echo "# Changes Requested" >> .bots/response/review.md
     cat .bots/response/review.json | jq -r ".change_requests" >> .bots/response/review.md
     echo -e "\n\n" >> .bots/response/review.md
