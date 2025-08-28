@@ -59,7 +59,8 @@ def collect_file_contents(changed_files, max_count=20, max_lines=400):
 
             # Read file content using batcat so it includes line numbers
             content = subprocess.run(
-                ['batcat', '--style=numbers,plain', '--decorations=always', file_path],
+                ['batcat', '--style=numbers,plain',
+                    '--decorations=always', file_path],
                 capture_output=True,
                 text=True,
                 check=True
