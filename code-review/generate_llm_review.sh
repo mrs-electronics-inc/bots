@@ -4,6 +4,10 @@
 # It expects the .bots/context.md file to exist.
 echo "Generating LLM review..."
 
+ls -lah .
+echo "---"
+ls -lah .bots
+
 # Use the name expected by llm-openrouter
 LLM_OPENROUTER_KEY=OPENROUTER_KEY
 
