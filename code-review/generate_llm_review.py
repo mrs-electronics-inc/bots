@@ -5,15 +5,11 @@ import llm
 
 
 def main():
+    print('models:')
+    print(llm.get_models())
     # Get environment variables
     review_model = os.getenv('REVIEW_MODEL', 'openrouter/qwen/qwen3-coder')
-    openrouter_key = os.getenv('OPENROUTER_KEY')
     platform = os.getenv('PLATFORM', 'github')
-
-    if not openrouter_key:
-        print("Error: OPENROUTER_KEY environment variable not set",
-              file=sys.stderr)
-        sys.exit(1)
 
     # Set change name based on platform
     change_name = "pull request" if platform == "github" else "merge request"

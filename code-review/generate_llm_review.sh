@@ -8,6 +8,9 @@ echo "Generating LLM review..."
 [ -d ".bots/response" ] && rm -rf ".bots/response"
 mkdir .bots/response
 
+# For some reason, we have to do this to access openrouter models from Python
+python -m llm keys set openrouter --value $OPENROUTER_KEY
+
 # Generate the LLM review using Python script
 generate_llm_review.py
 
