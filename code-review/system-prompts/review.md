@@ -8,7 +8,7 @@ YOU MUST strictly adhere to the "Style" and "Response Fields" instructions menti
 
 Please carefully review the $CHANGE_NAME details and comments. Also take a look at the git diffs.
 
-The current contents of several of the changed files are also included in your context in the `selected_current_files` filed.
+The current contents of several of the changed files are also included in your context in the `selected_current_files` field.
 - Not every file is included in the context.
 - The file contents are generated with the `batcat` command to add line numbers.
 

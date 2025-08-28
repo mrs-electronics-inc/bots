@@ -1,7 +1,8 @@
 # Changelog
 
-## v0.10.0 (upcoming)
+## v0.10.0
 
+- [#39](https://github.com/mrs-electronics-inc/bots/pull/39) - feat: collect JSON context
 - [#37](https://github.com/mrs-electronics-inc/bots/pull/37) - feat: improve bot response
 - [#36](https://github.com/mrs-electronics-inc/bots/pull/36) - feat: system prompt improvements
 

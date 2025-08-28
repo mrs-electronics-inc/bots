@@ -58,15 +58,15 @@ def collect_file_contents(changed_files, max_count=20, max_lines=400):
                 continue
 
             # Read file content using batcat so it includes line numbers
-            content = subprocess.run(
+            batcat_result = subprocess.run(
                 ['batcat', '--style=numbers,plain',
                     '--decorations=always', file_path],
                 capture_output=True,
                 text=True,
                 check=True
-            ).stdout
+            )
 
-            file_contents[file_path] = content
+            file_contents[file_path] = batcat_result.stdout
             count += 1
 
         except Exception as e:
