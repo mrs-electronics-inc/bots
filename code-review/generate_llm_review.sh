@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script generates the LLM review.
-# It expects the .bots/context.md file to exist.
+# It expects the .bots/context.json file to exist.
 echo "Generating LLM review..."
 
 # Use the name expected by llm-openrouter
@@ -12,7 +12,7 @@ LLM_OPENROUTER_KEY=OPENROUTER_KEY
 mkdir .bots/response
 
 # Generate the LLM review using Python script
-generate_llm_review.py
+python3 generate_llm_review.py
 
 ls -lah .bots/response/review.json
 

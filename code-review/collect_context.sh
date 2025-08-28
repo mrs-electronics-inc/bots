@@ -38,40 +38,5 @@ else
     exit 1
 fi
 
-// AI!: replace all the rest of this with a python script. gather the context into .bots/context.json INSTEAD of .bots/context.md
-
-context_files=("details" "diffs" "comments")
-# Combine context into a single `.bots/context.md` file
-for f in "${context_files[@]}"; do
-    echo -e "\n\n===== BEGIN CONTEXT: $f =====\n\n"; cat ".bots/context/$f"; echo -e "\n\n===== END CONTEXT: $f =====\n\n"
-done > .bots/context.md
-
-echo -e "changed files:\n$changed_files"
-if [ -z "$changed_files" ]; then
-    echo "Warning: No changed files detected."
-fi
-count=0
-max_count=10
-# Iterate through each changed file
-while IFS= read -r file; do
-    # Check if the file exists
-    if [[ -f "$file" ]]; then
-        # Only include text files
-        mime_type=$(file -b --mime-type "$file")
-        if [[ $mime_type == text/* ]]; then
-            # Count the number of lines in the file
-            line_count=$(wc -l < "$file")
-            # Check if the line count is less than 400
-            if (( line_count < 400 )); then
-                echo "===== BEGIN FILE: $file =====" >> .bots/context.md;
-                cat "$file" >> .bots/context.md;
-                echo "===== END FILE: $file =====" >> .bots/context.md
-                ((count++))
-                # Exit early if max_count reached
-                if (( count >= max_count )); then
-                    break
-                fi
-            fi
-        fi
-    fi
-done <<< "$changed_files"
+# Run the Python script to collect context into JSON
+python3 collect_context.py
