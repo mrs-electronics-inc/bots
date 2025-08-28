@@ -24,7 +24,6 @@ and generates a structured review using the specified LLM model.
 """
 import os
 import sys
-import json
 import llm
 
 MAX_RETRIES = 3

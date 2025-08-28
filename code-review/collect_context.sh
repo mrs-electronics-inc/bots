@@ -10,7 +10,7 @@ echo "Collecting context..."
 
 mkdir -p .bots/context
 
-CHANGE_FILES=""
+CHANGED_FILES=""
 
 if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
@@ -37,6 +37,10 @@ else
     echo "Error: PLATFORM environment variable must be 'gitlab' or 'github'."
     exit 1
 fi
+
+echo "changed files:"
+echo $CHANGED_FILES
+echo "---"
 
 # Run the Python script to collect context into JSON
 collect_context.py
