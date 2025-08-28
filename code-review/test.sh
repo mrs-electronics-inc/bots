@@ -8,4 +8,4 @@ docker build . -t code-review-test
 docker run -e OPENROUTER_KEY -v ./test.bots:/repo/.bots/ code-review-test generate_llm_review.sh
 # Output the result
 cat test.bots/response/review.md
-# TODO: how can we grade the result?
+# TODO(#31): how can we grade the result?
