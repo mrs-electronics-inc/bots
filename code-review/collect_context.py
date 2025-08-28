@@ -57,9 +57,13 @@ def collect_file_contents(changed_files, max_count=20, max_lines=400):
             if len(lines) >= max_lines:
                 continue
 
-            # Read file content
-            with open(file_path, 'r') as f:
-                content = f.read()
+            # Read file content using batcat so it includes line numbers
+            content = subprocess.run(
+                ['batcat', file_path],
+                capture_output=True,
+                text=True,
+                check=True
+            )
 
             file_contents[file_path] = content
             count += 1
