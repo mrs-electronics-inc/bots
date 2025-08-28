@@ -4,12 +4,12 @@
 # It expects the .bots/context.md file to exist.
 echo "Generating LLM review..."
 
+# Use the name expected by llm-openrouter
+LLM_OPENROUTER_KEY=OPENROUTER_KEY
+
 # Clean up the responses directory
 [ -d ".bots/response" ] && rm -rf ".bots/response"
 mkdir .bots/response
-
-# For some reason, we have to do this to access openrouter models from Python
-python -m llm keys set openrouter --value $OPENROUTER_KEY
 
 # Generate the LLM review using Python script
 generate_llm_review.py
