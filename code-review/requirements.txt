@@ -1,0 +1,4 @@
+python-gitlab==6.3.0
+llm==0.27.1
+llm-openrouter==0.4.1
+

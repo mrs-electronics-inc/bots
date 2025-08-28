@@ -1,0 +1,8 @@
+[
+  {
+    "username": "github-actions[bot]",
+    "timestamp": "2025-08-28T17:01:33Z",
+    "body": "# Changes Requested\n- Update the TODO in `code-review/test.sh` to include an issue number for better tracking (e.g., `# TODO(#<issue_number>): how can we grade the result?`).\n- Add a more descriptive entry for PR #37 in `CHANGELOG.md` that clearly explains the improvements made (e.g., `- [#37](https://github.com/mrs-electronics-inc/bots/pull/37) - feat: improve bot response reliability with retry logic and Python API`).\n\n\n\n## Summary of Changes\n- Switched from using the `llm` CLI tool to the Python API for generating LLM reviews.\n- Added retry logic to the Python review generator to improve reliability when responses are empty.\n- Updated dependencies in `requirements.txt` and Dockerfile for the new setup.\n- Introduced a new test workflow and script to validate the code review process.\n- Removed `uv` in favor of standard pip.\n- Improved Docker image build process by directly copying and installing requirements.\n- Updated GLAB version from 1.65.0 to 1.67.0.\n\n\n\n## Overall Feedback\nThis PR introduces excellent improvements by switching to the Python API and adding retry logic, which should make the bot's responses much more reliable. 🚀 The dependency updates and removal of `uv` simplify the setup nicely. One suggestion would be to enhance the testing approach to automatically assess review quality. Also, consider making the PR title more descriptive to better reflect the changes.\n\n\n\n",
+    "id": 3234266659
+  }
+]

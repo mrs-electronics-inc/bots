@@ -2,6 +2,7 @@
 
 ## v0.10.0 (upcoming)
 
+- [#37](https://github.com/mrs-electronics-inc/bots/pull/37) - feat: improve bot response
 - [#36](https://github.com/mrs-electronics-inc/bots/pull/36) - feat: system prompt improvements
 
 ## v0.9.1

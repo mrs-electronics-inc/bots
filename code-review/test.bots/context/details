@@ -1,0 +1,20 @@
+title:	feat: improve bot response
+state:	OPEN
+author:	Pertempto
+labels:	
+assignees:	
+reviewers:	
+projects:	
+milestone:	
+number:	37
+url:	https://github.com/mrs-electronics-inc/bots/pull/37
+additions:	920
+deletions:	49
+auto-merge:	disabled
+--
+Resolves #35 
+
+## Changes
+
+- [x] Use Python API
+- [x] Retry when response is empty
