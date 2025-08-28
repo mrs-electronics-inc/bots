@@ -12,7 +12,7 @@ LLM_OPENROUTER_KEY=OPENROUTER_KEY
 mkdir .bots/response
 
 # Generate the LLM review using Python script
-python3 generate_llm_review.py
+generate_llm_review.py
 
 ls -lah .bots/response/review.json
 

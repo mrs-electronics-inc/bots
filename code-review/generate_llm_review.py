@@ -70,16 +70,10 @@ def main():
     # Read context
     try:
         with open('.bots/context.json', 'r') as f:
-            context_data = json.load(f)
-        
-        # Format context for LLM
-        context = format_context(context_data)
+            context = f.read()
     except FileNotFoundError:
         print("Error: Context file not found at .bots/context.json",
               file=sys.stderr)
-        sys.exit(1)
-    except json.JSONDecodeError as e:
-        print(f"Error parsing context JSON: {e}", file=sys.stderr)
         sys.exit(1)
 
     # Define schema
@@ -107,38 +101,6 @@ def main():
         sys.exit(1)
 
     print("Review generated successfully")
-
-
-def format_context(context_data):
-    """Format context data for LLM consumption."""
-    context_parts = []
-    
-    # Add details
-    if 'details' in context_data:
-        context_parts.append("\n\n===== BEGIN CONTEXT: details =====\n\n")
-        context_parts.append(context_data['details'])
-        context_parts.append("\n\n===== END CONTEXT: details =====\n\n")
-    
-    # Add diffs
-    if 'diffs' in context_data:
-        context_parts.append("\n\n===== BEGIN CONTEXT: diffs =====\n\n")
-        context_parts.append(context_data['diffs'])
-        context_parts.append("\n\n===== END CONTEXT: diffs =====\n\n")
-    
-    # Add comments
-    if 'comments' in context_data:
-        context_parts.append("\n\n===== BEGIN CONTEXT: comments =====\n\n")
-        context_parts.append(context_data['comments'])
-        context_parts.append("\n\n===== END CONTEXT: comments =====\n\n")
-    
-    # Add file contents
-    if 'file_contents' in context_data:
-        for file_path, content in context_data['file_contents'].items():
-            context_parts.append(f"\n\n===== BEGIN FILE: {file_path} =====\n\n")
-            context_parts.append(content)
-            context_parts.append(f"\n\n===== END FILE: {file_path} =====\n\n")
-    
-    return ''.join(context_parts)
 
 
 def get_response_text(model, system_prompt, context, schema):

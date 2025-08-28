@@ -9,7 +9,6 @@ import os
 import json
 import subprocess
 import sys
-from pathlib import Path
 
 
 def read_context_file(file_path):
