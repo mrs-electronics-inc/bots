@@ -9,7 +9,7 @@ RUN apt update \
 # Install UV packages and tools
 ENV PATH="/root/.local/bin:${PATH}" 
 RUN python -m pip install uv \
-    && uv pip install --system python-gitlab \
+    && uv pip install --system python-gitlab llm \
     && uv tool install --force --python python3.12 --with pip aider-chat@latest \
     && uv tool install llm
 
