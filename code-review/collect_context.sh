@@ -10,33 +10,33 @@ echo "Collecting context..."
 
 mkdir -p .bots/context
 
-changed_files=""
+CHANGE_FILES=""
 
 if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
-    glab mr view $CI_MERGE_REQUEST_IID > .bots/context/details
+    glab mr view $CI_MERGE_REQUEST_IID --output json | jq '{title: .title, body: .description, author: .author, state: .state}' | j > .bots/context/details.json
     # Collect the merge request comments
     # For some reason the API returns them newest to oldest, so we have to
     # reverse them with jq
-    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq '[reverse | .[] | {username: .author.username, name: .author.name, timestamp: .created_at, body: .body, id: .id}]' > .bots/context/comments
+    glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq '[reverse | .[] | {username: .author.username, name: .author.name, timestamp: .created_at, body: .body, id: .id}]' > .bots/context/comments.json
     # Collect the diffs
     glab mr diff $CI_MERGE_REQUEST_IID --raw > .bots/context/diffs
     # Collect the names of the changed files
     git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-    changed_files=$(git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME --name-only)
+    CHANGED_FILES=$(git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME --name-only)
 elif [ "$PLATFORM" == "github" ]; then
     # Collect the pull request details
-    gh pr view $GITHUB_HEAD_REF > .bots/context/details
+    gh pr view $GITHUB_HEAD_REF --json title,body,author,state > .bots/context/details.json
     # Collect the pull request comments
-    gh api "repos/$GITHUB_REPOSITORY/issues/$PULL_REQUEST_NUMBER/comments" | jq '[.[] | {username: .user.login, timestamp: .created_at, body: .body, id: .id}]' > .bots/context/comments
+    gh api "repos/$GITHUB_REPOSITORY/issues/$PULL_REQUEST_NUMBER/comments" | jq '[.[] | {username: .user.login, timestamp: .created_at, body: .body, id: .id}]' > .bots/context/comments.json
     # Collect the diffs
     gh pr diff $GITHUB_HEAD_REF > .bots/context/diffs
     # Collect the names of the changed files
-    changed_files=$(gh pr diff $GITHUB_HEAD_REF --name-only)
+    CHANGED_FILES=$(gh pr diff $GITHUB_HEAD_REF --name-only)
 else
     echo "Error: PLATFORM environment variable must be 'gitlab' or 'github'."
     exit 1
 fi
 
 # Run the Python script to collect context into JSON
-python3 collect_context.py
+collect_context.py

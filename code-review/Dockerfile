@@ -30,6 +30,7 @@ RUN git config --global --add safe.directory /repo
 COPY gitlab_code_review.sh /bin
 COPY github_code_review.sh /bin
 COPY collect_context.sh /bin
+COPY collect_context.py /bin
 COPY generate_llm_review.sh /bin
 COPY generate_llm_review.py /bin
 COPY post_gitlab_review_comment.py /bin
