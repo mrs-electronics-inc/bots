@@ -1,31 +1,4 @@
 #!/usr/bin/env python3
-"""
-Generate LLM code review using the LLM Python API.
-
-This script replaces the bash-based llm command with a Python implementation
-that generates code reviews using the LLM library.
-
-Input Files:
-- /bots/system-prompts/review.md: System prompt template with placeholders
-- .bots/instructions.md: Repository-specific instructions (optional)
-- .bots/context.md: Context information about the code changes to review
-
-Output Files:
-- .bots/response/review.json: Generated review in JSON format with fields:
-  - summary: Summary of changes
-  - raw_change_requests: Raw change requests
-  - change_requests: Formatted change requests
-  - feedback: Overall feedback
-
-Environment Variables:
-- REVIEW_MODEL: Model to use for review (default: 'openrouter/qwen/qwen3-coder')
-- PLATFORM: Platform type ('github' or 'gitlab') (default: 'github')
-- OPENROUTER_KEY: API key for OpenRouter service
-
-The script reads the system prompt template, substitutes environment variables,
-appends repository-specific instructions if available, reads the context,
-and generates a structured review using the specified LLM model.
-"""
 import os
 import sys
 import llm
@@ -85,10 +58,9 @@ def main():
                      "feedback"]
     }
 
-    # Get model and set API key
+    # Get model
     try:
         model = llm.get_model(review_model)
-        model.key = openrouter_key
     except llm.UnknownModelError:
         print(f"Error: Unknown model '{review_model}'", file=sys.stderr)
         sys.exit(1)
