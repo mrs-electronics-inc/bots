@@ -10,6 +10,11 @@ def main():
     # Get environment variables
     review_model = os.getenv('REVIEW_MODEL', 'openrouter/qwen/qwen3-coder')
     platform = os.getenv('PLATFORM', 'github')
+    openrouter_key = os.getenv('OPENROUTER_KEY')
+
+    if not openrouter_key:
+        print("Error: OPENROUTER_KEY environment variable not set", file=sys.stderr)
+        sys.exit(1)
 
     # Set change name based on platform
     change_name = "pull request" if platform == "github" else "merge request"
@@ -58,9 +63,10 @@ def main():
                      "feedback"]
     }
 
-    # Get model
+    # Get model and set API key
     try:
         model = llm.get_model(review_model)
+        model.key = openrouter_key
     except llm.UnknownModelError:
         print(f"Error: Unknown model '{review_model}'", file=sys.stderr)
         sys.exit(1)
