@@ -38,6 +38,8 @@ else
     exit 1
 fi
 
+// AI!: replace all the rest of this with a python script. gather the context into .bots/context.json INSTEAD of .bots/context.md
+
 context_files=("details" "diffs" "comments")
 # Combine context into a single `.bots/context.md` file
 for f in "${context_files[@]}"; do
