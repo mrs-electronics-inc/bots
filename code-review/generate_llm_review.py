@@ -5,7 +5,7 @@ Generate LLM code review using the LLM Python API.
 Input Files:
 - /bots/system-prompts/review.md: System prompt template with placeholders
 - .bots/instructions.md: Repository-specific instructions (optional)
-- .bots/context.md: Context information about the code changes to review
+- .bots/context.json: Context information about the code changes to review
 
 Output Files:
 - .bots/response/review.json: Generated review in JSON format with fields:
@@ -68,10 +68,10 @@ def main():
 
     # Read context
     try:
-        with open('.bots/context.md', 'r') as f:
+        with open('.bots/context.json', 'r') as f:
             context = f.read()
     except FileNotFoundError:
-        print("Error: Context file not found at .bots/context.md",
+        print("Error: Context file not found at .bots/context.json",
               file=sys.stderr)
         sys.exit(1)
 

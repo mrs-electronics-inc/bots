@@ -4,7 +4,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Install core packages
 RUN apt update \
-    && apt install -y git wget gpg curl jq gettext file
+    && apt install -y git wget gpg curl jq gettext file bat
  
 # Install python packages
 COPY requirements.txt .
@@ -30,6 +30,7 @@ RUN git config --global --add safe.directory /repo
 COPY gitlab_code_review.sh /bin
 COPY github_code_review.sh /bin
 COPY collect_context.sh /bin
+COPY collect_context.py /bin
 COPY generate_llm_review.sh /bin
 COPY generate_llm_review.py /bin
 COPY post_gitlab_review_comment.py /bin
