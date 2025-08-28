@@ -83,8 +83,6 @@ def main():
 
     # Get changed_files
     changed_files = os.getenv('CHANGED_FILES', '').splitlines()
-    print('changed files:', changed_files)
-    print('RAW:', os.getenv('CHANGED_FILES', ''))
 
     # Collect file contents
     file_contents = collect_file_contents(changed_files)

@@ -40,9 +40,5 @@ fi
 
 export CHANGED_FILES
 
-echo "changed files:"
-echo "$CHANGED_FILES"
-echo "---"
-
 # Run the Python script to collect context into JSON
 collect_context.py
