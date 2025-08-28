@@ -63,7 +63,7 @@ def collect_file_contents(changed_files, max_count=20, max_lines=400):
                 capture_output=True,
                 text=True,
                 check=True
-            )
+            ).stdout
 
             file_contents[file_path] = content
             count += 1
