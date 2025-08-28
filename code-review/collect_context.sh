@@ -14,7 +14,7 @@ CHANGED_FILES=""
 
 if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
-    glab mr view $CI_MERGE_REQUEST_IID --output json | jq '{title: .title, body: .description, author: .author, state: .state}' | j > .bots/context/details.json
+    glab mr view $CI_MERGE_REQUEST_IID --output json | jq '{title: .title, body: .description, author: .author, state: .state}' > .bots/context/details.json
     # Collect the merge request comments
     # For some reason the API returns them newest to oldest, so we have to
     # reverse them with jq
