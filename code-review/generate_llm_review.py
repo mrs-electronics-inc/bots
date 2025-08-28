@@ -26,6 +26,8 @@ import os
 import sys
 import llm
 
+MAX_RETRIES = 3
+
 
 def main():
     # Get environment variables
@@ -34,6 +36,13 @@ def main():
 
     # Set change name based on platform
     change_name = "pull request" if platform == "github" else "merge request"
+
+    # Get model
+    try:
+        model = llm.get_model(review_model)
+    except llm.UnknownModelError:
+        print(f"Error: Unknown model '{review_model}'", file=sys.stderr)
+        sys.exit(1)
 
     # Read system prompt template
     try:
@@ -79,27 +88,8 @@ def main():
                      "feedback"]
     }
 
-    # Get model
-    try:
-        model = llm.get_model(review_model)
-    except llm.UnknownModelError:
-        print(f"Error: Unknown model '{review_model}'", file=sys.stderr)
-        sys.exit(1)
-
     # Generate response
-    try:
-        response = model.prompt(
-            context,
-            system=system_prompt,
-            presence_penalty=1.5,
-            temperature=1.1,
-            schema=schema
-        )
-        response_text = response.text()
-        # TODO: try again if response is empty
-    except Exception as e:
-        print(f"Error generating LLM response: {str(e)}", file=sys.stderr)
-        sys.exit(1)
+    response_text = get_response_text(model, system_prompt, context, schema)
 
     # Write response to JSON file
     try:
@@ -110,6 +100,28 @@ def main():
         sys.exit(1)
 
     print("Review generated successfully")
+
+
+def get_response_text(model, system_prompt, context, schema):
+    try:
+        for i in range(MAX_RETRIES):
+            response = model.prompt(
+                context,
+                system=system_prompt,
+                presence_penalty=1.5,
+                temperature=1.1,
+                schema=schema
+            )
+            response_text = response.text()
+            print("Response length:", len(response_text))
+            if len(response_text) > 10:
+                return response_text
+            else:
+                print("Received invalid response:",
+                      response_text, file=sys.stderr)
+    except Exception as e:
+        print(f"Error generating LLM response: {str(e)}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
