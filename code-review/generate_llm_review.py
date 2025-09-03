@@ -31,6 +31,7 @@ MAX_RETRIES = 3
 
 
 def main():
+    print([model for model in llm.get_models() if model.supports_tools])
     # Get environment variables
     review_model = os.getenv('REVIEW_MODEL', 'openrouter/qwen/qwen3-coder')
     platform = os.getenv('PLATFORM', 'github')
@@ -106,11 +107,10 @@ def get_response_text(model, system_prompt, context, schema):
             response = model.chain(
                 context,
                 system=system_prompt,
-                presence_penalty=1.5,
-                temperature=1.1,
                 schema=schema,
                 tools=[tools.add_change_request],
                 before_call=tools.before_call,
+                options={"presence_penalty": 1.5, "temperature": 1.1},
             )
             response_text = response.text()
             print("Response length:", len(response_text))

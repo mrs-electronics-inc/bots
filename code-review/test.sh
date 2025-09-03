@@ -4,8 +4,8 @@
 
 # Build the current image
 docker build . -t code-review-test
-# Run the review, pass the OPENROUTER_KEY in from the surrounding environment
-docker run -e OPENROUTER_KEY -v ./test.bots:/repo/.bots/ code-review-test generate_llm_review.sh
+# Run the review, using environment variables from .env file
+docker run --env-file .env -v ./test.bots:/repo/.bots/ code-review-test generate_llm_review.sh
 # Output the result
 cat test.bots/response/review.md
 # TODO(#31): how can we grade the result?
