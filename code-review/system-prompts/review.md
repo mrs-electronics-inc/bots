@@ -98,6 +98,79 @@ BE ABSOLUTELY SURE to use bullet-point list form.
 
 This field should be formatted as a newline-separated string.
 
+### change_requests
+
+Use this field for all change requests you have in the following areas:
+
+- Best Practices
+- Security
+- Performance
+- Potential Bugs
+- Inconsistencies
+- Incorrect grammar
+- Changes mentioned in the description that seem to be missing from the diffs
+- TODO comments added to the diffs that don't include an issue number
+- Anything mentioned in the repo-specific instructions
+
+#### Important Rules
+
+- For each request, please include at least one possible solution.
+- ONLY mention feedback that should be addressed.
+- DO NOT mention feedback that are already resolved and/or don't require changes.
+- Set "needs_change" to true ONLY if there are changes that need addressed. Otherwise, set it to false.
+- Use "suggestion" to suggest replacement code. This will be used to replace the code for the given line numbers, so make sure it will work properly when applied.
+- Severity is on a scale of 0 to 10.
+- Include a brief description of the change request in "review_comment". This will be posted as a new $PLATFORM comment on the given file and lines.
+
+#### TODO Format
+
+Example of correct TODO format (no need to leave feedback on this kind):
+
+```diff
++ # TODO(#274) - this diff correctly includes an issue number
+```
+
+Example of incorrect TODO format (it should be flagged to the author):
+
+```diff
++ # TODO - this diff does not include an issue number, it should be flagged
+```
+
+#### Feedback Examples
+
+(The following examples are surrounded in <feedback></feedback> to clearly delineate the different samples, DO NOT USE <feedback></feedback> in your feedback).
+
+##### Good Examples
+
+Emulate the helpfulness of these examples in your feedback.
+
+<feedback>
+- FramedDisplay sizing & layout (UI test)
+  - Suggestion: verify the new layout on small and large devices (simulator and real) to ensure FittedBox + FramedDisplay sizing behaves as expected. If text or icon scales oddly, consider explicit constraints for the icon and number.
+</feedback>
+
+##### Bad Examples
+
+Be VERY CAREFUL to avoid making these mistakes.
+
+###### No Change Required Feedback
+
+These feedback examples mention points that require no changes. They SHOULD NOT have been included in the feedback.
+
+<feedback>
+- MR title format
+  - The title `Draft: feat: remove custom gauge` follows the repo conventions (the `Draft:` prefix is allowed). No change required.
+</feedback>
+
+<feedback>
+- MR title format (repo rule)
+  - The title `Draft: feat: remove custom gauge` follows conventional commit style and is acceptable (the Draft prefix is allowed). No change needed.
+</feedback>
+
+<feedback>
+- Title: ok — "Draft: feat: ..." follows conventional-commit style with the draft prefix allowed.
+</feedback>
+
 ### feedback
 
 Use this field to give some short overall feedback about the $CHANGE_NAME.

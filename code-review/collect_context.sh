@@ -14,7 +14,7 @@ CHANGED_FILES=""
 
 if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request details
-    glab mr view $CI_MERGE_REQUEST_IID --output json | jq '{title: .title, body: .description, author: .author, state: .state}' > .bots/context/details.json
+    glab mr view $CI_MERGE_REQUEST_IID --output json | jq '{number: .iid, title: .title, body: .description, author: .author, state: .state}' > .bots/context/details.json
     # Collect the merge request comments
     # For some reason the API returns them newest to oldest, so we have to
     # reverse them with jq
@@ -26,7 +26,7 @@ if [ "$PLATFORM" == "gitlab" ]; then
     CHANGED_FILES=$(git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME --name-only)
 elif [ "$PLATFORM" == "github" ]; then
     # Collect the pull request details
-    gh pr view $GITHUB_HEAD_REF --json title,body,author,state > .bots/context/details.json
+    gh pr view $GITHUB_HEAD_REF --json number,title,body,author,state > .bots/context/details.json
     # Collect the pull request comments
     gh api "repos/$GITHUB_REPOSITORY/issues/$PULL_REQUEST_NUMBER/comments" | jq '[.[] | {username: .user.login, timestamp: .created_at, body: .body, id: .id}]' > .bots/context/comments.json
     # Collect the diffs

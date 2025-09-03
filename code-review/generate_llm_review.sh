@@ -19,7 +19,10 @@ ls -lah .bots/response/review.json
 # Add the change requests, if necessary
 if [ "$(cat .bots/response/review.json | jq -r '.change_requests')" != "" ]; then
     echo "# Changes Requested" >> .bots/response/review.md
+    # TODO: use separate comments for change requests
+    echo '```json' >> .bots/response/review.md
     cat .bots/response/review.json | jq -r ".change_requests" >> .bots/response/review.md
+    echo '```' >> .bots/response/review.md
     echo -e "\n\n" >> .bots/response/review.md
 fi
 

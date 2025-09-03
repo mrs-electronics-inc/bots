@@ -31,7 +31,6 @@ MAX_RETRIES = 3
 
 
 def main():
-    print([model for model in llm.get_models() if model.supports_tools])
     # Get environment variables
     review_model = os.getenv('REVIEW_MODEL', 'openrouter/qwen/qwen3-coder')
     platform = os.getenv('PLATFORM', 'github')
@@ -82,9 +81,27 @@ def main():
         "type": "object",
         "properties": {
             "summary": {"type": "string"},
-            "feedback": {"type": "string"}
+            "feedback": {"type": "string"},
+            "change_requests": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "file_path": {"type": "string"},
+                        "start_line_number": {"type": "integer"},
+                        "end_line_number": {"type": "integer"},
+                        "suggestion": {"type": "string"},
+                        "review_comment": {"type": "string"},
+                        "severity": {"type": "integer"},
+                        "needs_change": {"type": "boolean"},
+                    },
+                    "required": ["file_path", "start_line_number",
+                                 "suggestion", "review_comment", "severity",
+                                 "needs_change"]
+                },
+            },
         },
-        "required": ["summary", "feedback"]
+        "required": ["summary", "feedback", "change_requests"]
     }
 
     # Generate response
@@ -108,7 +125,7 @@ def get_response_text(model, system_prompt, context, schema):
                 context,
                 system=system_prompt,
                 schema=schema,
-                tools=[tools.add_change_request],
+                tools=[],
                 before_call=tools.before_call,
                 options={"presence_penalty": 1.5, "temperature": 1.1},
             )
