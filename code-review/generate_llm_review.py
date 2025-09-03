@@ -25,6 +25,7 @@ and generates a structured review using the specified LLM model.
 import os
 import sys
 import llm
+import tools
 
 MAX_RETRIES = 3
 
@@ -80,12 +81,9 @@ def main():
         "type": "object",
         "properties": {
             "summary": {"type": "string"},
-            "raw_change_requests": {"type": "string"},
-            "change_requests": {"type": "string"},
             "feedback": {"type": "string"}
         },
-        "required": ["summary", "raw_change_requests", "change_requests",
-                     "feedback"]
+        "required": ["summary", "feedback"]
     }
 
     # Generate response
@@ -105,12 +103,14 @@ def main():
 def get_response_text(model, system_prompt, context, schema):
     try:
         for i in range(MAX_RETRIES):
-            response = model.prompt(
+            response = model.chain(
                 context,
                 system=system_prompt,
                 presence_penalty=1.5,
                 temperature=1.1,
-                schema=schema
+                schema=schema,
+                tools=[tools.add_change_request],
+                before_call=tools.before_call,
             )
             response_text = response.text()
             print("Response length:", len(response_text))

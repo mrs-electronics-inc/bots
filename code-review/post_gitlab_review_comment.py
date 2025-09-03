@@ -52,6 +52,8 @@ def main():
             mr.notes.create({'body': review_content})
             print("Created new comment")
 
+        # TODO: add change requests
+
     except Exception as e:
         print(f"Error handling GitLab comment: {str(e)}", file=sys.stderr)
         sys.exit(1)
