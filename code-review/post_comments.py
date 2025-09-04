@@ -30,7 +30,7 @@ def main():
 def generate_main_comment(review):
     review_content = ""
 
-    if len(review["changes_requests"]) > 0:
+    if len(review["change_requests"]) > 0:
         review_content += "# Changes Requested\n"
         review_content += "See below comments for specific change requests.\n"
         # TODO: remove this
