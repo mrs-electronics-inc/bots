@@ -207,9 +207,10 @@ def post_github_comments(main_comment, change_requests):
             # Create a review comment
             pr.create_review_comment(
                 body=body,
-                commit_id=pr.head.sha,
+                commit=pr.merge_commit_sha,
                 path=change_request['new_file_path'],
-                position=change_request['new_start_line_number']
+                start_line=change_request['new_start_line_number'],
+                line=change_request['new_end_line_number']
             )
             print(
                 f"Created review comment for {change_request['new_file_path']}:{change_request['new_start_line_number']}")
