@@ -47,7 +47,7 @@ def generate_main_comment(review):
 
     if len(review["feedback"]) > 0:
         review_content += "## Overall Feedback\n"
-        review_content += review["summary"]
+        review_content += review["feedback"]
         review_content += "\n\n"
 
     return review_content
