@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import hashlib
 import os
+import pprint
 import sys
 import gitlab
 import github
@@ -93,11 +95,52 @@ def post_gitlab_comments(main_comment, change_requests):
             mr.notes.create({'body': main_comment})
             print("Created new comment")
 
-        # TODO: add change requests comments
+        for change_request in change_requests:
+            if not change_request['needs_change']:
+                print('Skipping unnecessary change request:', change_request)
+                continue
+            print('change_request:')
+            pprint.pprint(change_request)
+            print('---')
+            thread = {
+                'body': change_request['review_comment'],
+                'position': {
+                    'position_type': 'text',
+                    'base_sha': mr.diff_refs['base_sha'],
+                    'start_sha': mr.diff_refs['start_sha'],
+                    'head_sha': mr.diff_refs['head_sha'],
+                    'old_path': change_request['old_file_path'],
+                    'new_path': change_request['new_file_path'],
+                    'old_line': change_request['old_start_line_number'],
+                    'new_line': change_request['new_start_line_number'],
+                    'line_range': generate_gitlab_line_range(change_request)
+                    # TODO: handle line range parameter
+                }
+            }
+            print('thread:')
+            pprint.pprint(thread)
+            print('---')
+            try:
+                mr.discussions.create(thread)
+            except Exception as e:
+                print(f"Failed to create change request discussion: {str(e)}",
+                      file=sys.stderr)
 
     except Exception as e:
         print(f"Error handling GitLab comment: {str(e)}", file=sys.stderr)
         sys.exit(1)
+
+
+def generate_gitlab_line_range(change_request):
+    # Line code calculation explained here: https://forum.gitlab.com/t/api-request-to-create-a-discussion-on-a-line-range/79157/3
+    return {
+        'start': {
+            'line_code': f'{hashlib.sha1(change_request["new_file_path"].encode())}_{change_request["new_start_line_number"]}_{change_request["old_start_line_number"]}'
+        },
+        'end': {
+            'line_code': f'{hashlib.sha1(change_request["new_file_path"].encode())}_{change_request["new_end_line_number"]}_{change_request["old_end_line_number"]}'
+        }
+    }
 
 
 def post_github_comments(main_comment, change_requests):
