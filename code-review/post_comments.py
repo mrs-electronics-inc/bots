@@ -119,7 +119,11 @@ def post_gitlab_comments(main_comment, change_requests):
                     'new_path': change_request['new_file_path'],
                     # 'old_line': change_request['old_start_line_number'],
                     'new_line': change_request['new_start_line_number'],
-                    # TODO: re-enable this once we figure out how to fix it
+                    # TODO: re-enable this once we figure out how to
+                    #       fix the line_code calculation
+                    # It is possible the GitLab API is broke
+                    # https://gitlab.com/gitlab-org/gitlab/-/issues/524665
+                    # https://gitlab.com/gitlab-org/gitlab/-/issues/520794
                     # 'line_range': generate_gitlab_line_range(change_request)
                 }
             }
@@ -145,7 +149,7 @@ def generate_gitlab_line_range(change_request):
             'line_code': f'{hashlib.sha1(change_request["new_file_path"].encode()).hexdigest()}_{change_request["new_start_line_number"]}_{change_request["old_start_line_number"]}'
         },
         'end': {
-            'line_code': f'{hashlib.sha1(change_request["new_file_path"].encode()).hexdigest()}_{change_request["new_end_line_number"]}_{change_request["old_end_line_number"]}'
+            'line_code': f'{hashlib.sha1(change_request["new_file_path"].encode()).hexdigest()}_{change_request["new_end_line_number"]}_{change_request["old_end_line_number"]-1}'
         }
     }
 
