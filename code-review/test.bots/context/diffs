@@ -1,323 +1,89 @@
-diff --git a/.github/workflows/code-review.yaml b/.github/workflows/code-review.yaml
-index b5c50f6..0f63b61 100644
---- a/.github/workflows/code-review.yaml
-+++ b/.github/workflows/code-review.yaml
-@@ -9,7 +9,7 @@ jobs:
-     runs-on: ubuntu-latest
+diff --git a/apps/bots/.gitlab-ci.yml b/apps/bots/.gitlab-ci.yml
+index 6ed7ac8d7316d46c8c4747dc644342272199e2e1..e38ba96be21fa1ffa9ca339255934441a29a8774 100644
+--- a/apps/bots/.gitlab-ci.yml
++++ b/apps/bots/.gitlab-ci.yml
+@@ -40,7 +40,8 @@ run_code_review_bot:
+   stage: bot
+   tags:
+     - bot
+-  image: ghcr.io/mrs-electronics-inc/bots/code-review:latest
++  # TODO: use latest tag
++  image: ghcr.io/mrs-electronics-inc/bots/code-review:0.11.0-rc2
+   rules:
+     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+       allow_failure: true # Necessary so that Gitlab doesn't block the pipeline
+@@ -50,6 +51,9 @@ run_code_review_bot:
+   script:
+     # Run the built-in script for GitLab code review
+     - gitlab_code_review.sh
++  artifacts:
++    paths:
++      - ".bots/"
  
-     container:
--      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.10.0-rc14
-+      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.11.0-rc0
-       volumes:
-         - ${{ github.workspace }}:/repo
+ run_daily_bot:
+   stage: bot
+diff --git a/apps/web/src/assets/img/sz/logo-192.png b/apps/web/src/assets/img/sz/logo-192.png
+index ea49fa62267621c3aa519d3b075894d02bee7f12..b1dc4767cd51f640af7fd066ce9d4804f4bfeb9a 100644
+Binary files a/apps/web/src/assets/img/sz/logo-192.png and b/apps/web/src/assets/img/sz/logo-192.png differ
+diff --git a/apps/web/src/assets/img/sz/logo-512.png b/apps/web/src/assets/img/sz/logo-512.png
+index a3d15d7e152fb65348d2fe313b46df04f1f14415..2f5e6fbac86709ce78078452eb74bd2e915f2692 100644
+Binary files a/apps/web/src/assets/img/sz/logo-512.png and b/apps/web/src/assets/img/sz/logo-512.png differ
+diff --git a/apps/web/src/assets/manifest/cc/app.webmanifest b/apps/web/src/assets/manifest/cc/app.webmanifest
+index db63fe8c4d26bb6c2dbe9eb7f953c1ec483fd3a1..6b13278c4d8e32f462beb5a4cf5ae22d81e3780f 100644
+--- a/apps/web/src/assets/manifest/cc/app.webmanifest
++++ b/apps/web/src/assets/manifest/cc/app.webmanifest
+@@ -4,7 +4,7 @@
+     "display": "standalone",
+     "scope": "./",
+     "start_url": "./",
+-    "background_color": "#ffffff",
++    "background_color": "#737373",
+     "theme_color": "#1976d2",
+     "description": "A telematics cloud platform for real-time monitoring and control, with historical data tracking and alerts.",
+     "icons": [
+diff --git a/apps/web/src/assets/manifest/sz/app.webmanifest b/apps/web/src/assets/manifest/sz/app.webmanifest
+index e109250ee940f3cb8d9460327f21a4b74912f5ea..f031c9ef95cec936c9b2396401e5de5d5f9ef0e6 100644
+--- a/apps/web/src/assets/manifest/sz/app.webmanifest
++++ b/apps/web/src/assets/manifest/sz/app.webmanifest
+@@ -4,7 +4,7 @@
+     "display": "standalone",
+     "scope": "./",
+     "start_url": "./",
+-    "background_color": "#ffffff",
++    "background_color": "#737373",
+     "theme_color": "#1976d2",
+     "description": "A telematics cloud platform for real-time monitoring and control, with historical data tracking and alerts.",
+     "icons": [
+@@ -33,4 +33,4 @@
+             "form_factor": "wide"
+         }
+     ]
+-}
++}
+\ No newline at end of file
+diff --git a/apps/web/src/index.html b/apps/web/src/index.html
+index 5bcc79c12090b7047a5122f618f2f95630a18d35..54f5d6da842a83fd5d314f47a468c627b5170ecc 100644
+--- a/apps/web/src/index.html
++++ b/apps/web/src/index.html
+@@ -5,7 +5,10 @@
+         <title>Loading...</title>
+         <base href="/" />
  
-diff --git a/code-review/Dockerfile b/code-review/Dockerfile
-index 8def8f0..ae5fd01 100644
---- a/code-review/Dockerfile
-+++ b/code-review/Dockerfile
-@@ -33,6 +33,7 @@ COPY collect_context.sh /bin
- COPY collect_context.py /bin
- COPY generate_llm_review.sh /bin
- COPY generate_llm_review.py /bin
-+COPY tools.py /bin
- COPY post_gitlab_review_comment.py /bin
- COPY system-prompts /bots/system-prompts
+-        <meta name="viewport" content="width=device-width, initial-scale=1" />
++        <metaabc
++            name="viewport"
++            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
++        />
+         <link
+             rel="icon"
+             id="favicon"
+@@ -89,8 +92,7 @@
+             <app-root></app-root>
+         </div>
+         <noscript>
+-            Please enable JavaScript to continue using this
+-            application.
++            Please enable JavaScript to continue using this application.
+         </noscript>
+     </body>
  
-diff --git a/code-review/collect_context.sh b/code-review/collect_context.sh
-index ac18855..db725ee 100755
---- a/code-review/collect_context.sh
-+++ b/code-review/collect_context.sh
-@@ -14,7 +14,7 @@ CHANGED_FILES=""
- 
- if [ "$PLATFORM" == "gitlab" ]; then
-     # Collect the merge request details
--    glab mr view $CI_MERGE_REQUEST_IID --output json | jq '{title: .title, body: .description, author: .author, state: .state}' > .bots/context/details.json
-+    glab mr view $CI_MERGE_REQUEST_IID --output json | jq '{number: .iid, title: .title, body: .description, author: .author, state: .state}' > .bots/context/details.json
-     # Collect the merge request comments
-     # For some reason the API returns them newest to oldest, so we have to
-     # reverse them with jq
-@@ -26,7 +26,7 @@ if [ "$PLATFORM" == "gitlab" ]; then
-     CHANGED_FILES=$(git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME --name-only)
- elif [ "$PLATFORM" == "github" ]; then
-     # Collect the pull request details
--    gh pr view $GITHUB_HEAD_REF --json title,body,author,state > .bots/context/details.json
-+    gh pr view $GITHUB_HEAD_REF --json number,title,body,author,state > .bots/context/details.json
-     # Collect the pull request comments
-     gh api "repos/$GITHUB_REPOSITORY/issues/$PULL_REQUEST_NUMBER/comments" | jq '[.[] | {username: .user.login, timestamp: .created_at, body: .body, id: .id}]' > .bots/context/comments.json
-     # Collect the diffs
-diff --git a/code-review/generate_llm_review.py b/code-review/generate_llm_review.py
-index c099c2f..f67aac6 100755
---- a/code-review/generate_llm_review.py
-+++ b/code-review/generate_llm_review.py
-@@ -25,6 +25,7 @@
- import os
- import sys
- import llm
-+import tools
- 
- MAX_RETRIES = 3
- 
-@@ -80,12 +81,27 @@ def main():
-         "type": "object",
-         "properties": {
-             "summary": {"type": "string"},
--            "raw_change_requests": {"type": "string"},
--            "change_requests": {"type": "string"},
--            "feedback": {"type": "string"}
-+            "feedback": {"type": "string"},
-+            "change_requests": {
-+                "type": "array",
-+                "items": {
-+                    "type": "object",
-+                    "properties": {
-+                        "file_path": {"type": "string"},
-+                        "start_line_number": {"type": "integer"},
-+                        "end_line_number": {"type": "integer"},
-+                        "suggestion": {"type": "string"},
-+                        "review_comment": {"type": "string"},
-+                        "severity": {"type": "integer"},
-+                        "needs_change": {"type": "boolean"},
-+                    },
-+                    "required": ["file_path", "start_line_number",
-+                                 "suggestion", "review_comment", "severity",
-+                                 "needs_change"]
-+                },
-+            },
-         },
--        "required": ["summary", "raw_change_requests", "change_requests",
--                     "feedback"]
-+        "required": ["summary", "feedback", "change_requests"]
-     }
- 
-     # Generate response
-@@ -105,12 +121,13 @@ def main():
- def get_response_text(model, system_prompt, context, schema):
-     try:
-         for i in range(MAX_RETRIES):
--            response = model.prompt(
-+            response = model.chain(
-                 context,
-                 system=system_prompt,
--                presence_penalty=1.5,
--                temperature=1.1,
--                schema=schema
-+                schema=schema,
-+                tools=[],
-+                before_call=tools.before_call,
-+                options={"presence_penalty": 1.5, "temperature": 1.1},
-             )
-             response_text = response.text()
-             print("Response length:", len(response_text))
-diff --git a/code-review/generate_llm_review.sh b/code-review/generate_llm_review.sh
-index a355f59..6b29e71 100755
---- a/code-review/generate_llm_review.sh
-+++ b/code-review/generate_llm_review.sh
-@@ -5,7 +5,7 @@
- echo "Generating LLM review..."
- 
- # Use the name expected by llm-openrouter
--LLM_OPENROUTER_KEY=OPENROUTER_KEY
-+LLM_OPENROUTER_KEY=$OPENROUTER_KEY
- 
- # Clean up the responses directory
- [ -d ".bots/response" ] && rm -rf ".bots/response"
-@@ -19,7 +19,10 @@ ls -lah .bots/response/review.json
- # Add the change requests, if necessary
- if [ "$(cat .bots/response/review.json | jq -r '.change_requests')" != "" ]; then
-     echo "# Changes Requested" >> .bots/response/review.md
-+    # TODO: use separate comments for change requests
-+    echo '```json' >> .bots/response/review.md
-     cat .bots/response/review.json | jq -r ".change_requests" >> .bots/response/review.md
-+    echo '```' >> .bots/response/review.md
-     echo -e "\n\n" >> .bots/response/review.md
- fi
- 
-diff --git a/code-review/github_code_review.sh b/code-review/github_code_review.sh
-index 889312a..6bb885b 100755
---- a/code-review/github_code_review.sh
-+++ b/code-review/github_code_review.sh
-@@ -19,3 +19,5 @@ generate_llm_review.sh
- 
- # Leave the review comment
- gh pr comment $GITHUB_HEAD_REF --edit-last --create-if-none -F .bots/response/review.md
-+
-+# TODO: add change requests
-diff --git a/code-review/post_gitlab_review_comment.py b/code-review/post_gitlab_review_comment.py
-index a615753..acd1cd0 100755
---- a/code-review/post_gitlab_review_comment.py
-+++ b/code-review/post_gitlab_review_comment.py
-@@ -52,6 +52,8 @@ def main():
-             mr.notes.create({'body': review_content})
-             print("Created new comment")
- 
-+        # TODO: add change requests
-+
-     except Exception as e:
-         print(f"Error handling GitLab comment: {str(e)}", file=sys.stderr)
-         sys.exit(1)
-diff --git a/code-review/system-prompts/review.md b/code-review/system-prompts/review.md
-index 6fd2d93..a7b2130 100644
---- a/code-review/system-prompts/review.md
-+++ b/code-review/system-prompts/review.md
-@@ -1,5 +1,5 @@
- # Background
-- 
-+
- You are a helpful senior software engineer who will review this $PLATFORM $CHANGE_NAME.
- 
- The user will refer to you as the "code review bot"
-@@ -9,25 +9,28 @@ YOU MUST strictly adhere to the "Style" and "Response Fields" instructions menti
- Please carefully review the $CHANGE_NAME details and comments. Also take a look at the git diffs.
- 
- The current contents of several of the changed files are also included in your context in the `selected_current_files` field.
-+
- - Not every file is included in the context.
- - The file contents are generated with the `batcat` command to add line numbers.
- 
- Follow the given JSON schema for your output.
--  - A post-processing tool will convert each field into its own Markdown section in the final output.
--  - Use an empty string for any fields where appropriate.
-+
-+- A post-processing tool will convert each field into its own Markdown section in the final output.
-+- Use an empty string for any fields where appropriate.
- 
- Any comments authored by "github-actions[bot]" or "Code Review Bot" should be considered comments that you gave.
- 
- You have the following capabilities:
--  - Leave feedback comments about the code changes.
--You **do not** have the following capabilities:
--  - Create new $CHANGE_NAME
--  - Draft exact patches or changes
--  - Suggest specific edits to files
--  - Copy and paste changes
--  - Maintain a conversation with the author of the $CHANGE_NAME
--  - Respond to future comments
--  - Leave more detailed comments after your main review.
-+
-+- Leave feedback comments about the code changes.
-+  You **do not** have the following capabilities:
-+- Create new $CHANGE_NAME
-+- Draft exact patches or changes
-+- Suggest specific edits to files
-+- Copy and paste changes
-+- Maintain a conversation with the author of the $CHANGE_NAME
-+- Respond to future comments
-+- Leave more detailed comments after your main review.
- 
- **DO NOT** say anything like "let me know", "I can re-run", "I can re-check", or "Please take a look below". You **DO NOT** have the ability to receive future comments from the user!
- 
-@@ -36,7 +39,7 @@ You **do not** have the following capabilities:
- (The following examples are surrounded in <feedback></feedback> to clearly delineate the different samples, DO NOT USE <feedback></feedback> in your feedback).
- 
- #### Incorrect Capabilities
-- 
-+
- A few examples of things you should NEVER SAY, because you DO NOT have these capabilities.
- 
- <feedback>
-@@ -74,7 +77,8 @@ Use a friendly and concise style.
- Use verbosity=short for your responses.
- 
- Tag the $CHANGE_NAME author directly when it is helpful to get their attention about something.
--  - Example of tagging someone: @username, some comment here.
-+
-+- Example of tagging someone: @username, some comment here.
- 
- Don't be afraid to give negative feedback, but be sure it is accurate.
- 
-@@ -94,9 +98,10 @@ BE ABSOLUTELY SURE to use bullet-point list form.
- 
- This field should be formatted as a newline-separated string.
- 
--### raw_change_requests
-+### change_requests
- 
- Use this field for all change requests you have in the following areas:
-+
- - Best Practices
- - Security
- - Performance
-@@ -105,37 +110,34 @@ Use this field for all change requests you have in the following areas:
- - Incorrect grammar
- - Changes mentioned in the description that seem to be missing from the diffs
- - TODO comments added to the diffs that don't include an issue number
--- Anything mentioned in the repo-specific instructions 
-+- Anything mentioned in the repo-specific instructions
- 
--This field should be formatted as a newline-separated string.
-+#### Important Rules
-+
-+- For each request, please include at least one possible solution.
-+- ONLY mention feedback that should be addressed.
-+- DO NOT mention feedback that are already resolved and/or don't require changes.
-+- Set "needs_change" to true ONLY if there are changes that need addressed. Otherwise, set it to false.
-+- Use "suggestion" to suggest replacement code. This will be used to replace the code for the given line numbers, so make sure it will work properly when applied.
-+- Severity is on a scale of 0 to 10.
-+- Include a brief description of the change request in "review_comment". This will be posted as a new $PLATFORM comment on the given file and lines.
- 
- #### TODO Format
- 
- Example of correct TODO format (no need to leave feedback on this kind):
-+
- ```diff
- + # TODO(#274) - this diff correctly includes an issue number
- ```
- 
- Example of incorrect TODO format (it should be flagged to the author):
-+
- ```diff
- + # TODO - this diff does not include an issue number, it should be flagged
- ```
- 
--### change_requests
--
--Use this field to clean up `raw_change_requests` to follow the following rules.
--
--
--#### Important Rules
--- This field should be formatted as a newline-separated string.
--- Set this field to an empty string if there are no change requests.
--- For each request, please include at least one possible solution.
--- ONLY mention feedback that should be addressed
--- DO NOT mention feedback that are already resolved and/or don't require changes.
--- Compare `raw_change_requests` with the following examples and remove anything that should be avoided.
--
- #### Feedback Examples
-- 
-+
- (The following examples are surrounded in <feedback></feedback> to clearly delineate the different samples, DO NOT USE <feedback></feedback> in your feedback).
- 
- ##### Good Examples
-diff --git a/code-review/test.sh b/code-review/test.sh
-index 2ea4341..bf6f28a 100755
---- a/code-review/test.sh
-+++ b/code-review/test.sh
-@@ -4,8 +4,8 @@
- 
- # Build the current image
- docker build . -t code-review-test
--# Run the review, pass the OPENROUTER_KEY in from the surrounding environment
--docker run -e OPENROUTER_KEY -v ./test.bots:/repo/.bots/ code-review-test generate_llm_review.sh
-+# Run the review, using environment variables from .env file
-+docker run --env-file .env -v ./test.bots:/repo/.bots/ code-review-test generate_llm_review.sh
- # Output the result
- cat test.bots/response/review.md
- # TODO(#31): how can we grade the result?
-diff --git a/code-review/tools.py b/code-review/tools.py
-new file mode 100644
-index 0000000..bd3c888
---- /dev/null
-+++ b/code-review/tools.py
-@@ -0,0 +1,12 @@
-+from typing import Optional
-+import llm
-+
-+
-+def before_call(tool: Optional[llm.Tool], tool_call: llm.ToolCall):
-+    """
-+    This is called before each tool call. It is useful for debugging.
-+    """
-+    print(f"Calling tool {tool.name} with arguments {tool_call.arguments}")
-+
-+
-+# TODO: add tools once they are supported by llm-openrouter

@@ -1,1 +1,65 @@
-[]
+[
+  {
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "timestamp": "2025-09-04T15:20:15.203Z",
+    "body": "requested review from @talhakhalid",
+    "id": 2730552406
+  },
+  {
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "timestamp": "2025-09-04T15:20:15.262Z",
+    "body": "assigned to @aemig_mrs",
+    "id": 2730552411
+  },
+  {
+    "username": "group_5220007_bot_b6208d1ba5b3f4dee18a58f5b69b7b68",
+    "name": "Code Review Bot",
+    "timestamp": "2025-09-04T15:20:45.990Z",
+    "body": "# Review\nNo change requests.\n## Summary of Changes\n- Updated the code review bot Docker image version in `.gitlab-ci.yml`.\n- Adjusted background color in web manifests for both `cc` and `sz` apps to match the login page nav bar gray.\n- Modified viewport meta tag in `index.html` to disable user scaling for improved mobile UX.\n- Minor formatting cleanup in `index.html` regarding `<noscript>` content.\n- Added artifact collection paths for code review outputs.\n\n## Overall Feedback\nLooking at this MR, I can see you're working on PWA improvements for mobile UX, particularly focusing on visual consistency and control. @aemig_mrs \n\nThe changes seem straightforward - updating manifest colors, disabling user scaling, and adding some padding. 👍\n\nI noticed there are some binary image files changed but no actual code changes shown in the diffs for those. The web manifest and HTML changes look good from a functionality standpoint!\n\nLet me know if there's anything specific you'd like me to focus on during this test of the new code review bot setup! 🚀",
+    "id": 2730553477
+  },
+  {
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "timestamp": "2025-09-04T15:22:45.333Z",
+    "body": "added 2 commits\n\n<ul><li>a9bf8e44 - chore: Revert &quot;feat: add padding&quot;</li><li>9ab0115b - feat: adding padding and maintain transparency</li></ul>\n\n[Compare with previous version](/mrs-electronics/spoke-zone/sz/-/merge_requests/499/diffs?diff_id=1481284129&start_sha=ec7f7d0840212658f3d1cf745d3cc16da8c48cfd)",
+    "id": 2730557838
+  },
+  {
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "timestamp": "2025-09-04T15:23:14.678Z",
+    "body": "approved this merge request",
+    "id": 2730558822
+  },
+  {
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "timestamp": "2025-09-04T16:20:09.190Z",
+    "body": "I'm going to use this MR as a testbed for https://github.com/mrs-electronics-inc/bots/pull/41",
+    "id": 2730680008
+  },
+  {
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "timestamp": "2025-09-04T16:20:47.168Z",
+    "body": "added 1 commit\n\n<ul><li>f83231e0 - feat: try new code review bot</li></ul>\n\n[Compare with previous version](/mrs-electronics/spoke-zone/sz/-/merge_requests/499/diffs?diff_id=1481364056&start_sha=9ab0115b12c0a068ba69d7c9678b6bbfd00f8bd7)",
+    "id": 2730681092
+  },
+  {
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "timestamp": "2025-09-04T16:35:43.929Z",
+    "body": "added 2 commits\n\n<ul><li>a8d5dc6c - feat: collect artifacts</li><li>46bc8740 - feat: try new code review bot</li></ul>\n\n[Compare with previous version](/mrs-electronics/spoke-zone/sz/-/merge_requests/499/diffs?diff_id=1481380402&start_sha=f83231e0f3dfd635681667d848abf4b8b9d855a6)",
+    "id": 2730709482
+  },
+  {
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "timestamp": "2025-09-04T16:39:29.016Z",
+    "body": "added 1 commit\n\n<ul><li>9a008a81 - chore: a couple purposeful mistakes</li></ul>\n\n[Compare with previous version](/mrs-electronics/spoke-zone/sz/-/merge_requests/499/diffs?diff_id=1481384197&start_sha=46bc8740d5a956ca7e35095db84d57400d135ec8)",
+    "id": 2730715899
+  }
+]

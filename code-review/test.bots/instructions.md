@@ -1,7 +1,17 @@
-- Make sure that the pull request title follows the conventional commit style.
-	- Alert the developer if the title is in the wrong format.
-	- Example of a correct title: `fix: some bug`.
-	- Example of an incorrect title: `Resolves "#18 - some bug"`.
-	- The scope portion is NOT required in the PR title.
-- Make sure that the `CHANGELOG.md` file is included in the diffs.
-	- Remind the PR author that the changelog must be updated with each PR.
+- Make sure that the merge request title follows the conventional commit style.
+    - Alert the developer if the title is in the wrong format.
+    - Example of a correct title: fix: some bug
+    - Example of an incorrect title: Resolves "#18 - some bug"
+    - It is ok if the title has an extra "Draft: " or "draft: " prefix. Ignore that part of the title. It is automatically added by GitLab for draft merge requests.
+    - Valid types for this repo:
+        - `fix:`
+        - `feat:`
+        - `chore:`
+        - `refactor:`
+        - `docs:`
+        - `perf:`
+        - `test:`
+        - `debt:`
+        - `release:`
+        - `notes:`
+        - `ci:`

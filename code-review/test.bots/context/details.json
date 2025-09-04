@@ -1,1 +1,16 @@
-{"author":{"id":"MDQ6VXNlcjE3MjA5ODI4","is_bot":false,"login":"Pertempto","name":"Addison Emig"},"body":"Resolves #30","number":41,"state":"OPEN","title":"feat: suggest changes to specific files without tools"}
+{
+  "number": 499,
+  "title": "fix: improve mobile UX on PWA",
+  "body": "## Changes\n\n- made background color in the web manifest match the gray on the login page nav bar\n- disabled user scaling\n- added padding to SZ logos\n\n## Review\n\n@talhakhalid \n- [ ] No concerns\n\n### Testing\n\nIf this section is empty, no manual testing is needed.\n\n## To Do\n\nThe reviewers can add items here as changes are requested.\n\nLink to issue:\n\n\nRelated to #735",
+  "author": {
+    "id": 7395193,
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "state": "active",
+    "locked": false,
+    "created_at": null,
+    "avatar_url": "https://gitlab.com/uploads/-/system/user/avatar/7395193/avatar.png",
+    "web_url": "https://gitlab.com/aemig_mrs"
+  },
+  "state": "opened"
+}
