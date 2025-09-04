@@ -1,5 +1,5 @@
 diff --git a/apps/bots/.gitlab-ci.yml b/apps/bots/.gitlab-ci.yml
-index 6ed7ac8d7316d46c8c4747dc644342272199e2e1..e38ba96be21fa1ffa9ca339255934441a29a8774 100644
+index 6ed7ac8d7316d46c8c4747dc644342272199e2e1..a851158a56aadf73765ce55dbb9323d50eaf1bf1 100644
 --- a/apps/bots/.gitlab-ci.yml
 +++ b/apps/bots/.gitlab-ci.yml
 @@ -40,7 +40,8 @@ run_code_review_bot:
@@ -8,7 +8,7 @@ index 6ed7ac8d7316d46c8c4747dc644342272199e2e1..e38ba96be21fa1ffa9ca339255934441
      - bot
 -  image: ghcr.io/mrs-electronics-inc/bots/code-review:latest
 +  # TODO: use latest tag
-+  image: ghcr.io/mrs-electronics-inc/bots/code-review:0.11.0-rc2
++  image: ghcr.io/mrs-electronics-inc/bots/code-review:0.11.0-rc3
    rules:
      - if: $CI_PIPELINE_SOURCE == "merge_request_event"
        allow_failure: true # Necessary so that Gitlab doesn't block the pipeline
@@ -62,7 +62,7 @@ index e109250ee940f3cb8d9460327f21a4b74912f5ea..f031c9ef95cec936c9b2396401e5de5d
 +}
 \ No newline at end of file
 diff --git a/apps/web/src/index.html b/apps/web/src/index.html
-index 5bcc79c12090b7047a5122f618f2f95630a18d35..54f5d6da842a83fd5d314f47a468c627b5170ecc 100644
+index 5bcc79c12090b7047a5122f618f2f95630a18d35..a661ae164d615fb5cb4aaf4076833d39adc196c6 100644
 --- a/apps/web/src/index.html
 +++ b/apps/web/src/index.html
 @@ -5,7 +5,10 @@
@@ -70,7 +70,7 @@ index 5bcc79c12090b7047a5122f618f2f95630a18d35..54f5d6da842a83fd5d314f47a468c627
          <base href="/" />
  
 -        <meta name="viewport" content="width=device-width, initial-scale=1" />
-+        <metaabc
++        <meta
 +            name="viewport"
 +            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 +        />

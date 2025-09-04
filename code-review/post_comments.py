@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 import hashlib
+import json
 import os
 import pprint
 import sys
-import gitlab
+import traceback
+# external
 import github
-import json
+import gitlab
 
 
 def main():
@@ -79,7 +81,7 @@ def post_gitlab_comments(main_comment, change_requests):
         # Look for an existing comment from "Code Review Bot"
         comment_id = None
         for note in notes:
-            if note.author.get('name') == 'Code Review Bot':
+            if note.author.get('name') == 'Code Review Bot' and note.body.startswith('#'):
                 comment_id = note.id
                 break
 
@@ -102,19 +104,23 @@ def post_gitlab_comments(main_comment, change_requests):
             print('change_request:')
             pprint.pprint(change_request)
             print('---')
+            body = change_request['review_comment']
+            suggestion = change_request['suggestion']
+            if suggestion:
+                body += f'\n\n```suggestion:\n{suggestion}\n```'
             thread = {
-                'body': change_request['review_comment'],
+                'body': body,
                 'position': {
                     'position_type': 'text',
                     'base_sha': mr.diff_refs['base_sha'],
                     'start_sha': mr.diff_refs['start_sha'],
                     'head_sha': mr.diff_refs['head_sha'],
-                    'old_path': change_request['old_file_path'],
+                    # 'old_path': change_request['old_file_path'],
                     'new_path': change_request['new_file_path'],
-                    'old_line': change_request['old_start_line_number'],
+                    # 'old_line': change_request['old_start_line_number'],
                     'new_line': change_request['new_start_line_number'],
-                    'line_range': generate_gitlab_line_range(change_request)
-                    # TODO: handle line range parameter
+                    # TODO: re-enable this once we figure out how to fix it
+                    # 'line_range': generate_gitlab_line_range(change_request)
                 }
             }
             print('thread:')
@@ -127,6 +133,7 @@ def post_gitlab_comments(main_comment, change_requests):
                       file=sys.stderr)
 
     except Exception as e:
+        traceback.print_exc()
         print(f"Error handling GitLab comment: {str(e)}", file=sys.stderr)
         sys.exit(1)
 
@@ -135,10 +142,10 @@ def generate_gitlab_line_range(change_request):
     # Line code calculation explained here: https://forum.gitlab.com/t/api-request-to-create-a-discussion-on-a-line-range/79157/3
     return {
         'start': {
-            'line_code': f'{hashlib.sha1(change_request["new_file_path"].encode())}_{change_request["new_start_line_number"]}_{change_request["old_start_line_number"]}'
+            'line_code': f'{hashlib.sha1(change_request["new_file_path"].encode()).hexdigest()}_{change_request["new_start_line_number"]}_{change_request["old_start_line_number"]}'
         },
         'end': {
-            'line_code': f'{hashlib.sha1(change_request["new_file_path"].encode())}_{change_request["new_end_line_number"]}_{change_request["old_end_line_number"]}'
+            'line_code': f'{hashlib.sha1(change_request["new_file_path"].encode()).hexdigest()}_{change_request["new_end_line_number"]}_{change_request["old_end_line_number"]}'
         }
     }
 

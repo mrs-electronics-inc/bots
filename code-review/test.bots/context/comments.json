@@ -14,13 +14,6 @@
     "id": 2730552411
   },
   {
-    "username": "group_5220007_bot_b6208d1ba5b3f4dee18a58f5b69b7b68",
-    "name": "Code Review Bot",
-    "timestamp": "2025-09-04T15:20:45.990Z",
-    "body": "# Review\nNo change requests.\n## Summary of Changes\n- Updated the code review bot Docker image version in `.gitlab-ci.yml`.\n- Adjusted background color in web manifests for both `cc` and `sz` apps to match the login page nav bar gray.\n- Modified viewport meta tag in `index.html` to disable user scaling for improved mobile UX.\n- Minor formatting cleanup in `index.html` regarding `<noscript>` content.\n- Added artifact collection paths for code review outputs.\n\n## Overall Feedback\nLooking at this MR, I can see you're working on PWA improvements for mobile UX, particularly focusing on visual consistency and control. @aemig_mrs \n\nThe changes seem straightforward - updating manifest colors, disabling user scaling, and adding some padding. 👍\n\nI noticed there are some binary image files changed but no actual code changes shown in the diffs for those. The web manifest and HTML changes look good from a functionality standpoint!\n\nLet me know if there's anything specific you'd like me to focus on during this test of the new code review bot setup! 🚀",
-    "id": 2730553477
-  },
-  {
     "username": "aemig_mrs",
     "name": "Addison Emig",
     "timestamp": "2025-09-04T15:22:45.333Z",
@@ -61,5 +54,12 @@
     "timestamp": "2025-09-04T16:39:29.016Z",
     "body": "added 1 commit\n\n<ul><li>9a008a81 - chore: a couple purposeful mistakes</li></ul>\n\n[Compare with previous version](/mrs-electronics/spoke-zone/sz/-/merge_requests/499/diffs?diff_id=1481384197&start_sha=46bc8740d5a956ca7e35095db84d57400d135ec8)",
     "id": 2730715899
+  },
+  {
+    "username": "aemig_mrs",
+    "name": "Addison Emig",
+    "timestamp": "2025-09-04T17:17:09.880Z",
+    "body": "added 1 commit\n\n<ul><li>2a5d3205 - feat: try new code review bot</li></ul>\n\n[Compare with previous version](/mrs-electronics/spoke-zone/sz/-/merge_requests/499/diffs?diff_id=1481423133&start_sha=9a008a81b20acc97a416ce781b4f84aa8beaa118)",
+    "id": 2730781153
   }
 ]
