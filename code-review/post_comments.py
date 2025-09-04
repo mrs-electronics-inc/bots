@@ -119,7 +119,7 @@ def post_gitlab_comments(main_comment, change_requests):
                     'new_path': change_request['new_file_path'],
                     # 'old_line': change_request['old_start_line_number'],
                     'new_line': change_request['new_start_line_number'],
-                    # TODO: re-enable this once we figure out how to
+                    # TODO(#42): re-enable this once we figure out how to
                     #       fix the line_code calculation
                     # It is possible the GitLab API is broke
                     # https://gitlab.com/gitlab-org/gitlab/-/issues/524665
