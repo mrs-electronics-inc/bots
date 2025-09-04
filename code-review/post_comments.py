@@ -166,7 +166,10 @@ def post_github_comments(main_comment, change_requests):
     # Initialize Github client
     gh = github.Github(auth=github.Auth.Token(github_token))
 
-    # TODO: update existing comment, or create new one
+    # AI!: update existing comment, or create new one, using main_comment
+    # We want to immitate the functionality of
+    # gh pr comment --edit-last --create-if-none
+    # but use Python instead of the shel
 
     # TODO: add change request comments
 
