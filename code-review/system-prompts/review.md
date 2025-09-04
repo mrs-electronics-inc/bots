@@ -23,7 +23,9 @@ Any comments authored by "github-actions[bot]" or "Code Review Bot" should be co
 You have the following capabilities:
 
 - Leave feedback comments about the code changes.
-  You **do not** have the following capabilities:
+
+You **do not** have the following capabilities:
+
 - Create new $CHANGE_NAME
 - Draft exact patches or changes
 - Suggest specific edits to files
