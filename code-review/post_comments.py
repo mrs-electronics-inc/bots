@@ -158,21 +158,66 @@ def post_github_comments(main_comment, change_requests):
     # Get environment variables
     github_token = os.environ.get('GH_TOKEN')
     pull_request_number = os.environ.get('PULL_REQUEST_NUMBER')
+    repo_name = os.environ.get('GITHUB_REPOSITORY')
 
-    if not all([github_token, pull_request_number]):
+    if not all([github_token, pull_request_number, repo_name]):
         print("Error: Missing required environment variables", file=sys.stderr)
         sys.exit(1)
 
     # Initialize Github client
     gh = github.Github(auth=github.Auth.Token(github_token))
-
-    # AI!: update existing comment, or create new one, using main_comment
-    # We want to immitate the functionality of
-    # gh pr comment --edit-last --create-if-none
-    # but use Python instead of the shel
-
-    # TODO: add change request comments
-
+    
+    try:
+        # Get the repository and pull request
+        repo = gh.get_repo(repo_name)
+        pr = repo.get_pull(int(pull_request_number))
+        
+        # Get all comments on the pull request
+        comments = pr.get_issue_comments()
+        
+        # Look for an existing comment from "Code Review Bot"
+        comment_id = None
+        for comment in comments:
+            if comment.user.login == 'github-actions[bot]' and comment.body.startswith('#'):
+                comment_id = comment.id
+                break
+        
+        # Create or update the comment
+        if comment_id:
+            # Update existing comment
+            comment = pr.get_issue_comment(comment_id)
+            comment.edit(main_comment)
+            print(f"Updated comment with ID: {comment_id}")
+        else:
+            # Create new comment
+            pr.create_issue_comment(main_comment)
+            print("Created new comment")
+        
+        # Post change request comments
+        for change_request in change_requests:
+            if not change_request['needs_change']:
+                print('Skipping unnecessary change request:', change_request)
+                continue
+            
+            body = change_request['review_comment']
+            suggestion = change_request['suggestion']
+            if suggestion:
+                body += f'\n\n```suggestion:\n{suggestion}\n```'
+            
+            # Create a review comment
+            pr.create_review_comment(
+                body=body,
+                commit_id=pr.head.sha,
+                path=change_request['new_file_path'],
+                position=change_request['new_start_line_number']
+            )
+            print(f"Created review comment for {change_request['new_file_path']}:{change_request['new_start_line_number']}")
+    
+    except Exception as e:
+        traceback.print_exc()
+        print(f"Error handling GitHub comment: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+    
     gh.close()
 
 
