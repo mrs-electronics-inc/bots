@@ -34,7 +34,7 @@ COPY collect_context.py /bin
 COPY generate_llm_review.sh /bin
 COPY generate_llm_review.py /bin
 COPY tools.py /bin
-COPY post_gitlab_review_comment.py /bin
+COPY post_comments.py /bin
 COPY system-prompts /bots/system-prompts
 
 CMD ["/bin/bash"]

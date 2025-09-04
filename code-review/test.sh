@@ -5,7 +5,7 @@
 # Build the current image
 docker build . -t code-review-test
 # Run the review, pass the OPENROUTER_KEY in from the surrounding environment
-docker run -e OPENROUTER_KEY -v ./test.bots:/repo/.bots/ code-review-test generate_llm_review.sh
-# Output the result
-cat test.bots/response/review.md
+# Use jq to format the results
+docker run -e OPENROUTER_KEY -v ./test.bots:/repo/.bots/ code-review-test sh -c "generate_llm_review.sh; cat /repo/.bots/response/review.json | jq"
+
 # TODO(#31): how can we grade the result?

@@ -18,6 +18,4 @@ collect_context.sh
 generate_llm_review.sh
 
 # Leave the review comment
-gh pr comment $GITHUB_HEAD_REF --edit-last --create-if-none -F .bots/response/review.md
-
-# TODO: add change requests
+post_comments.py

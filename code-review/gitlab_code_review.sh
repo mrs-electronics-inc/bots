@@ -17,4 +17,4 @@ collect_context.sh
 generate_llm_review.sh
 
 # Create or update the review comment
-post_gitlab_review_comment.py
+post_comments.py
