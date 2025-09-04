@@ -199,6 +199,9 @@ def post_github_comments(main_comment, change_requests):
                 print('Skipping unnecessary change request:', change_request)
                 continue
 
+            print('change_request:')
+            pprint.pprint(change_request)
+            print('---')
             body = change_request['review_comment']
             suggestion = change_request['suggestion']
             if suggestion:
@@ -207,7 +210,7 @@ def post_github_comments(main_comment, change_requests):
             # Create a review comment
             pr.create_review_comment(
                 body=body,
-                commit=pr.merge_commit_sha,
+                commit=pr.head.sha,
                 path=change_request['new_file_path'],
                 start_line=change_request['new_start_line_number'],
                 line=change_request['new_end_line_number']
