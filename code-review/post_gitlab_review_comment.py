@@ -23,12 +23,12 @@ def main():
         sys.exit(1)
 
     # Read the comments response content if it exists
-    comments_content = None
+    response_content = None
     try:
         with open('.bots/response/comments.md', 'r') as f:
             content = f.read().strip()
             if content and content != "No new responses at this time.":
-                comments_content = content
+                response_content = content
     except FileNotFoundError:
         pass  # No comments file is fine
 
@@ -45,14 +45,11 @@ def main():
 
         # Look for existing comments from "Code Review Bot"
         review_comment_id = None
-        comments_comment_id = None
         for note in notes:
             if note.author.get('name') == 'Code Review Bot':
                 # Check if this is a review comment or comments response
                 if note.body.startswith('# Changes Requested') or note.body.startswith('## Summary') or note.body.startswith('## Overall Feedback'):
                     review_comment_id = note.id
-                elif comments_content and note.body.strip() == comments_content.strip():
-                    comments_comment_id = note.id
 
         # Create or update the main review comment
         if review_comment_id is not None:
@@ -67,17 +64,10 @@ def main():
             print("Created new review comment")
 
         # Handle comment responses if they exist
-        if comments_content:
-            if comments_comment_id is not None:
-                # Update existing comments comment
-                note = mr.notes.get(int(comments_comment_id))
-                note.body = comments_content
-                note.save()
-                print(f"Updated comments response with ID: {comments_comment_id}")
-            else:
-                # Create new comments comment
-                mr.notes.create({'body': comments_content})
-                print("Created new comments response")
+        if response_content:
+            # Create new response comment
+            mr.notes.create({'body': response_content})
+            print("Created new comments response")
 
     except Exception as e:
         print(f"Error handling GitLab comment: {str(e)}", file=sys.stderr)
