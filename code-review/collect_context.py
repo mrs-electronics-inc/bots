@@ -78,8 +78,6 @@ def collect_file_contents(changed_files, max_count=20, max_lines=400):
 
 def main():
     """Main function to collect context."""
-    print("Collecting context...")
-
     # Read context from files
     context = {}
     context['details'] = read_context_file('.bots/context/details.json')
