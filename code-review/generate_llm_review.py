@@ -31,7 +31,7 @@ MAX_RETRIES = 3
 
 def main():
     # Get environment variables
-    review_model = os.getenv('REVIEW_MODEL', 'openrouter/qwen/qwen3-coder')
+    review_model = os.getenv('REVIEW_MODEL', 'openrouter/x-ai/grok-code-fast-1')
     platform = os.getenv('PLATFORM', 'github')
 
     # Set change name based on platform
