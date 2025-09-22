@@ -1,26 +1,17 @@
 #!/usr/bin/env python3
 import os
 import sys
-import subprocess
-import json
-
-
-def run_gh_command(command):
-    """Run a GitHub CLI command and return the result."""
-    try:
-        result = subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
-        return result.stdout.strip()
-    except subprocess.CalledProcessError as e:
-        print(f"Error running command: {command}", file=sys.stderr)
-        print(f"Error output: {e.stderr}", file=sys.stderr)
-        sys.exit(1)
+from github import Github
 
 
 def main():
     # Get environment variables
-    pr_ref = os.environ.get('GITHUB_HEAD_REF')
-    if not pr_ref:
-        print("Error: GITHUB_HEAD_REF environment variable not set", file=sys.stderr)
+    github_token = os.environ.get('GITHUB_TOKEN')
+    repo_name = os.environ.get('GITHUB_REPOSITORY')
+    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
+
+    if not all([github_token, repo_name, pr_number]):
+        print("Error: Missing required environment variables: GITHUB_TOKEN, GITHUB_REPOSITORY, PULL_REQUEST_NUMBER", file=sys.stderr)
         sys.exit(1)
 
     # Read the review content
@@ -41,62 +32,56 @@ def main():
     except FileNotFoundError:
         pass  # No comments file is fine
 
-    # Get existing comments from the PR
-    comments_json = run_gh_command(f"gh pr comments {pr_ref} --json id,body,author")
+    # Initialize GitHub client
+    g = Github(github_token)
 
-    if comments_json:
-        try:
-            comments = json.loads(comments_json)
-        except json.JSONDecodeError:
-            print("Error parsing comments JSON", file=sys.stderr)
-            sys.exit(1)
-    else:
-        comments = []
+    try:
+        # Get the repository and pull request
+        repo = g.get_repo(repo_name)
+        pr = repo.get_pull(int(pr_number))
 
-    # Look for existing comments from Code Review Bot
-    review_comment_id = None
-    comments_comment_id = None
-    for comment in comments:
-        author_login = comment.get('author', {}).get('login')
-        if author_login in ['github-actions[bot]', 'Code Review Bot']:
-            body = comment.get('body', '')
-            # Check if this is a review comment
-            if (body.startswith('# Changes Requested') or
-                body.startswith('## Summary') or
-                body.startswith('## Overall Feedback')):
-                review_comment_id = comment.get('id')
-            # Check if this is a comments response
-            elif comments_content and body.strip() == comments_content.strip():
-                comments_comment_id = comment.get('id')
+        # Get all comments on the PR
+        comments = list(pr.get_issue_comments())
 
-    # Create or update the main review comment
-    if review_comment_id is not None:
-        # Update existing review comment
-        print(f"Updating existing review comment with ID: {review_comment_id}")
-        run_gh_command(f"gh pr comment {pr_ref} --edit {review_comment_id} -F .bots/response/review.md")
-    else:
-        # Create new review comment
-        print("Creating new review comment")
-        run_gh_command(f"gh pr comment {pr_ref} -F .bots/response/review.md")
+        # Look for existing comments from Code Review Bot
+        review_comment = None
+        comments_comment = None
+        for comment in comments:
+            if comment.user.login in ['github-actions[bot]', 'Code Review Bot']:
+                body = comment.body
+                # Check if this is a review comment
+                if (body.startswith('# Changes Requested') or
+                    body.startswith('## Summary') or
+                    body.startswith('## Overall Feedback')):
+                    review_comment = comment
+                # Check if this is a comments response
+                elif comments_content and body.strip() == comments_content.strip():
+                    comments_comment = comment
 
-    # Handle comment responses if they exist
-    if comments_content:
-        if comments_comment_id is not None:
-            # Update existing comments comment
-            print(f"Updating existing comments response with ID: {comments_comment_id}")
-            # Write comments content to a temp file for the command
-            with open('.bots/response/comments_temp.md', 'w') as f:
-                f.write(comments_content)
-            run_gh_command(f"gh pr comment {pr_ref} --edit {comments_comment_id} -F .bots/response/comments_temp.md")
-            os.remove('.bots/response/comments_temp.md')
+        # Create or update the main review comment
+        if review_comment is not None:
+            # Update existing review comment
+            review_comment.edit(body=review_content)
+            print(f"Updated review comment with ID: {review_comment.id}")
         else:
-            # Create new comments comment
-            print("Creating new comments response")
-            # Write comments content to a temp file for the command
-            with open('.bots/response/comments_temp.md', 'w') as f:
-                f.write(comments_content)
-            run_gh_command(f"gh pr comment {pr_ref} -F .bots/response/comments_temp.md")
-            os.remove('.bots/response/comments_temp.md')
+            # Create new review comment
+            pr.create_issue_comment(review_content)
+            print("Created new review comment")
+
+        # Handle comment responses if they exist
+        if comments_content:
+            if comments_comment is not None:
+                # Update existing comments comment
+                comments_comment.edit(body=comments_content)
+                print(f"Updated comments response with ID: {comments_comment.id}")
+            else:
+                # Create new comments comment
+                pr.create_issue_comment(comments_content)
+                print("Created new comments response")
+
+    except Exception as e:
+        print(f"Error handling GitHub comment: {str(e)}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
