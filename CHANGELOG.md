@@ -2,6 +2,7 @@
 
 ## v0.11.0
 
+- [#44](https://github.com/mrs-electronics-inc/bots/pull/44) - feat: use grok
 - [#43](https://github.com/mrs-electronics-inc/bots/pull/43) - docs: update README
 
 ## v0.10.0
