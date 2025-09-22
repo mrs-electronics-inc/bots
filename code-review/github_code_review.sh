@@ -19,3 +19,9 @@ generate_llm_review.sh
 
 # Leave the review comment
 gh pr comment $GITHUB_HEAD_REF --edit-last --create-if-none -F .bots/response/review.md
+
+# Leave comment responses if they exist
+if [ -f ".bots/response/comments.md" ] && [ -s ".bots/response/comments.md" ]; then
+    echo "Posting comment responses..."
+    gh pr comment $GITHUB_HEAD_REF --body "$(cat .bots/response/comments.md)"
+fi
