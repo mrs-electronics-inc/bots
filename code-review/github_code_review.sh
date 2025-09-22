@@ -17,20 +17,5 @@ collect_context.sh
 # Generate the LLM review
 generate_llm_review.sh
 
-# Leave the review comment
-# Find existing review comment from Code Review Bot
-REVIEW_COMMENT_ID=$(gh pr comments $GITHUB_HEAD_REF --json id,body,author | jq -r '.[] | select(.author.login == "github-actions[bot]" or .author.login == "Code Review Bot") | select(.body | startswith("# Changes Requested") or startswith("## Summary") or startswith("## Overall Feedback")) | .id' | head -1)
-
-if [ -n "$REVIEW_COMMENT_ID" ]; then
-    echo "Updating existing review comment with ID: $REVIEW_COMMENT_ID"
-    gh pr comment $GITHUB_HEAD_REF --edit $REVIEW_COMMENT_ID -F .bots/response/review.md
-else
-    echo "Creating new review comment"
-    gh pr comment $GITHUB_HEAD_REF -F .bots/response/review.md
-fi
-
-# Leave comment responses if they exist
-if [ -f ".bots/response/comments.md" ] && [ -s ".bots/response/comments.md" ]; then
-    echo "Posting comment responses..."
-    gh pr comment $GITHUB_HEAD_REF --body "$(cat .bots/response/comments.md)"
-fi
+# Create or update the review comment
+post_github_review_comment.py
