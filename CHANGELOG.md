@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.11.0
+
+- [#43](https://github.com/mrs-electronics-inc/bots/pull/43) - docs: update README
+
 ## v0.10.0
 
 - [#39](https://github.com/mrs-electronics-inc/bots/pull/39) - feat: collect JSON context
