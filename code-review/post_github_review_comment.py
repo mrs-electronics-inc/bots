@@ -2,6 +2,7 @@
 import os
 import sys
 from github import Github
+from comment_utils import read_review_content, read_response_content, is_review_comment
 
 
 def main():
@@ -16,21 +17,13 @@ def main():
 
     # Read the review content
     try:
-        with open('.bots/response/review.md', 'r') as f:
-            review_content = f.read()
+        review_content = read_review_content()
     except FileNotFoundError:
         print("Error: Review file not found", file=sys.stderr)
         sys.exit(1)
 
-    # Read the response comment content if it exists
-    response_content = None
-    try:
-        with open('.bots/response/comments.md', 'r') as f:
-            content = f.read().strip()
-            if content and content != "No new responses at this time.":
-                response_content = content
-    except FileNotFoundError:
-        pass  # No comments file is fine
+    # Read the response content if it exists
+    response_content = read_response_content()
 
     # Initialize GitHub client
     g = Github(github_token)
@@ -47,12 +40,10 @@ def main():
         review_comment = None
         for comment in comments:
             if comment.user.login in ['github-actions[bot]', 'Code Review Bot']:
-                body = comment.body
                 # Check if this is a review comment
-                if (body.startswith('# Changes Requested') or
-                    body.startswith('## Summary') or
-                    body.startswith('## Overall Feedback')):
+                if is_review_comment(comment.body):
                     review_comment = comment
+                    break
 
         # Create or update the main review comment
         if review_comment is not None:

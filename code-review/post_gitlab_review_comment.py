@@ -2,6 +2,7 @@
 import os
 import sys
 import gitlab
+from comment_utils import read_review_content, read_response_content, is_review_comment
 
 
 def main():
@@ -16,21 +17,13 @@ def main():
 
     # Read the review content
     try:
-        with open('.bots/response/review.md', 'r') as f:
-            review_content = f.read()
+        review_content = read_review_content()
     except FileNotFoundError:
         print("Error: Review file not found", file=sys.stderr)
         sys.exit(1)
 
-    # Read the comments response content if it exists
-    response_content = None
-    try:
-        with open('.bots/response/comments.md', 'r') as f:
-            content = f.read().strip()
-            if content and content != "No new responses at this time.":
-                response_content = content
-    except FileNotFoundError:
-        pass  # No comments file is fine
+    # Read the response content if it exists
+    response_content = read_response_content()
 
     # Initialize GitLab client
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=gitlab_token)
@@ -47,9 +40,10 @@ def main():
         review_comment_id = None
         for note in notes:
             if note.author.get('name') == 'Code Review Bot':
-                # Check if this is a review comment or comments response
-                if note.body.startswith('# Changes Requested') or note.body.startswith('## Summary') or note.body.startswith('## Overall Feedback'):
+                # Check if this is a review comment
+                if is_review_comment(note.body):
                     review_comment_id = note.id
+                    break
 
         # Create or update the main review comment
         if review_comment_id is not None:
