@@ -22,13 +22,13 @@ def main():
         print("Error: Review file not found", file=sys.stderr)
         sys.exit(1)
 
-    # Read the comments response content if it exists
-    comments_content = None
+    # Read the response comment content if it exists
+    response_content = None
     try:
         with open('.bots/response/comments.md', 'r') as f:
             content = f.read().strip()
             if content and content != "No new responses at this time.":
-                comments_content = content
+                response_content = content
     except FileNotFoundError:
         pass  # No comments file is fine
 
@@ -45,7 +45,6 @@ def main():
 
         # Look for existing comments from Code Review Bot
         review_comment = None
-        comments_comment = None
         for comment in comments:
             if comment.user.login in ['github-actions[bot]', 'Code Review Bot']:
                 body = comment.body
@@ -54,9 +53,6 @@ def main():
                     body.startswith('## Summary') or
                     body.startswith('## Overall Feedback')):
                     review_comment = comment
-                # Check if this is a comments response
-                elif comments_content and body.strip() == comments_content.strip():
-                    comments_comment = comment
 
         # Create or update the main review comment
         if review_comment is not None:
@@ -69,15 +65,10 @@ def main():
             print("Created new review comment")
 
         # Handle comment responses if they exist
-        if comments_content:
-            if comments_comment is not None:
-                # Update existing comments comment
-                comments_comment.edit(body=comments_content)
-                print(f"Updated comments response with ID: {comments_comment.id}")
-            else:
-                # Create new comments comment
-                pr.create_issue_comment(comments_content)
-                print("Created new comments response")
+        if response_content:
+            # Create new response comment
+            pr.create_issue_comment(response_content)
+            print("Created new response comment")
 
     except Exception as e:
         print(f"Error handling GitHub comment: {str(e)}", file=sys.stderr)
