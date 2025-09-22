@@ -101,6 +101,57 @@ def main():
 
     print("Review generated successfully")
 
+    # Generate comment responses
+    generate_comment_responses(model, platform, change_name, context)
+
+
+def generate_comment_responses(model, platform, change_name, context):
+    """Generate responses to comments and save to comments.md"""
+    print("Generating comment responses...")
+
+    # Read comments system prompt template
+    try:
+        with open('/bots/system-prompts/comments.md', 'r') as f:
+            comments_system_prompt_template = f.read()
+    except FileNotFoundError:
+        print("Warning: Comments system prompt template not found, skipping comment responses", file=sys.stderr)
+        return
+
+    # Substitute environment variables in comments system prompt
+    comments_system_prompt = comments_system_prompt_template.replace(
+        '$CHANGE_NAME', change_name).replace(
+        '$PLATFORM', platform)
+
+    # Append repo-specific instructions if they exist
+    try:
+        with open('.bots/instructions.md', 'r') as f:
+            repo_instructions = f.read()
+            comments_system_prompt += "\n\n# Repo-specific Instructions\n\n"
+            comments_system_prompt += repo_instructions
+    except FileNotFoundError:
+        comments_system_prompt += "\n\n# Repo-specific Instructions\n\nNone."
+
+    # Generate comment response (no schema needed for markdown output)
+    try:
+        response = model.prompt(
+            context,
+            system=comments_system_prompt,
+            presence_penalty=1.5,
+            temperature=1.1
+        )
+        comments_response = response.text()
+    except Exception as e:
+        print(f"Error generating comment responses: {str(e)}", file=sys.stderr)
+        return
+
+    # Write comments response to markdown file
+    try:
+        with open('.bots/response/comments.md', 'w') as f:
+            f.write(comments_response)
+        print("Comment responses generated successfully")
+    except Exception as e:
+        print(f"Error writing comments response file: {str(e)}", file=sys.stderr)
+
 
 def get_response_text(model, system_prompt, context, schema):
     try:

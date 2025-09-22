@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.0
+
+- [#45](https://github.com/mrs-electronics-inc/bots/pull/45) - feat: respond to comments
+
 ## v0.11.0
 
 - [#44](https://github.com/mrs-electronics-inc/bots/pull/44) - feat: use grok

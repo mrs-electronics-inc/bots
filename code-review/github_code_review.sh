@@ -17,5 +17,5 @@ collect_context.sh
 # Generate the LLM review
 generate_llm_review.sh
 
-# Leave the review comment
-gh pr comment $GITHUB_HEAD_REF --edit-last --create-if-none -F .bots/response/review.md
+# Create or update the review comment
+post_github_review_comment.py

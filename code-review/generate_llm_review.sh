@@ -35,4 +35,4 @@ echo "## Overall Feedback" >> .bots/response/review.md
 cat .bots/response/review.json | jq -r ".feedback" >> .bots/response/review.md
 echo -e "\n\n" >> .bots/response/review.md
  
-# TODO(#15): respond to comments and pipe to .bots/response/comments.md
+# Comment responses are handled in github_code_review.sh

@@ -2,6 +2,7 @@
 import os
 import sys
 import gitlab
+from comment_utils import read_review_content, read_response_content, is_review_comment
 
 
 def main():
@@ -16,11 +17,13 @@ def main():
 
     # Read the review content
     try:
-        with open('.bots/response/review.md', 'r') as f:
-            review_content = f.read()
+        review_content = read_review_content()
     except FileNotFoundError:
         print("Error: Review file not found", file=sys.stderr)
         sys.exit(1)
+
+    # Read the response content if it exists
+    response_content = read_response_content()
 
     # Initialize GitLab client
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=gitlab_token)
@@ -33,24 +36,32 @@ def main():
         # Get all notes (comments)
         notes = mr.notes.list(iterator=True)
 
-        # Look for an existing comment from "Code Review Bot"
-        comment_id = None
+        # Look for existing comments from "Code Review Bot"
+        review_comment_id = None
         for note in notes:
             if note.author.get('name') == 'Code Review Bot':
-                comment_id = note.id
-                break
+                # Check if this is a review comment
+                if is_review_comment(note.body):
+                    review_comment_id = note.id
+                    break
 
-        # Create or update the comment
-        if comment_id:
-            # Update existing comment
-            note = mr.notes.get(comment_id)
+        # Create or update the main review comment
+        if review_comment_id is not None:
+            # Update existing review comment
+            note = mr.notes.get(int(review_comment_id))
             note.body = review_content
             note.save()
-            print(f"Updated comment with ID: {comment_id}")
+            print(f"Updated review comment with ID: {review_comment_id}")
         else:
-            # Create new comment
+            # Create new review comment
             mr.notes.create({'body': review_content})
-            print("Created new comment")
+            print("Created new review comment")
+
+        # Handle comment responses if they exist
+        if response_content:
+            # Create new response comment
+            mr.notes.create({'body': response_content})
+            print("Created new comments response")
 
     except Exception as e:
         print(f"Error handling GitLab comment: {str(e)}", file=sys.stderr)
