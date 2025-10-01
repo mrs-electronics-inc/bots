@@ -65,14 +65,14 @@ def get_file_contents(file_name: str) -> str:
         mime_type = result.stdout.strip()
 
         if not mime_type.startswith('text/'):
-            return f"FILE HAS UNSUPPORTED MIME TYPE: ${mime_type}"
+            return f"FILE HAS UNSUPPORTED MIME TYPE: {mime_type}"
 
         # Check line count
         with open(full_path, 'r') as f:
             lines = f.readlines()
 
         if len(lines) >= 1000:
-            return f"FILE IS TOO BIG: ${len(lines)} lines"
+            return f"FILE IS TOO BIG: {len(lines)} lines"
 
         # Read file content using batcat so it includes line numbers
         batcat_result = subprocess.run(
