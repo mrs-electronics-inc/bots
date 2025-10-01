@@ -12,6 +12,7 @@ and generates a structured review using the specified LLM model.
 """
 import os
 import sys
+import json
 import llm
 from tools import get_review_tools, before_tool_call, after_tool_call
 
@@ -58,7 +59,7 @@ def main():
     # Read context
     try:
         with open('.bots/context.json', 'r') as f:
-            context = f.read()
+            context = json.load(f)
     except FileNotFoundError:
         print("Error: Context file not found at .bots/context.json",
               file=sys.stderr)
