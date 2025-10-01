@@ -5,6 +5,7 @@
 #    - GITHUB_TOKEN
 #    - PULL_REQUEST_NUMBER
 # The others are automatically automatically included in GitHub pull request pipelines.
+set -e
 
 # I don't know why we need this when it is already in the Dockerfile
 # But the GitHub workflow fails otherwise.
