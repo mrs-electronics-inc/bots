@@ -20,6 +20,7 @@ def get_details_tool(context):
         """
         # TODO: get details directly rather than from context object
         return context["details"]
+    return get_details
 
 
 def get_changed_files_tool(context):
@@ -29,6 +30,7 @@ def get_changed_files_tool(context):
         """
         # TODO: get changed files directly rather than from context object
         return context["changed_files"]
+    return get_changed_files
 
 
 def get_diffs_tool(context):
@@ -38,6 +40,7 @@ def get_diffs_tool(context):
         """
         # TODO: get diffs directly rather than from context object
         return context["diffs"]
+    return get_diffs
 
 
 def get_file_contents(file_name: str) -> str:
@@ -94,6 +97,7 @@ def get_comments_tool(context):
         """
         # TODO: get comments directly rather than from context object
         return context["comments"]
+    return get_comments
 
 
 def post_comment(content: str):

@@ -4,7 +4,7 @@
 #    - OPENROUTER_KEY
 #    - GITLAB_TOKEN
 # The others are automatically included in GitLab merge request pipelines.
-
+set -e
 
 # Authenticate with GitLab
 glab auth login --token $GITLAB_TOKEN
