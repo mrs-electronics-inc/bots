@@ -76,22 +76,12 @@ def main():
               file=sys.stderr)
         sys.exit(1)
 
-    # Define schema
-    schema = {
-        "type": "object",
-        "properties": {
-            "summary": {"type": "string"},
-            "feedback": {"type": "string"},
-        },
-        "required": ["summary", "feedback"]
-    }
-
     # Generate response
-    response_text = get_response_text(model, system_prompt, context, schema)
+    response_text = get_response_text(model, system_prompt, context)
 
     # Write response to JSON file
     try:
-        with open('.bots/response/review.json', 'w') as f:
+        with open('.bots/response/review.md', 'w') as f:
             f.write(response_text)
     except Exception as e:
         print(f"Error writing response file: {str(e)}", file=sys.stderr)
@@ -100,13 +90,12 @@ def main():
     print("Review generated successfully")
 
 
-def get_response_text(model, system_prompt, context, schema):
+def get_response_text(model, system_prompt, context):
     try:
         for i in range(MAX_RETRIES):
             response = model.chain(
                 "Please review my merge request.",
                 system=system_prompt,
-                schema=schema,
                 tools=get_review_tools(context),
                 before_call=before_tool_call,
                 after_call=after_tool_call,
