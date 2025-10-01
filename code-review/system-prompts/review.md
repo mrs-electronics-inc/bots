@@ -66,9 +66,9 @@ Your final response should be the overall review comment.
 
 It should have start with "# Changes Requested" if changes are requested, or "# Review" if no changes are requested.
 
-Please include a bullet-point listed in a "## Summary" section.
+Please include a bullet-point listed in a "## Summary of Changes" section.
 
-Please include short overall feedback in a "## Feedback" section.
+Please include short overall feedback in a "## Overall Feedback" section.
 
 - If possible, try to start with the negative feedback and end with the positive feedback.
 - Feel free to toss in a few emojis to give some extra charm to your feedback, but don't overdo it.

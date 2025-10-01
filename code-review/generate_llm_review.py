@@ -2,18 +2,6 @@
 """
 Generate LLM code review using the LLM Python API.
 
-Input Files:
-- /bots/system-prompts/review.md: System prompt template with placeholders
-- .bots/instructions.md: Repository-specific instructions (optional)
-- .bots/context.json: Context information about the code changes to review
-
-Output Files:
-- .bots/response/review.json: Generated review in JSON format with fields:
-  - summary: Summary of changes
-  - raw_change_requests: Raw change requests
-  - change_requests: Formatted change requests
-  - feedback: Overall feedback
-
 Environment Variables:
 - REVIEW_MODEL: Model to use (default: 'openrouter/qwen/qwen3-coder')
 - PLATFORM: 'github' or 'gitlab' (default: 'github')

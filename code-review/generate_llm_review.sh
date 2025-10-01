@@ -13,26 +13,3 @@ mkdir .bots/response
 
 # Generate the LLM review using Python script
 generate_llm_review.py
-
-ls -lah .bots/response/review.json
-
-# Add the change requests, if necessary
-if [ "$(cat .bots/response/review.json | jq -r '.change_requests')" != "" ]; then
-    echo "# Changes Requested" >> .bots/response/review.md
-    cat .bots/response/review.json | jq -r ".change_requests" >> .bots/response/review.md
-    echo -e "\n\n" >> .bots/response/review.md
-fi
-
-# Add the summary, if necessary
-if [ "$(cat .bots/response/review.json | jq -r '.summary')" != "" ]; then
-    echo "## Summary of Changes" >> .bots/response/review.md
-    cat .bots/response/review.json | jq -r ".summary" >> .bots/response/review.md
-    echo -e "\n\n" >> .bots/response/review.md
-fi
-
-# Add the overall feedback
-echo "## Overall Feedback" >> .bots/response/review.md
-cat .bots/response/review.json | jq -r ".feedback" >> .bots/response/review.md
-echo -e "\n\n" >> .bots/response/review.md
- 
-# TODO(#15): respond to comments and pipe to .bots/response/comments.md
