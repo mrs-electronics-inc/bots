@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.0
+
+- [#48](https://github.com/mrs-electronics-inc/bots/pull/48) - feat: tool-based system
+
 ## v0.11.0
 
 - [#44](https://github.com/mrs-electronics-inc/bots/pull/44) - feat: use grok
