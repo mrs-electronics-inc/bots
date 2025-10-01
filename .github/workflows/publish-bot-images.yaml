@@ -40,6 +40,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{is_default_branch}}
+            type=match,pattern=*-rc*,value=rc
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6.18.0
