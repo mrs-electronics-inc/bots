@@ -109,9 +109,11 @@ def get_response_text(model, system_prompt, context, schema):
                 tools=get_review_tools(context),
                 before_call=before_tool_call,
                 after_call=after_tool_call,
-                presence_penalty=1.5,
-                temperature=1.1,
-                schema=schema
+                options={
+                    "presence_penalty": 1.5,
+                    "temperature": 1.1,
+                    "schema": schema,
+                },
             )
             response_text = response.text()
             print("Response length:", len(response_text))
