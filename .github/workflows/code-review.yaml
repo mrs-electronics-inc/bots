@@ -9,8 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      # Use the latest release candidate
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:rc
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.12.0-rc11
       volumes:
         - ${{ github.workspace }}:/repo
 
