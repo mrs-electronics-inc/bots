@@ -2,6 +2,8 @@ import llm
 from typing import Optional
 import os
 import subprocess
+import github
+import gitlab
 
 
 def get_review_tools(context):
@@ -104,12 +106,53 @@ def post_comment(content: str):
     """
     Post a comment on the change request.
     """
-    # TODO: actually implement posting the comment
-    print('new comment:', content)
+    platform = os.environ.get('PLATFORM')
+    if platform == 'github':
+        _post_github_comment(content)
+    elif platform == 'gitlab':
+        _post_gitlab_comment(content)
+    else:
+        print(f"Unsupported platform: {platform}")
+        return
+
+
+def _post_github_comment(content: str):
+    token = os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
+    repo = os.environ.get('GITHUB_REPOSITORY')
+    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
+
+    if not token or not repo or not pr_number:
+        print("Missing GitHub environment variables")
+        return
+
+    g = github.Github(token)
+    repo_obj = g.get_repo(repo)
+    pr = repo_obj.get_pull(int(pr_number))
+
+    pr.create_issue_comment(content)
+    return "Created new GitHub comment"
+
+
+def _post_gitlab_comment(content: str):
+    token = os.environ.get('GITLAB_TOKEN')
+    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
+    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
+
+    if not token or not project_id or not mr_iid:
+        print("Missing GitLab environment variables")
+        return
+
+    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
+    project = gl.projects.get(project_id)
+    mr = project.mergerequests.get(mr_iid)
+
+    mr.notes.create({'body': content})
+    return "Created new GitLab comment"
 
 
 def before_tool_call(tool: Optional[llm.Tool], tool_call: llm.ToolCall):
-    print(f"Calling tool {tool.name} with arguments {tool_call.arguments}")
+    tool_name = tool.name if tool else "unknown"
+    print(f"Calling tool {tool_name} with arguments {tool_call.arguments}")
 
 
 def after_tool_call(tool: llm.Tool, tool_call: llm.ToolCall,
