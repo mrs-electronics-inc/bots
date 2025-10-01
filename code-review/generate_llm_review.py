@@ -25,6 +25,7 @@ and generates a structured review using the specified LLM model.
 import os
 import sys
 import llm
+from tools import get_review_tools, before_tool_call, after_tool_call
 
 MAX_RETRIES = 3
 
@@ -82,8 +83,7 @@ def main():
             "summary": {"type": "string"},
             "feedback": {"type": "string"},
         },
-        "required": ["summary", 
-                     "feedback"]
+        "required": ["summary", "feedback"]
     }
 
     # Generate response
@@ -103,9 +103,12 @@ def main():
 def get_response_text(model, system_prompt, context, schema):
     try:
         for i in range(MAX_RETRIES):
-            response = model.prompt(
+            response = model.chain(
                 "Please review my merge request.",
                 system=system_prompt,
+                tools=get_review_tools(context),
+                before_call=before_tool_call,
+                after_call=after_tool_call,
                 presence_penalty=1.5,
                 temperature=1.1,
                 schema=schema
