@@ -80,11 +80,9 @@ def main():
         "type": "object",
         "properties": {
             "summary": {"type": "string"},
-            "raw_change_requests": {"type": "string"},
-            "change_requests": {"type": "string"},
-            "feedback": {"type": "string"}
+            "feedback": {"type": "string"},
         },
-        "required": ["summary", "raw_change_requests", "change_requests",
+        "required": ["summary", 
                      "feedback"]
     }
 
@@ -106,7 +104,7 @@ def get_response_text(model, system_prompt, context, schema):
     try:
         for i in range(MAX_RETRIES):
             response = model.prompt(
-                context,
+                "Please review my merge request.",
                 system=system_prompt,
                 presence_penalty=1.5,
                 temperature=1.1,

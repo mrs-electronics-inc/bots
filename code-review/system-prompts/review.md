@@ -28,7 +28,7 @@ Don't be afraid to give negative feedback, but be sure it is accurate.
 
 Use bullet point lists instead of numbered lists.
 
-All code should be surrounded by the proper Markdown backticks, both inline and block style.
+All references to code MUST be surrounded by the proper Markdown backticks, both inline and block style.
 
 When you mention a specific file path, surround it with backticks so that it is easier to read.
 
@@ -41,3 +41,13 @@ Set this field to a basic summary of the changes made in the $CHANGE_NAME.
 BE ABSOLUTELY SURE to use bullet-point list form.
 
 This field should be formatted as a newline-separated string.
+
+### feedback
+
+Use this field to give some short overall feedback about the $CHANGE_NAME.
+
+If possible, try to start with the negative feedback and end with the positive feedback.
+
+Feel free to toss in a few emojis to give some extra charm to your feedback, but don't overdo it.
+
+DO NOT use more than a few sentences for this field.
