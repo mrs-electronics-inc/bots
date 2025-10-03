@@ -5,13 +5,6 @@ import gitlab
 import github
 
 
-# Prefixes used to identify review comments
-REVIEW_COMMENT_PREFIXES = [
-    '# Review',
-    '# Changes Requested',
-]
-
-
 def post_github_comment():
     """Post or update comment on GitHub PR."""
     token = os.environ.get('GH_TOKEN')
@@ -117,8 +110,8 @@ def post_gitlab_comment():
 
 
 def is_review_comment(body):
-    """Check if a comment body is a review comment based on prefixes"""
-    return any(body.startswith(prefix) for prefix in REVIEW_COMMENT_PREFIXES)
+    """Check if a comment body is a review comment based on prefix"""
+    return body.startswith('#')
 
 
 def main():
