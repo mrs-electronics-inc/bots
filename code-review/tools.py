@@ -13,7 +13,7 @@ def get_review_tools(context):
             get_changed_files,
             get_diffs,
             get_file_contents,
-            get_comments_tool(context),
+            get_comments,
             post_comment]
 
 
@@ -144,6 +144,57 @@ def _get_gitlab_diffs() -> str:
     diffs = mr.diffs.list()
     diff_texts = [d.diff for d in diffs]
     return '\n'.join(diff_texts)
+
+
+def _get_github_comments() -> str:
+    token = os.environ.get('GH_TOKEN')
+    repo = os.environ.get('GITHUB_REPOSITORY')
+    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
+
+    if not token or not repo or not pr_number:
+        return json.dumps({"error": "Missing GitHub environment variables"})
+
+    g = github.Github(token)
+    repo_obj = g.get_repo(repo)
+    pr = repo_obj.get_pull(int(pr_number))
+
+    comments = pr.get_comments()
+    comment_list = []
+    for c in comments:
+        comment_list.append({
+            "username": c.user.login,
+            "timestamp": c.created_at.isoformat(),
+            "body": c.body,
+            "id": c.id
+        })
+    return json.dumps(comment_list)
+
+
+def _get_gitlab_comments() -> str:
+    token = os.environ.get('GITLAB_TOKEN')
+    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
+    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
+
+    if not token or not project_id or not mr_iid:
+        return json.dumps({"error": "Missing GitLab environment variables"})
+
+    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
+    project = gl.projects.get(project_id)
+    mr = project.mergerequests.get(mr_iid)
+
+    notes = mr.notes.list()
+    # Reverse to oldest first
+    notes.reverse()
+    comment_list = []
+    for n in notes:
+        comment_list.append({
+            "username": n.author['username'],
+            "name": n.author['name'],
+            "timestamp": n.created_at,
+            "body": n.body,
+            "id": n.id
+        })
+    return json.dumps(comment_list)
 
 
 def get_commits_details() -> str:
@@ -283,15 +334,18 @@ def get_file_contents(file_name: str) -> str:
         return "ERROR READING FILE"
 
 
-def get_comments_tool(context):
-    def get_comments() -> str:
-        """
-        Get the comments for the change request.
-        NOTE: this will not include any newly added comments.
-        """
-        # TODO: get comments directly rather than from context object
-        return context["comments"]
-    return get_comments
+def get_comments() -> str:
+    """
+    Get the comments for the change request.
+    NOTE: this will not include any newly added comments.
+    """
+    platform = os.environ.get('PLATFORM')
+    if platform == 'github':
+        return _get_github_comments()
+    elif platform == 'gitlab':
+        return _get_gitlab_comments()
+    else:
+        return "Unsupported platform"
 
 
 def post_comment(content: str):

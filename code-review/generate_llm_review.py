@@ -79,7 +79,7 @@ def get_response_text(model, system_prompt, context):
     try:
         for i in range(MAX_RETRIES):
             response = model.chain(
-                "Please review my merge request.",
+                "Please review my merge request using the provided tools.",
                 system=system_prompt,
                 tools=get_review_tools(context),
                 before_call=before_tool_call,

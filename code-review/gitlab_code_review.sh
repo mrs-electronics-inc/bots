@@ -9,9 +9,7 @@ set -e
 # Authenticate with GitLab
 glab auth login --token $GITLAB_TOKEN
 
-# Collect all the context
 export PLATFORM="gitlab"
-collect_context.sh
 
 # Generate the LLM review
 generate_llm_review.sh

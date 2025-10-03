@@ -29,8 +29,8 @@ RUN git config --global --add safe.directory /repo
 # Add scripts
 COPY gitlab_code_review.sh /bin
 COPY github_code_review.sh /bin
-COPY collect_context.sh /bin
-COPY collect_context.py /bin
+COPY gitlab_tools.py /bin
+COPY github_tools.py /bin
 COPY tools.py /bin
 COPY generate_llm_review.sh /bin
 COPY generate_llm_review.py /bin
