@@ -232,8 +232,7 @@ def post_comment(content: str):
     elif platform == 'gitlab':
         _post_gitlab_comment(content)
     else:
-        print(f"Unsupported platform: {platform}")
-        return
+        return "Unsupported platform"
 
 
 def _post_github_comment(content: str):
@@ -277,5 +276,4 @@ def before_tool_call(tool: Optional[llm.Tool], tool_call: llm.ToolCall):
 
 def after_tool_call(tool: llm.Tool, tool_call: llm.ToolCall,
                     tool_result: llm.ToolResult):
-    print(
-        f"Called tool {tool.name} with arguments {tool_call.arguments}, returned {tool_result.output}")
+    print(f"Called tool {tool.name} with arguments {tool_call.arguments}, response length: {len(tool_result.output)}")

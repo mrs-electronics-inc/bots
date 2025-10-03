@@ -24,9 +24,6 @@ def main():
     review_model = os.getenv('REVIEW_MODEL', 'openrouter/x-ai/grok-code-fast-1')
     platform = os.getenv('PLATFORM', 'github')
 
-    # Set change name based on platform
-    change_name = "pull request" if platform == "github" else "merge request"
-
     # Get model
     try:
         model = llm.get_model(review_model)
@@ -44,7 +41,6 @@ def main():
 
     # Substitute environment variables in system prompt
     system_prompt = system_prompt_template.replace(
-        '$CHANGE_NAME', change_name).replace(
         '$PLATFORM', platform)
 
     # Append repo-specific instructions if they exist
