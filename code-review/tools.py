@@ -28,7 +28,7 @@ def get_review_tools():
                 gitlab_tools.get_comments,
                 gitlab_tools.post_comment]
     else:
-        # TODO: implement tools for testing platform
+        # TODO(#31): implement tools for testing platform
         return []
 
 
