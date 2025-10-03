@@ -2,290 +2,31 @@ import llm
 from typing import Optional
 import os
 import subprocess
-import json
-import github
-import gitlab
+import github_tools
+import gitlab_tools
 
 
-def get_review_tools(context):
-    return [get_details,
-            get_commits_details,
-            get_changed_files,
-            get_diffs,
-            get_file_contents,
-            get_comments,
-            post_comment]
-
-
-def get_details() -> str:
-    """
-    Get the overall details for the change request.
-    """
+def get_review_tools():
     platform = os.environ.get('PLATFORM')
     if platform == 'github':
-        return _get_github_details()
+        return [github_tools.get_details,
+                github_tools.get_commits_details,
+                github_tools.get_changed_files,
+                github_tools.get_diffs,
+                get_file_contents,
+                github_tools.get_comments,
+                github_tools.post_comment]
     elif platform == 'gitlab':
-        return _get_gitlab_details()
+        return [gitlab_tools.get_details,
+                gitlab_tools.get_commits_details,
+                gitlab_tools.get_changed_files,
+                gitlab_tools.get_diffs,
+                get_file_contents,
+                gitlab_tools.get_comments,
+                gitlab_tools.post_comment]
     else:
-        return "Unsupported platform"
-
-
-def _get_github_details() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
-        return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
-
-    return json.dumps({
-        "id": pr.number,
-        "title": pr.title,
-        "description": pr.body,
-        "author": pr.user.login,
-        "state": pr.state,
-        "created_at": pr.created_at.isoformat(),
-        "url": pr.html_url,
-        "base_branch": pr.base.ref,
-        "head_branch": pr.head.ref
-    })
-
-
-def _get_gitlab_details() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
-        return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
-
-    return json.dumps({
-        "id": mr.iid,
-        "title": mr.title,
-        "description": mr.description,
-        "author": mr.author['username'],
-        "state": mr.state,
-        "created_at": mr.created_at.isoformat(),
-        "url": mr.web_url,
-        "base_branch": mr.target_branch,
-        "head_branch": mr.source_branch
-    })
-
-
-def _get_github_changed_files() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
-        return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
-
-    return '\n'.join(list(set(f.filename for f in pr.get_files())))
-
-
-def _get_gitlab_changed_files() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
-        return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
-
-    return '\n'.join(list(set(mr.changes().keys())))
-
-
-def _get_github_diffs() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
-        return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
-
-    files = pr.get_files()
-    diffs = []
-    for f in files:
-        diffs.append(f"diff --git a/{f.filename} b/{f.filename}\n{f.patch}")
-    return '\n'.join(diffs)
-
-
-def _get_gitlab_diffs() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
-        return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
-
-    diffs = mr.diffs.list()
-    diff_texts = [d.diff for d in diffs]
-    return '\n'.join(diff_texts)
-
-
-def _get_github_comments() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
-        return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
-
-    comments = pr.get_comments()
-    comment_list = []
-    for c in comments:
-        comment_list.append({
-            "username": c.user.login,
-            "timestamp": c.created_at.isoformat(),
-            "body": c.body,
-            "id": c.id
-        })
-    return json.dumps(comment_list)
-
-
-def _get_gitlab_comments() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
-        return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
-
-    notes = mr.notes.list()
-    # Reverse to oldest first
-    notes.reverse()
-    comment_list = []
-    for n in notes:
-        comment_list.append({
-            "username": n.author['username'],
-            "name": n.author['name'],
-            "timestamp": n.created_at,
-            "body": n.body,
-            "id": n.id
-        })
-    return json.dumps(comment_list)
-
-
-def get_commits_details() -> str:
-    """
-    Get the details of all commits in the change request.
-    """
-    platform = os.environ.get('PLATFORM')
-    if platform == 'github':
-        return _get_github_commits_details()
-    elif platform == 'gitlab':
-        return _get_gitlab_commits_details()
-    else:
-        return "Unsupported platform"
-
-
-def _get_github_commits_details() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
-        return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
-
-    commits = pr.get_commits()
-    commit_list = []
-    for commit in commits:
-        commit_list.append({
-            "sha": commit.sha,
-            "message": commit.commit.message,
-            "author": commit.commit.author.name if commit.commit.author else None,
-            "date": commit.commit.author.date.isoformat() if commit.commit.author else None,
-            "url": commit.html_url
-        })
-
-    return json.dumps(commit_list)
-
-
-def _get_gitlab_commits_details() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
-        return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
-
-    commits = mr.commits()
-    commit_list = []
-    for commit in commits:
-        commit_list.append({
-            "sha": commit.id,
-            "message": commit.message,
-            "author": commit.author_name,
-            "date": commit.authored_date,
-            "url": commit.web_url
-        })
-
-    return json.dumps(commit_list)
-
-
-def get_changed_files() -> str:
-    """
-    Get the file names of all the changed files.
-    """
-    platform = os.environ.get('PLATFORM')
-    if platform == 'github':
-        return _get_github_changed_files()
-    elif platform == 'gitlab':
-        return _get_gitlab_changed_files()
-    else:
-        return "Unsupported platform"
-
-
-def get_diffs() -> str:
-    """
-    Get the diffs for the change request.
-    """
-    platform = os.environ.get('PLATFORM')
-    if platform == 'github':
-        return _get_github_diffs()
-    elif platform == 'gitlab':
-        return _get_gitlab_diffs()
-    else:
-        return "Unsupported platform"
+        # TODO: implement tools for testing platform
+        return []
 
 
 def get_file_contents(file_name: str) -> str:
@@ -332,66 +73,6 @@ def get_file_contents(file_name: str) -> str:
 
     except Exception:
         return "ERROR READING FILE"
-
-
-def get_comments() -> str:
-    """
-    Get the comments for the change request.
-    """
-    platform = os.environ.get('PLATFORM')
-    if platform == 'github':
-        return _get_github_comments()
-    elif platform == 'gitlab':
-        return _get_gitlab_comments()
-    else:
-        return "Unsupported platform"
-
-
-def post_comment(content: str):
-    """
-    Post a comment on the change request.
-    """
-    platform = os.environ.get('PLATFORM')
-    if platform == 'github':
-        _post_github_comment(content)
-    elif platform == 'gitlab':
-        _post_gitlab_comment(content)
-    else:
-        return "Unsupported platform"
-
-
-def _post_github_comment(content: str):
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
-        print("Missing GitHub environment variables")
-        return
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
-
-    pr.create_issue_comment(content)
-    return "Created new GitHub comment"
-
-
-def _post_gitlab_comment(content: str):
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
-        print("Missing GitLab environment variables")
-        return
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
-
-    mr.notes.create({'body': content})
-    return "Created new GitLab comment"
 
 
 def before_tool_call(tool: Optional[llm.Tool], tool_call: llm.ToolCall):
