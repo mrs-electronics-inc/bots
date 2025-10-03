@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 import os
 import sys
-import subprocess
 import gitlab
 from github import Github
+
+
+# Prefixes used to identify review comments
+REVIEW_COMMENT_PREFIXES = [
+    '# Review',
+    '# Changes Requested',
+]
 
 
 def post_github_comment():
@@ -26,16 +32,17 @@ def post_github_comment():
 
     try:
         g = Github(token)
-        repo = g.get_repo(repo_name)  # type: ignore
-        pr = repo.get_pull(int(pr_number))  # type: ignore
+        repo = g.get_repo(repo_name)
+        pr = repo.get_pull(int(pr_number))
 
         # Get all comments on the PR
         comments = list(pr.get_issue_comments())
 
-        # Find the latest comment from github-actions[bot]
+        # Look for an existing review comment
         bot_comment = None
         for comment in reversed(comments):
-            if comment.user.login == 'github-actions[bot]':
+            if (comment.user.login == 'github-actions[bot]'
+                    and is_review_comment(comment.body)):
                 bot_comment = comment
                 break
 
@@ -72,10 +79,11 @@ def post_gitlab_comment():
         print("Error: Review file not found", file=sys.stderr)
         sys.exit(1)
 
-    # Initialize GitLab client
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=gitlab_token)
-
     try:
+        # Initialize GitLab client
+        gl = gitlab.Gitlab(url='https://gitlab.com',
+                           private_token=gitlab_token)
+
         # Get the project and merge request
         project = gl.projects.get(project_id)
         mr = project.mergerequests.get(merge_request_iid)
@@ -83,10 +91,11 @@ def post_gitlab_comment():
         # Get all notes (comments)
         notes = mr.notes.list(iterator=True)
 
-        # Look for an existing comment from "Code Review Bot"
+        # Look for an existing review comment
         comment_id = None
         for note in notes:
-            if note.author.get('name') == 'Code Review Bot':
+            if (note.author.get('name') == 'Code Review Bot'
+                    and is_review_comment(note.body)):
                 comment_id = note.id
                 break
 
@@ -105,6 +114,11 @@ def post_gitlab_comment():
     except Exception as e:
         print(f"Error handling GitLab comment: {str(e)}", file=sys.stderr)
         sys.exit(1)
+
+
+def is_review_comment(body):
+    """Check if a comment body is a review comment based on prefixes"""
+    return any(body.startswith(prefix) for prefix in REVIEW_COMMENT_PREFIXES)
 
 
 def main():
