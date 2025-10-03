@@ -2,17 +2,11 @@ import os
 import json
 import github
 
+
 def get_details() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
+    pr = _get_pr()
+    if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
 
     return json.dumps({
         "id": pr.number,
@@ -26,17 +20,11 @@ def get_details() -> str:
         "head_branch": pr.head.ref
     })
 
+
 def get_commits_details() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
+    pr = _get_pr()
+    if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
 
     commits = pr.get_commits()
     commit_list = []
@@ -51,31 +39,19 @@ def get_commits_details() -> str:
 
     return json.dumps(commit_list)
 
+
 def get_changed_files() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
+    pr = _get_pr()
+    if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
 
     return '\n'.join(list(set(f.filename for f in pr.get_files())))
 
+
 def get_diffs() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
+    pr = _get_pr()
+    if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
 
     files = pr.get_files()
     diffs = []
@@ -83,17 +59,11 @@ def get_diffs() -> str:
         diffs.append(f"diff --git a/{f.filename} b/{f.filename}\n{f.patch}")
     return '\n'.join(diffs)
 
+
 def get_comments() -> str:
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
-
-    if not token or not repo or not pr_number:
+    pr = _get_pr()
+    if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
-
-    g = github.Github(token)
-    repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
 
     comments = pr.get_comments()
     comment_list = []
@@ -106,18 +76,24 @@ def get_comments() -> str:
         })
     return json.dumps(comment_list)
 
+
 def post_comment(content: str):
+    pr = _get_pr()
+    if pr is None:
+        return json.dumps({"error": "Missing GitHub environment variables"})
+
+    pr.create_issue_comment(content)
+    return "Created new GitHub comment"
+
+
+def _get_pr():
     token = os.environ.get('GH_TOKEN')
     repo = os.environ.get('GITHUB_REPOSITORY')
     pr_number = os.environ.get('PULL_REQUEST_NUMBER')
 
     if not token or not repo or not pr_number:
-        print("Missing GitHub environment variables")
-        return
+        return None
 
     g = github.Github(token)
     repo_obj = g.get_repo(repo)
-    pr = repo_obj.get_pull(int(pr_number))
-
-    pr.create_issue_comment(content)
-    return "Created new GitHub comment"
+    return repo_obj.get_pull(int(pr_number))
