@@ -2,17 +2,11 @@ import os
 import json
 import gitlab
 
+
 def get_details() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
+    mr = _get_mr()
+    if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
 
     return json.dumps({
         "id": mr.iid,
@@ -26,17 +20,11 @@ def get_details() -> str:
         "head_branch": mr.source_branch
     })
 
+
 def get_commits_details() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
+    mr = _get_mr()
+    if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
 
     commits = mr.commits()
     commit_list = []
@@ -51,47 +39,29 @@ def get_commits_details() -> str:
 
     return json.dumps(commit_list)
 
+
 def get_changed_files() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
+    mr = _get_mr()
+    if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
 
     return '\n'.join(list(set(mr.changes().keys())))
 
+
 def get_diffs() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
+    mr = _get_mr()
+    if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
 
     diffs = mr.diffs.list()
     diff_texts = [d.diff for d in diffs]
     return '\n'.join(diff_texts)
 
+
 def get_comments() -> str:
-    token = os.environ.get('GITLAB_TOKEN')
-    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
-    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
-
-    if not token or not project_id or not mr_iid:
+    mr = _get_mr()
+    if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
-
-    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
-    project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
 
     notes = mr.notes.list()
     # Reverse to oldest first
@@ -107,18 +77,24 @@ def get_comments() -> str:
         })
     return json.dumps(comment_list)
 
+
 def post_comment(content: str):
+    mr = _get_mr()
+    if mr is None:
+        return json.dumps({"error": "Missing GitLab environment variables"})
+
+    mr.notes.create({'body': content})
+    return "Created new GitLab comment"
+
+
+def _get_mr():
     token = os.environ.get('GITLAB_TOKEN')
     project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
     mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
 
     if not token or not project_id or not mr_iid:
-        print("Missing GitLab environment variables")
-        return
+        return None
 
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
     project = gl.projects.get(project_id)
-    mr = project.mergerequests.get(mr_iid)
-
-    mr.notes.create({'body': content})
-    return "Created new GitLab comment"
+    return project.mergerequests.get(mr_iid)
