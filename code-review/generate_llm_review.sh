@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # This script generates the LLM review.
-# It expects the .bots/context.json file to exist.
 echo "Generating LLM review..."
 
 # Use the name expected by llm-openrouter

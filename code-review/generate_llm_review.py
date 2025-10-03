@@ -7,12 +7,11 @@ Environment Variables:
 - PLATFORM: 'github' or 'gitlab' (default: 'github')
 
 The script reads the system prompt template, substitutes environment variables,
-appends repository-specific instructions if available, reads the context,
+appends repository-specific instructions if available,
 and generates a structured review using the specified LLM model.
 """
 import os
 import sys
-import json
 import llm
 from tools import get_review_tools, before_tool_call, after_tool_call
 
@@ -52,17 +51,8 @@ def main():
     except FileNotFoundError:
         system_prompt += "\n\n# Repo-specific Instructions\n\nNone."
 
-    # Read context
-    try:
-        with open('.bots/context.json', 'r') as f:
-            context = json.load(f)
-    except FileNotFoundError:
-        print("Error: Context file not found at .bots/context.json",
-              file=sys.stderr)
-        sys.exit(1)
-
     # Generate response
-    response_text = get_response_text(model, system_prompt, context)
+    response_text = get_response_text(model, system_prompt)
 
     # Write response to JSON file
     try:
@@ -75,13 +65,13 @@ def main():
     print("Review generated successfully")
 
 
-def get_response_text(model, system_prompt, context):
+def get_response_text(model, system_prompt):
     try:
         for i in range(MAX_RETRIES):
             response = model.chain(
                 "Please review my merge request using the provided tools.",
                 system=system_prompt,
-                tools=get_review_tools(context),
+                tools=get_review_tools(),
                 before_call=before_tool_call,
                 after_call=after_tool_call,
             )

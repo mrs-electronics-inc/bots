@@ -11,9 +11,7 @@ set -e
 # But the GitHub workflow fails otherwise.
 git config --global --add safe.directory /repo
 
-# Collect all the context
 export PLATFORM="github"
-collect_context.sh
 
 # Generate the LLM review
 generate_llm_review.sh
