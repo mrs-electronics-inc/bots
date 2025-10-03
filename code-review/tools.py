@@ -337,7 +337,6 @@ def get_file_contents(file_name: str) -> str:
 def get_comments() -> str:
     """
     Get the comments for the change request.
-    NOTE: this will not include any newly added comments.
     """
     platform = os.environ.get('PLATFORM')
     if platform == 'github':
