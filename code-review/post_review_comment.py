@@ -2,7 +2,7 @@
 import os
 import sys
 import gitlab
-from github
+import github
 
 
 # Prefixes used to identify review comments
