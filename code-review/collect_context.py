@@ -30,10 +30,7 @@ def main():
     context['comments'] = read_context_file('.bots/context/comments.json')
     context['diffs'] = read_context_file('.bots/context/diffs')
 
-    # Get changed_files
-    changed_files = os.getenv('CHANGED_FILES', '').splitlines()
 
-    context['changed_files'] = changed_files
 
     # Save context as JSON
     output_path = '.bots/context.json'

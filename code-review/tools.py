@@ -10,7 +10,7 @@ import gitlab
 def get_review_tools(context):
     return [get_details,
             get_commits_details,
-            get_changed_files_tool(context),
+            get_changed_files,
             get_diffs_tool(context),
             get_file_contents,
             get_comments_tool(context),
@@ -80,6 +80,36 @@ def _get_gitlab_details() -> str:
     })
 
 
+def _get_github_changed_files() -> str:
+    token = os.environ.get('GH_TOKEN')
+    repo = os.environ.get('GITHUB_REPOSITORY')
+    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
+
+    if not token or not repo or not pr_number:
+        return json.dumps({"error": "Missing GitHub environment variables"})
+
+    g = github.Github(token)
+    repo_obj = g.get_repo(repo)
+    pr = repo_obj.get_pull(int(pr_number))
+
+    return '\n'.join(list(set(f.filename for f in pr.get_files())))
+
+
+def _get_gitlab_changed_files() -> str:
+    token = os.environ.get('GITLAB_TOKEN')
+    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
+    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
+
+    if not token or not project_id or not mr_iid:
+        return json.dumps({"error": "Missing GitLab environment variables"})
+
+    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
+    project = gl.projects.get(project_id)
+    mr = project.mergerequests.get(mr_iid)
+
+    return '\n'.join(list(set(mr.changes().keys())))
+
+
 def get_commits_details() -> str:
     """
     Get the details of all commits in the change request.
@@ -145,14 +175,17 @@ def _get_gitlab_commits_details() -> str:
     return json.dumps(commit_list)
 
 
-def get_changed_files_tool(context):
-    def get_changed_files() -> str:
-        """
-        Get the file names of all the changed files.
-        """
-        # TODO: get changed files directly rather than from context object
-        return context["changed_files"]
-    return get_changed_files
+def get_changed_files() -> str:
+    """
+    Get the file names of all the changed files.
+    """
+    platform = os.environ.get('PLATFORM')
+    if platform == 'github':
+        return _get_github_changed_files()
+    elif platform == 'gitlab':
+        return _get_gitlab_changed_files()
+    else:
+        return "Unsupported platform"
 
 
 def get_diffs_tool(context):

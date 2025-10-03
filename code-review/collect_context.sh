@@ -10,7 +10,7 @@ echo "Collecting context..."
 
 mkdir -p .bots/context
 
-CHANGED_FILES=""
+
 
 if [ "$PLATFORM" == "gitlab" ]; then
     # Collect the merge request comments
@@ -19,22 +19,19 @@ if [ "$PLATFORM" == "gitlab" ]; then
     glab api "projects/$CI_MERGE_REQUEST_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes" | jq '[reverse | .[] | {username: .author.username, name: .author.name, timestamp: .created_at, body: .body, id: .id}]' > .bots/context/comments.json
     # Collect the diffs
     glab mr diff $CI_MERGE_REQUEST_IID --raw > .bots/context/diffs
-    # Collect the names of the changed files
-    git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-    CHANGED_FILES=$(git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME --name-only)
+
 elif [ "$PLATFORM" == "github" ]; then
     # Collect the pull request comments
     gh api "repos/$GITHUB_REPOSITORY/issues/$PULL_REQUEST_NUMBER/comments" | jq '[.[] | {username: .user.login, timestamp: .created_at, body: .body, id: .id}]' > .bots/context/comments.json
     # Collect the diffs
     gh pr diff $GITHUB_HEAD_REF > .bots/context/diffs
-    # Collect the names of the changed files
-    CHANGED_FILES=$(gh pr diff $GITHUB_HEAD_REF --name-only)
+
 else
     echo "Error: PLATFORM environment variable must be 'gitlab' or 'github'."
     exit 1
 fi
 
-export CHANGED_FILES
+
 
 # Run the Python script to collect context into JSON
 collect_context.py
