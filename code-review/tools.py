@@ -2,12 +2,13 @@ import llm
 from typing import Optional
 import os
 import subprocess
+import json
 import github
 import gitlab
 
 
 def get_review_tools(context):
-    return [get_details_tool(context),
+    return [get_details,
             get_changed_files_tool(context),
             get_diffs_tool(context),
             get_file_contents,
@@ -15,14 +16,67 @@ def get_review_tools(context):
             post_comment]
 
 
-def get_details_tool(context):
-    def get_details() -> str:
-        """
-        Get the overall details for the change request.
-        """
-        # TODO: get details directly rather than from context object
-        return context["details"]
-    return get_details
+def get_details() -> str:
+    """
+    Get the overall details for the change request.
+    """
+    platform = os.environ.get('PLATFORM')
+    if platform == 'github':
+        return _get_github_details()
+    elif platform == 'gitlab':
+        return _get_gitlab_details()
+    else:
+        return "Unsupported platform"
+
+
+def _get_github_details() -> str:
+    token = os.environ.get('GH_TOKEN')
+    repo = os.environ.get('GITHUB_REPOSITORY')
+    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
+
+    if not token or not repo or not pr_number:
+        return json.dumps({"error": "Missing GitHub environment variables"})
+
+    g = github.Github(token)
+    repo_obj = g.get_repo(repo)
+    pr = repo_obj.get_pull(int(pr_number))
+
+    return json.dumps({
+        "id": pr.number,
+        "title": pr.title,
+        "description": pr.body,
+        "author": pr.user.login,
+        "state": pr.state,
+        "created_at": pr.created_at.isoformat(),
+        "url": pr.html_url,
+        "base_branch": pr.base.ref,
+        "head_branch": pr.head.ref
+    })
+
+
+def _get_gitlab_details() -> str:
+    token = os.environ.get('GITLAB_TOKEN')
+    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
+    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
+
+    if not token or not project_id or not mr_iid:
+        return json.dumps({"error": "Missing GitLab environment variables"})
+
+    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
+    project = gl.projects.get(project_id)
+    mr = project.mergerequests.get(mr_iid)
+
+    return json.dumps({
+        "id": mr.iid,
+        "title": mr.title,
+        "description": mr.description,
+        "author": mr.author['username'],
+        "state": mr.state,
+        "created_at": mr.created_at.isoformat(),
+        "url": mr.web_url,
+        "base_branch": mr.target_branch,
+        "head_branch": mr.source_branch
+    })
 
 
 def get_changed_files_tool(context):
@@ -117,7 +171,7 @@ def post_comment(content: str):
 
 
 def _post_github_comment(content: str):
-    token = os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
+    token = os.environ.get('GH_TOKEN')
     repo = os.environ.get('GITHUB_REPOSITORY')
     pr_number = os.environ.get('PULL_REQUEST_NUMBER')
 

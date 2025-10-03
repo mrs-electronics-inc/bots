@@ -27,7 +27,6 @@ def main():
     """Main function to collect context."""
     # Read context from files
     context = {}
-    context['details'] = read_context_file('.bots/context/details.json')
     context['comments'] = read_context_file('.bots/context/comments.json')
     context['diffs'] = read_context_file('.bots/context/diffs')
 
