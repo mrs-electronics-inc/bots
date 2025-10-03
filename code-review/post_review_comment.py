@@ -2,7 +2,7 @@
 import os
 import sys
 import gitlab
-from github import Github
+from github
 
 
 # Prefixes used to identify review comments
@@ -31,7 +31,7 @@ def post_github_comment():
         sys.exit(1)
 
     try:
-        g = Github(token)
+        g = github.Github(auth=github.Auth.Token(token))
         repo = g.get_repo(repo_name)
         pr = repo.get_pull(int(pr_number))
 
