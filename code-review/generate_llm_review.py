@@ -2,29 +2,18 @@
 """
 Generate LLM code review using the LLM Python API.
 
-Input Files:
-- /bots/system-prompts/review.md: System prompt template with placeholders
-- .bots/instructions.md: Repository-specific instructions (optional)
-- .bots/context.json: Context information about the code changes to review
-
-Output Files:
-- .bots/response/review.json: Generated review in JSON format with fields:
-  - summary: Summary of changes
-  - raw_change_requests: Raw change requests
-  - change_requests: Formatted change requests
-  - feedback: Overall feedback
-
 Environment Variables:
 - REVIEW_MODEL: Model to use (default: 'openrouter/qwen/qwen3-coder')
 - PLATFORM: 'github' or 'gitlab' (default: 'github')
 
 The script reads the system prompt template, substitutes environment variables,
-appends repository-specific instructions if available, reads the context,
+appends repository-specific instructions if available,
 and generates a structured review using the specified LLM model.
 """
 import os
 import sys
 import llm
+from tools import get_review_tools, before_tool_call, after_tool_call
 
 MAX_RETRIES = 3
 
@@ -33,9 +22,6 @@ def main():
     # Get environment variables
     review_model = os.getenv('REVIEW_MODEL', 'openrouter/x-ai/grok-code-fast-1')
     platform = os.getenv('PLATFORM', 'github')
-
-    # Set change name based on platform
-    change_name = "pull request" if platform == "github" else "merge request"
 
     # Get model
     try:
@@ -54,7 +40,6 @@ def main():
 
     # Substitute environment variables in system prompt
     system_prompt = system_prompt_template.replace(
-        '$CHANGE_NAME', change_name).replace(
         '$PLATFORM', platform)
 
     # Append repo-specific instructions if they exist
@@ -66,34 +51,12 @@ def main():
     except FileNotFoundError:
         system_prompt += "\n\n# Repo-specific Instructions\n\nNone."
 
-    # Read context
-    try:
-        with open('.bots/context.json', 'r') as f:
-            context = f.read()
-    except FileNotFoundError:
-        print("Error: Context file not found at .bots/context.json",
-              file=sys.stderr)
-        sys.exit(1)
-
-    # Define schema
-    schema = {
-        "type": "object",
-        "properties": {
-            "summary": {"type": "string"},
-            "raw_change_requests": {"type": "string"},
-            "change_requests": {"type": "string"},
-            "feedback": {"type": "string"}
-        },
-        "required": ["summary", "raw_change_requests", "change_requests",
-                     "feedback"]
-    }
-
     # Generate response
-    response_text = get_response_text(model, system_prompt, context, schema)
+    response_text = get_response_text(model, system_prompt)
 
     # Write response to JSON file
     try:
-        with open('.bots/response/review.json', 'w') as f:
+        with open('.bots/response/review.md', 'w') as f:
             f.write(response_text)
     except Exception as e:
         print(f"Error writing response file: {str(e)}", file=sys.stderr)
@@ -102,15 +65,15 @@ def main():
     print("Review generated successfully")
 
 
-def get_response_text(model, system_prompt, context, schema):
+def get_response_text(model, system_prompt):
     try:
         for i in range(MAX_RETRIES):
-            response = model.prompt(
-                context,
+            response = model.chain(
+                "Please review my merge request using the provided tools.",
                 system=system_prompt,
-                presence_penalty=1.5,
-                temperature=1.1,
-                schema=schema
+                tools=get_review_tools(),
+                before_call=before_tool_call,
+                after_call=after_tool_call,
             )
             response_text = response.text()
             print("Response length:", len(response_text))
