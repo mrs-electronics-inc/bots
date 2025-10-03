@@ -4,6 +4,9 @@ import gitlab
 
 
 def get_details() -> str:
+    """
+    Get the overall details for the change request.
+    """
     mr = _get_mr()
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
@@ -22,6 +25,9 @@ def get_details() -> str:
 
 
 def get_commits_details() -> str:
+    """
+    Get the details of all commits in the change request.
+    """
     mr = _get_mr()
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
@@ -41,6 +47,9 @@ def get_commits_details() -> str:
 
 
 def get_changed_files() -> str:
+    """
+    Get the file names of all the changed files.
+    """
     mr = _get_mr()
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
@@ -49,6 +58,9 @@ def get_changed_files() -> str:
 
 
 def get_diffs() -> str:
+    """
+    Get the diffs for the change request.
+    """
     mr = _get_mr()
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
@@ -59,6 +71,9 @@ def get_diffs() -> str:
 
 
 def get_comments() -> str:
+    """
+    Get the comments for the change request.
+    """
     mr = _get_mr()
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
@@ -79,12 +94,15 @@ def get_comments() -> str:
 
 
 def post_comment(content: str):
+    """
+    Post a comment on the change request.
+    """
     mr = _get_mr()
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
 
     mr.notes.create({'body': content})
-    return "Created new GitLab comment"
+    return json.dumps({"success": "Created new GitLab comment"})
 
 
 def _get_mr():

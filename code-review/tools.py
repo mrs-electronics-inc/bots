@@ -7,6 +7,9 @@ import gitlab_tools
 
 
 def get_review_tools():
+    """
+    Get the list of review tools based on the platform.
+    """
     platform = os.environ.get('PLATFORM')
     if platform == 'github':
         return [github_tools.get_details,
@@ -76,10 +79,16 @@ def get_file_contents(file_name: str) -> str:
 
 
 def before_tool_call(tool: Optional[llm.Tool], tool_call: llm.ToolCall):
+    """
+    Callback function called before a tool is executed.
+    """
     tool_name = tool.name if tool else "unknown"
     print(f"Calling tool {tool_name} with arguments {tool_call.arguments}")
 
 
 def after_tool_call(tool: llm.Tool, tool_call: llm.ToolCall,
                     tool_result: llm.ToolResult):
+    """
+    Callback function called after a tool is executed.
+    """
     print(f"Called tool {tool.name} with arguments {tool_call.arguments}, response length: {len(tool_result.output)}")
