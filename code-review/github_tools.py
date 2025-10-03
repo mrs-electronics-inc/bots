@@ -80,7 +80,11 @@ def get_comments() -> str:
     if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
 
-    comments = pr.get_comments()
+    # get_issue_comments returns the comments in the main conversation section
+    conversation_comments = pr.get_issue_comments()
+    review_comments = pr.get_review_comments()
+    comments = list(conversation_comments) + list(review_comments)
+    comments.sort(key=lambda c: c.created_at)
     comment_list = []
     for c in comments:
         comment_list.append({
