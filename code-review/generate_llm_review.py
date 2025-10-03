@@ -74,9 +74,11 @@ def get_response_text(model, system_prompt):
                 tools=get_review_tools(),
                 before_call=before_tool_call,
                 after_call=after_tool_call,
+                options={"reasoning_enabled": True}
             )
             response_text = response.text()
             print("Response length:", len(response_text))
+            print("Response usage:", response.usage())
             if len(response_text) > 10:
                 return response_text
             else:
