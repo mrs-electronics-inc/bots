@@ -9,6 +9,7 @@ import gitlab
 
 def get_review_tools(context):
     return [get_details,
+            get_commits_details,
             get_changed_files_tool(context),
             get_diffs_tool(context),
             get_file_contents,
@@ -77,6 +78,71 @@ def _get_gitlab_details() -> str:
         "base_branch": mr.target_branch,
         "head_branch": mr.source_branch
     })
+
+
+def get_commits_details() -> str:
+    """
+    Get the details of all commits in the change request.
+    """
+    platform = os.environ.get('PLATFORM')
+    if platform == 'github':
+        return _get_github_commits_details()
+    elif platform == 'gitlab':
+        return _get_gitlab_commits_details()
+    else:
+        return "Unsupported platform"
+
+
+def _get_github_commits_details() -> str:
+    token = os.environ.get('GH_TOKEN')
+    repo = os.environ.get('GITHUB_REPOSITORY')
+    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
+
+    if not token or not repo or not pr_number:
+        return json.dumps({"error": "Missing GitHub environment variables"})
+
+    g = github.Github(token)
+    repo_obj = g.get_repo(repo)
+    pr = repo_obj.get_pull(int(pr_number))
+
+    commits = pr.get_commits()
+    commit_list = []
+    for commit in commits:
+        commit_list.append({
+            "sha": commit.sha,
+            "message": commit.commit.message,
+            "author": commit.commit.author.name if commit.commit.author else None,
+            "date": commit.commit.author.date.isoformat() if commit.commit.author else None,
+            "url": commit.html_url
+        })
+
+    return json.dumps(commit_list)
+
+
+def _get_gitlab_commits_details() -> str:
+    token = os.environ.get('GITLAB_TOKEN')
+    project_id = os.environ.get('CI_MERGE_REQUEST_PROJECT_ID')
+    mr_iid = os.environ.get('CI_MERGE_REQUEST_IID')
+
+    if not token or not project_id or not mr_iid:
+        return json.dumps({"error": "Missing GitLab environment variables"})
+
+    gl = gitlab.Gitlab(url='https://gitlab.com', private_token=token)
+    project = gl.projects.get(project_id)
+    mr = project.mergerequests.get(mr_iid)
+
+    commits = mr.commits()
+    commit_list = []
+    for commit in commits:
+        commit_list.append({
+            "sha": commit.id,
+            "message": commit.message,
+            "author": commit.author_name,
+            "date": commit.authored_date,
+            "url": commit.web_url
+        })
+
+    return json.dumps(commit_list)
 
 
 def get_changed_files_tool(context):
