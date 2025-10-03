@@ -28,7 +28,6 @@ def main():
     # Read context from files
     context = {}
     context['comments'] = read_context_file('.bots/context/comments.json')
-    context['diffs'] = read_context_file('.bots/context/diffs')
 
 
 
