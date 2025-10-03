@@ -14,12 +14,12 @@ REVIEW_COMMENT_PREFIXES = [
 
 def post_github_comment():
     """Post or update comment on GitHub PR."""
-    token = os.environ.get('GITHUB_TOKEN')
+    token = os.environ.get('GH_TOKEN')
     repo_name = os.environ.get('GITHUB_REPOSITORY')
     pr_number = os.environ.get('PULL_REQUEST_NUMBER')
 
     if not all([token, repo_name, pr_number]):
-        print("Error: Missing required environment variables (GITHUB_TOKEN, GITHUB_REPOSITORY, PULL_REQUEST_NUMBER)", file=sys.stderr)
+        print("Error: Missing required environment variables (GH_TOKEN, GITHUB_REPOSITORY, PULL_REQUEST_NUMBER)", file=sys.stderr)
         sys.exit(1)
 
     # Read the review content
