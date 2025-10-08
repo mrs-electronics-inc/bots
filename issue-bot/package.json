@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@gitbeaker/rest": "^40.1.2",
+    "@octokit/rest": "^20.0.2",
     "typescript": "^5.5.4"
   },
   "devDependencies": {

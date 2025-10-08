@@ -1,5 +1,6 @@
+import { GitLabAPI } from '../apis';
 import { issueBotHandler } from '../issue-bot';
-import { Gitlab } from '@gitbeaker/rest';
+import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 // Mock fs for reading labels.json
 jest.mock('fs', () => ({
@@ -18,13 +19,9 @@ jest.mock('fs', () => ({
   })),
 }));
 
-// Mock the GitLab module
-jest.mock('@gitbeaker/rest');
-
-const mockedGitlab = jest.mocked(Gitlab);
-
-describe('issueBotHandler', () => {
+describe('issueBotHandler - GitLab', () => {
   let mockApi: any;
+  let api: GitLabAPI;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -35,19 +32,24 @@ describe('issueBotHandler', () => {
         edit: jest.fn(),
       },
       IssueNotes: {
-        all: jest.fn().mockResolvedValue([]),
+        all: jest.fn(),
         create: jest.fn(),
         edit: jest.fn(),
       },
       ProjectLabels: {
-        all: jest.fn().mockResolvedValue([
-          { name: 'priority::normal' },
-          { name: 'priority::high' },
-          { name: 'Type::Bug' },
-        ]),
+        all: jest.fn(),
       },
     };
-    mockedGitlab.mockImplementation(() => mockApi as any);
+
+    // Set up mock return values
+    mockApi.IssueNotes.all.mockResolvedValue([]);
+    mockApi.ProjectLabels.all.mockResolvedValue([
+      { name: 'priority::normal' },
+      { name: 'priority::high' },
+      { name: 'Type::Bug' },
+    ]);
+
+    api = new GitLabAPI(mockApi);
 
     // Set up environment variables
     process.env.TOKEN_ISSUE_BOT = 'fake-token';
@@ -61,14 +63,21 @@ describe('issueBotHandler', () => {
 
   it('should add type label for valid issue title', async () => {
     mockApi.Issues.show.mockResolvedValue({
+      iid: 123,
       title: 'fix: some bug',
       labels: [],
       state: 'opened',
       project_id: 456,
-      iid: 123,
     });
 
-    const result = await issueBotHandler();
+    const event = {
+      event_type: 'issue',
+      user: { name: 'TestUser' },
+      object_attributes: { iid: 123 },
+      project: { id: 456 },
+    };
+
+    const result = await issueBotHandler(api, event);
 
     expect(result.success).toBe(true);
     expect(mockApi.Issues.edit).toHaveBeenCalledWith(456, 123, { addLabels: 'Type::Bug' });
@@ -76,14 +85,21 @@ describe('issueBotHandler', () => {
 
   it('should skip closed issues', async () => {
     mockApi.Issues.show.mockResolvedValue({
+      iid: 123,
       title: 'fix: some bug',
       labels: [],
       state: 'closed',
       project_id: 456,
-      iid: 123,
     });
 
-    const result = await issueBotHandler();
+    const event = {
+      event_type: 'issue',
+      user: { name: 'TestUser' },
+      object_attributes: { iid: 123 },
+      project: { id: 456 },
+    };
+
+    const result = await issueBotHandler(api, event);
 
     expect(result.success).toBe(false);
     expect(mockApi.Issues.edit).not.toHaveBeenCalled();
@@ -91,38 +107,39 @@ describe('issueBotHandler', () => {
 
   it('should add comment for invalid issue type', async () => {
     mockApi.Issues.show.mockResolvedValue({
+      iid: 123,
       title: 'invalid: some issue',
       labels: [],
       state: 'opened',
       project_id: 456,
-      iid: 123,
     });
     mockApi.IssueNotes.all.mockResolvedValue([]);
 
-    const result = await issueBotHandler();
+    const event = {
+      event_type: 'issue',
+      user: { name: 'TestUser' },
+      object_attributes: { iid: 123 },
+      project: { id: 456 },
+    };
+
+    const result = await issueBotHandler(api, event);
 
     expect(result.success).toBe(true);
     expect(mockApi.IssueNotes.create).toHaveBeenCalled();
   });
 
   it('should skip events triggered by bots', async () => {
-    process.env.PAYLOAD = JSON.stringify({
+    const event = {
       event_type: 'issue',
       user: { name: 'BotUser' },
       object_attributes: { iid: 123 },
       project: { id: 456 },
-    });
+    };
 
-    const result = await issueBotHandler();
-
-    expect(result.success).toBe(false);
-  });
-
-  it('should return false if no token', async () => {
-    delete process.env.TOKEN_ISSUE_BOT;
-
-    const result = await issueBotHandler();
+    const result = await issueBotHandler(api, event);
 
     expect(result.success).toBe(false);
   });
+
+
 });
