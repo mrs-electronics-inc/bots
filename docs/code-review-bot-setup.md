@@ -1,6 +1,6 @@
 # Setting Up the Code Review Bot
 
-This page shows examples of how to set up the Code Review Bot in GitHub and Gitlab CI/CD.
+This page shows examples of how to set up the Code Review Bot in GitHub and Gitlab CI/CD, along with steps for optional extra configuration.
 
 ## GitHub Workflow
 
@@ -73,7 +73,7 @@ run_code_review_bot:
       - ".bots/"
 ```
 
-### Configuration
+## Configuration
 
 You can add additional instructions to the bot's system prompt by including a `.bots/instructions.md` file in your repository.
 

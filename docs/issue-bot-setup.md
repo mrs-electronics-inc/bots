@@ -1,3 +1,28 @@
 # Setting Up the Issue Bot
 
-<!-- TODO -->
+This page shows examples of how to set up the Issue Bot in Gitlab CI/CD and configure its operation.
+
+## Configuration
+
+Define the type labels for the bot to apply to issues by including a `.bots/labels.json` file in your repository.
+
+See an example [here](/.bots/labels.json).
+
+## GitLab Pipeline
+
+Here is a minimal example of using the Issue Bot in a GitLab job. It is set up to run on every merge request event, but requires a manual trigger to avoid filling up the merge request comments.
+
+Be sure to use the name "Code Review Bot" for your code review bot's token.
+
+```yaml
+run_issue_bot:
+  stage: bot
+  image: ghcr.io/mrs-electronics-inc/bots/issue:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+  variables:
+    GITLAB_TOKEN: $TOKEN_ISSUE_BOT
+  script:
+    - export PAYLOAD=$(cat $TRIGGER_PAYLOAD)
+    - npx tsx /bin/issue-bot.ts
+```
