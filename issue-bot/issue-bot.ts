@@ -3,8 +3,6 @@ import fs from 'fs';
 
 type GitlabInstance = InstanceType<typeof Gitlab>;
 
-const GL_TOKEN = process.env.TOKEN_ISSUE_BOT;
-
 const labelsPath = '.bots/labels.json';
 const labelsData = JSON.parse(fs.readFileSync(labelsPath, 'utf8'));
 const TYPE_LABELS: Record<string, string> = labelsData;
@@ -45,7 +43,7 @@ const extractIssueType = (issueTitle: string): IssueType | null => {
 
 export const issueBotHandler = async (): Promise<{ success: boolean; timestamp?: number }> => {
     console.log('I am the issue bot!');
-    const token = GL_TOKEN;
+    const token = process.env.TOKEN_ISSUE_BOT;
     if (!token) {
         console.error('No gitlab token supplied!');
         return { success: false };
