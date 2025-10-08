@@ -6,7 +6,23 @@ This page shows examples of how to set up the Issue Bot in Gitlab CI/CD and conf
 
 Define the type labels for the bot to apply to issues by including a `.bots/labels.json` file in your repository.
 
-See an example [here](/.bots/labels.json).
+An example file might look like this:
+
+```json
+{
+  "fix": "Type::Bug",
+  "feat": "Type::Feature",
+  "chore": "Type::Chore",
+  "refactor": "Type::Refactor",
+  "docs": "Type::Documentation",
+  "perf": "Type::Performance",
+  "test": "Type::Testing",
+  "debt": "Type::Technical Debt",
+  "release": "Type::Release",
+  "notes": "Type::Notes",
+  "ci": "Type::CI/CD"
+}
+```
 
 ## GitLab Pipeline
 
