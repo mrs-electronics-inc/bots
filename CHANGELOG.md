@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.0 (upcoming)
+
+- [#51](https://github.com/mrs-electronics-inc/bots/pull/44) - feat: add issue bot
+
 ## v0.11.0
 
 - [#44](https://github.com/mrs-electronics-inc/bots/pull/44) - feat: use grok
