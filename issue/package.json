@@ -1,0 +1,13 @@
+{
+  "name": "mrs-issue-bot",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@gitbeaker/rest": "^40.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}

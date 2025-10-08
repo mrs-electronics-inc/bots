@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        bot: [code-review]
+        bot: [code-review, issue]
     permissions:
       contents: read
       packages: write
