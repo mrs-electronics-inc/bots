@@ -1,0 +1,32 @@
+name: Test Issue Bot
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'issue-bot/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'issue-bot/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: issue-bot/package-lock.json
+
+    - name: Install dependencies
+      run: cd issue-bot && npm ci
+
+    - name: Run tests
+      run: cd issue-bot && npm test
