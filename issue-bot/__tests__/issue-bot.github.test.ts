@@ -1,22 +1,24 @@
 import { GitHubAPI } from '../apis';
-import { issueBotHandler } from '../issue-bot';
+import { issueBotHandler } from '../issue-bot-handler';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 // Mock fs for reading labels.json
 jest.mock('fs', () => ({
-  readFileSync: jest.fn(() => JSON.stringify({
-    fix: 'Type::Bug',
-    feat: 'Type::Feature',
-    chore: 'Type::Chore',
-    refactor: 'Type::Refactor',
-    docs: 'Type::Documentation',
-    perf: 'Type::Performance',
-    test: 'Type::Testing',
-    debt: 'Type::Technical Debt',
-    release: 'Type::Release',
-    notes: 'Type::Notes',
-    ci: 'Type::Continuous Integration',
-  })),
+  readFileSync: jest.fn(() =>
+    JSON.stringify({
+      fix: 'Type::Bug',
+      feat: 'Type::Feature',
+      chore: 'Type::Chore',
+      refactor: 'Type::Refactor',
+      docs: 'Type::Documentation',
+      perf: 'Type::Performance',
+      test: 'Type::Testing',
+      debt: 'Type::Technical Debt',
+      release: 'Type::Release',
+      notes: 'Type::Notes',
+      ci: 'Type::Continuous Integration',
+    })
+  ),
 }));
 
 describe('issueBotHandler - GitHub', () => {
@@ -40,11 +42,7 @@ describe('issueBotHandler - GitHub', () => {
     // Set up mock return values
     mockApi.issues.listComments.mockResolvedValue({ data: [] });
     mockApi.issues.listLabelsForRepo.mockResolvedValue({
-      data: [
-        { name: 'priority::normal' },
-        { name: 'priority::high' },
-        { name: 'Type::Bug' },
-      ],
+      data: [{ name: 'priority::normal' }, { name: 'priority::high' }, { name: 'Type::Bug' }],
     });
 
     api = new GitHubAPI(mockApi);

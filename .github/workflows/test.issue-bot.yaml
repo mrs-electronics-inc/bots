@@ -28,5 +28,11 @@ jobs:
     - name: Install dependencies
       run: cd issue-bot && npm ci
 
+    - name: Run linter
+      run: cd issue-bot && npm run lint
+
+    - name: Check formatting
+      run: cd issue-bot && npm run format:check
+
     - name: Run tests
       run: cd issue-bot && npm test
