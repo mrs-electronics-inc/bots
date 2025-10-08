@@ -16,5 +16,5 @@ jobs:
       env:
         OPENROUTER_KEY: ${{ secrets.API_KEY_CODE_REVIEW_BOT }}
       run: |
-        cd code-review
+        cd code-review-bot
         ./test.sh
