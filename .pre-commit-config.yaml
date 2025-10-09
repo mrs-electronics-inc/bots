@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -11,7 +11,7 @@ repos:
     hooks:
       - id: eslint
         name: eslint
-        entry: bash -c "cd issue-bot && npm run lint"
+        entry: bash -c "cd issue-bot && npm run lint:fix"
         language: system
         files: issue-bot/.*\.ts$
         pass_filenames: false

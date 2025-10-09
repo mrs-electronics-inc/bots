@@ -1,6 +1,6 @@
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { GitLabAPI } from '../apis';
 import { issueBotHandler } from '../issue-bot-handler';
-import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 // Mock fs for reading labels.json
 jest.mock('fs', () => ({
@@ -16,12 +16,13 @@ jest.mock('fs', () => ({
       debt: 'Type::Technical Debt',
       release: 'Type::Release',
       notes: 'Type::Notes',
-      ci: 'Type::Continuous Integration',
+      ci: 'Type::CI/CD',
     })
   ),
 }));
 
 describe('issueBotHandler - GitLab', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockApi: any;
   let api: GitLabAPI;
 

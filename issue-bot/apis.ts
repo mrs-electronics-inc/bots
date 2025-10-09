@@ -1,8 +1,6 @@
 import { Gitlab } from '@gitbeaker/rest';
-import { Octokit } from '@octokit/rest';
 
 type GitlabInstance = InstanceType<typeof Gitlab>;
-type OctokitInstance = InstanceType<typeof Octokit>;
 
 export interface IssueBotAPI {
   getIssue(projectId: string | number, issueId: number): Promise<Issue>;
@@ -27,7 +25,7 @@ export interface Issue {
   iid: number;
   title: string;
   labels: string[];
-  state: 'opened' | 'closed';
+  state: 'open' | 'closed';
   project_id?: number;
   repository?: string;
 }
@@ -52,7 +50,7 @@ export class GitLabAPI implements IssueBotAPI {
       iid: issue.iid,
       title: issue.title,
       labels: issue.labels as string[],
-      state: issue.state === 'opened' ? 'opened' : 'closed',
+      state: issue.state === 'opened' ? 'open' : 'closed',
       project_id: issue.project_id as number,
     };
   }
@@ -91,81 +89,6 @@ export class GitLabAPI implements IssueBotAPI {
       id: n.id,
       body: n.body,
       author: { name: n.author.name },
-    }));
-  }
-}
-
-// GitHub API implementation
-export class GitHubAPI implements IssueBotAPI {
-  constructor(private api: OctokitInstance) {}
-
-  async getIssue(repo: string, issueId: number): Promise<Issue> {
-    const { data } = await this.api.issues.get({
-      owner: repo.split('/')[0],
-      repo: repo.split('/')[1],
-      issue_number: issueId,
-    });
-    return {
-      iid: data.number,
-      title: data.title,
-      labels: data.labels.map((l: any) => (typeof l === 'string' ? l : l.name)),
-      state: data.state === 'open' ? 'opened' : 'closed',
-      repository: repo,
-    };
-  }
-
-  async editIssue(repo: string, issueId: number, options: { addLabels?: string[] }): Promise<void> {
-    if (options.addLabels) {
-      await this.api.issues.addLabels({
-        owner: repo.split('/')[0],
-        repo: repo.split('/')[1],
-        issue_number: issueId,
-        labels: options.addLabels,
-      });
-    }
-  }
-
-  async getLabels(repo: string): Promise<Label[]> {
-    const { data } = await this.api.issues.listLabelsForRepo({
-      owner: repo.split('/')[0],
-      repo: repo.split('/')[1],
-    });
-    return data.map((l) => ({ name: l.name }));
-  }
-
-  async createComment(repo: string, issueId: number, comment: string): Promise<void> {
-    await this.api.issues.createComment({
-      owner: repo.split('/')[0],
-      repo: repo.split('/')[1],
-      issue_number: issueId,
-      body: comment,
-    });
-  }
-
-  async editComment(
-    repo: string,
-    issueId: number,
-    commentId: number,
-    comment: string
-  ): Promise<void> {
-    await this.api.issues.updateComment({
-      owner: repo.split('/')[0],
-      repo: repo.split('/')[1],
-      comment_id: commentId,
-      body: comment,
-    });
-  }
-
-  async getComments(repo: string, issueId: number): Promise<Comment[]> {
-    const { data } = await this.api.issues.listComments({
-      owner: repo.split('/')[0],
-      repo: repo.split('/')[1],
-      issue_number: issueId,
-    });
-    return data.map((c) => ({
-      id: c.id,
-      body: c.body || '',
-      author: { name: c.user?.login || '' },
     }));
   }
 }
