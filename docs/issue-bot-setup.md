@@ -26,9 +26,15 @@ An example file might look like this:
 
 ## GitLab Pipeline
 
-Here is a minimal example of using the Issue Bot in a GitLab job. It is set up to run on every merge request event, but requires a manual trigger to avoid filling up the merge request comments.
+### Webhook Setup
 
-Be sure to use the name "Code Review Bot" for your code review bot's token.
+<!-- TODO(#46): add webhook setup -->
+
+### Pipeline Job Setup
+
+Here is a minimal example of using the Issue Bot in a GitLab job. It is set up to run when triggered by the webhook you just created.
+
+Be sure to use the name "Issue Bot" for your issue bot's token.
 
 ```yaml
 run_issue_bot:

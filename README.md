@@ -12,6 +12,6 @@ Find instructions on how to set it up [here](/docs/code-review-bot-setup.md).
 
 ## Issue
 
-This is a Docker image with built-in scripts for performing various triage operations on issues. It is designed to be run in Gitlab CI/CD only.
+This is a Docker image with built-in scripts for performing various triage operations on issues. It is currently only designed to be run in Gitlab CI/CD. We may add GitHub support in the future.
 
 Find instructions on how to set it up [here](/docs/issue-bot-setup.md).

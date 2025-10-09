@@ -1,3 +1,4 @@
+fail_fast: true
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -11,14 +12,16 @@ repos:
     hooks:
       - id: eslint
         name: eslint
-        entry: bash -c "cd issue-bot && npm run lint:fix"
+        # TODO: only add staged files back
+        entry: bash -c "cd issue-bot && npm run lint:fix && git add ."
         language: system
         files: issue-bot/.*\.ts$
         pass_filenames: false
 
       - id: prettier
         name: prettier
-        entry: bash -c "cd issue-bot && npm run format:check"
+        # TODO: only add staged files back
+        entry: bash -c "cd issue-bot && npm run format && git add ."
         language: system
         files: issue-bot/.*\.ts$
-        pass_filenames: false
+        pass_filenames: true
