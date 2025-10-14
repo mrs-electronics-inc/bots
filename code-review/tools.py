@@ -20,6 +20,7 @@ def get_review_tools():
             get_file_contents,
             github_tools.get_comments,
             github_tools.post_comment,
+            github_tools.post_review,
         ]
     elif platform == "gitlab":
         return [
@@ -30,6 +31,7 @@ def get_review_tools():
             get_file_contents,
             gitlab_tools.get_comments,
             gitlab_tools.post_comment,
+            gitlab_tools.post_review,
         ]
     else:
         # TODO(#31): implement tools for testing platform

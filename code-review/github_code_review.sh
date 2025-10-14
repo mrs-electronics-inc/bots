@@ -15,6 +15,3 @@ export PLATFORM="github"
 
 # Generate the LLM review
 generate_llm_review.sh
-
-# Leave the review comment
-post_review_comment.py

@@ -1,6 +1,7 @@
 import os
 import json
 import github
+import utils
 
 
 def get_details() -> str:
@@ -11,17 +12,19 @@ def get_details() -> str:
     if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
 
-    return json.dumps({
-        "id": pr.number,
-        "title": pr.title,
-        "description": pr.body,
-        "author": pr.user.login,
-        "state": pr.state,
-        "created_at": pr.created_at.isoformat(),
-        "url": pr.html_url,
-        "base_branch": pr.base.ref,
-        "head_branch": pr.head.ref
-    })
+    return json.dumps(
+        {
+            "id": pr.number,
+            "title": pr.title,
+            "description": pr.body,
+            "author": pr.user.login,
+            "state": pr.state,
+            "created_at": pr.created_at.isoformat(),
+            "url": pr.html_url,
+            "base_branch": pr.base.ref,
+            "head_branch": pr.head.ref,
+        }
+    )
 
 
 def get_commits_details() -> str:
@@ -35,13 +38,21 @@ def get_commits_details() -> str:
     commits = pr.get_commits()
     commit_list = []
     for commit in commits:
-        commit_list.append({
-            "sha": commit.sha,
-            "message": commit.commit.message,
-            "author": commit.commit.author.name if commit.commit.author else None,
-            "date": commit.commit.author.date.isoformat() if commit.commit.author else None,
-            "url": commit.html_url
-        })
+        commit_list.append(
+            {
+                "sha": commit.sha,
+                "message": commit.commit.message,
+                "author": (
+                    commit.commit.author.name if commit.commit.author else None
+                ),
+                "date": (
+                    commit.commit.author.date.isoformat()
+                    if commit.commit.author
+                    else None
+                ),
+                "url": commit.html_url,
+            }
+        )
 
     return json.dumps(commit_list)
 
@@ -54,7 +65,7 @@ def get_changed_files() -> str:
     if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
 
-    return '\n'.join(list(set(f.filename for f in pr.get_files())))
+    return "\n".join(list(set(f.filename for f in pr.get_files())))
 
 
 def get_diffs() -> str:
@@ -69,7 +80,7 @@ def get_diffs() -> str:
     diffs = []
     for f in files:
         diffs.append(f"diff --git a/{f.filename} b/{f.filename}\n{f.patch}")
-    return '\n'.join(diffs)
+    return "\n".join(diffs)
 
 
 def get_comments() -> str:
@@ -87,12 +98,14 @@ def get_comments() -> str:
     comments.sort(key=lambda c: c.created_at)
     comment_list = []
     for c in comments:
-        comment_list.append({
-            "username": c.user.login,
-            "timestamp": c.created_at.isoformat(),
-            "body": c.body,
-            "id": c.id
-        })
+        comment_list.append(
+            {
+                "username": c.user.login,
+                "timestamp": c.created_at.isoformat(),
+                "body": c.body,
+                "id": c.id,
+            }
+        )
     return json.dumps(comment_list)
 
 
@@ -108,10 +121,44 @@ def post_comment(content: str):
     return json.dumps({"success": "Created new GitHub comment"})
 
 
+def post_review(content: str):
+    """
+    Update the overall review comment.
+    Creates a new review comment if one doesn't exist yet.
+    """
+    error = verify_review_content(content)
+    if error:
+        return {"error": error}
+
+    pr = _get_pr()
+    if pr is None:
+        return json.dumps({"error": "Missing GitHub environment variables"})
+
+    # Get all comments on the PR
+    comments = list(pr.get_issue_comments())
+
+    # Look for an existing review comment
+    bot_comment = None
+    for comment in reversed(comments):
+        is_author = comment.user.login == "github-actions[bot]"
+        if is_author and utils.is_review_comment(comment.body):
+            bot_comment = comment
+            break
+
+    if bot_comment:
+        # Update existing comment
+        bot_comment.edit(content)
+        return json.dumps({"success": f"Updated comment {bot_comment.id}"})
+    else:
+        # Create new comment
+        pr.create_issue_comment(content)
+        return json.dumps({"success": "Created new comment"})
+
+
 def _get_pr():
-    token = os.environ.get('GH_TOKEN')
-    repo = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PULL_REQUEST_NUMBER')
+    token = os.environ.get("GH_TOKEN")
+    repo = os.environ.get("GITHUB_REPOSITORY")
+    pr_number = os.environ.get("PULL_REQUEST_NUMBER")
 
     if not token or not repo or not pr_number:
         return None

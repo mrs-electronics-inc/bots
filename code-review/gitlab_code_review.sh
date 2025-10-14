@@ -13,6 +13,3 @@ export PLATFORM="gitlab"
 
 # Generate the LLM review
 generate_llm_review.sh
-
-# Create or update the review comment
-post_review_comment.py

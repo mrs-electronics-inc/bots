@@ -53,13 +53,7 @@ def main():
     # Generate response
     response_text = get_response_text(model, system_prompt)
 
-    # Write response to JSON file
-    try:
-        with open(".bots/response/review.md", "w") as f:
-            f.write(response_text)
-    except Exception as e:
-        print(f"Error writing response file: {str(e)}", file=sys.stderr)
-        sys.exit(1)
+    print("Response:", response_text)
 
     print("Review generated successfully")
 
@@ -77,7 +71,7 @@ def get_response_text(model, system_prompt):
             )
             response_text = response.text()
             print("Response length:", len(response_text))
-            if len(response_text) > 10:
+            if len(response_text) > 3:
                 with open(".bots/response/tool-results.json", "w") as f:
                     json.dump(f, tools_context.results)
                 return response_text
