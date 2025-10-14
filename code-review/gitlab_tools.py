@@ -100,13 +100,22 @@ def get_comments() -> str:
     return json.dumps(comment_list)
 
 
-def post_comment(content: str):
+def post_comment(content: str, reason: str):
     """
     Post a comment on the change request.
+    Reason must be one of the following:
+        - "suggestion"
+        - "clarification"
+        - "warning"
+        - "response"
     """
     mr = _get_mr()
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
+
+    error = utils.verify_comment_reason(reason)
+    if error:
+        return {"error": error}
 
     mr.notes.create({"body": content})
     return json.dumps({"success": "Created new GitLab comment"})
@@ -117,7 +126,7 @@ def post_review(content: str):
     Update the overall review comment.
     Creates a new review comment if one doesn't exist yet.
     """
-    error = verify_review_content(content)
+    error = utils.verify_review_content(content)
     if error:
         return {"error": error}
 
@@ -140,12 +149,12 @@ def post_review(content: str):
     if comment_id:
         # Update existing comment
         note = mr.notes.get(comment_id)
-        note.body = review_content
+        note.body = content
         note.save()
         return json.dumps({"success": f"Updated comment with ID: {comment_id}"})
     else:
         # Create new comment
-        mr.notes.create({"body": review_content})
+        mr.notes.create({"body": content})
         return json.dumps({"success": f"Created new comment"})
 
 

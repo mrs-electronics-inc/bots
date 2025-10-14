@@ -109,13 +109,22 @@ def get_comments() -> str:
     return json.dumps(comment_list)
 
 
-def post_comment(content: str):
+def post_comment(content: str, reason: str):
     """
     Post a comment on the change request.
+    Reason must be one of the following:
+        - "suggestion"
+        - "clarification"
+        - "warning"
+        - "response"
     """
     pr = _get_pr()
     if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
+
+    error = utils.verify_comment_reason(reason)
+    if error:
+        return {"error": error}
 
     pr.create_issue_comment(content)
     return json.dumps({"success": "Created new GitHub comment"})
@@ -126,7 +135,7 @@ def post_review(content: str):
     Update the overall review comment.
     Creates a new review comment if one doesn't exist yet.
     """
-    error = verify_review_content(content)
+    error = utils.verify_review_content(content)
     if error:
         return {"error": error}
 

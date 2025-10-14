@@ -47,7 +47,7 @@ When you mention a specific file path, surround it with backticks so that it is 
 
 Use the tools to leave individual comments. Keep these individual comments short and to the point.
 
-CRITICAL: Only include comments that are directly actionable or provide essential context. Eliminate any commentary that:
+CRITICAL: Only leave comments that are directly actionable or provide essential context. Eliminate any commentary that:
 
 - Simply restates what the code/content already shows
 - Repeats change requests from previous comments
@@ -55,10 +55,10 @@ CRITICAL: Only include comments that are directly actionable or provide essentia
 - Adds verbosity without adding value
 - States the obvious or self-evident
 
-Every comment must either:
+Every comment MUST either:
 
-- Provide specific, actionable guidance
-- Clarify complex logic that isn't immediately apparent
+- Provide specific, actionable change request
+- Request clarification for complex logic that isn't immediately apparent
 - Warn about critical considerations or edge cases
 - Respond to users' comments. (use the "> " quote syntax in Markdown to quote their comment).
 

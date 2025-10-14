@@ -1,4 +1,17 @@
+# Prefixes for review comments
 required_prefixes = ["# Review", "# Changes Requested"]
+# Reasons to post a comment. We have these to force the bot to justify each
+# comment it wants to post.
+comment_reasons = ["suggestion", "clarification", "warning", "response"]
+
+
+def verify_comment_reason(reason: str):
+    """
+    Verify the comment reason is valid
+    """
+    if not reason in comment_reasons:
+        return "Invalid reason"
+    return ""
 
 
 def is_review_comment(content: str):
