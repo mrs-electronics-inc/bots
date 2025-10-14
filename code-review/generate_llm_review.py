@@ -10,6 +10,7 @@ The script reads the system prompt template, substitutes environment variables,
 appends repository-specific instructions if available,
 and generates a structured review using the specified LLM model.
 """
+import json
 import os
 import sys
 import llm
