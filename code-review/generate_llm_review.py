@@ -20,8 +20,8 @@ MAX_RETRIES = 3
 
 def main():
     # Get environment variables
-    review_model = os.getenv('REVIEW_MODEL', 'openrouter/x-ai/grok-code-fast-1')
-    platform = os.getenv('PLATFORM', 'github')
+    review_model = os.getenv("REVIEW_MODEL", "openrouter/x-ai/grok-code-fast-1")
+    platform = os.getenv("PLATFORM", "github")
 
     # Get model
     try:
@@ -32,19 +32,18 @@ def main():
 
     # Read system prompt template
     try:
-        with open('/bots/system-prompts/review.md', 'r') as f:
+        with open("/bots/system-prompts/review.md", "r") as f:
             system_prompt_template = f.read()
     except FileNotFoundError:
         print("Error: System prompt template not found", file=sys.stderr)
         sys.exit(1)
 
     # Substitute environment variables in system prompt
-    system_prompt = system_prompt_template.replace(
-        '$PLATFORM', platform)
+    system_prompt = system_prompt_template.replace("$PLATFORM", platform)
 
     # Append repo-specific instructions if they exist
     try:
-        with open('.bots/instructions.md', 'r') as f:
+        with open(".bots/instructions.md", "r") as f:
             repo_instructions = f.read()
             system_prompt += "\n\n# Repo-specific Instructions\n\n"
             system_prompt += repo_instructions
@@ -56,7 +55,7 @@ def main():
 
     # Write response to JSON file
     try:
-        with open('.bots/response/review.md', 'w') as f:
+        with open(".bots/response/review.md", "w") as f:
             f.write(response_text)
     except Exception as e:
         print(f"Error writing response file: {str(e)}", file=sys.stderr)
@@ -68,24 +67,28 @@ def main():
 def get_response_text(model, system_prompt):
     try:
         for i in range(MAX_RETRIES):
+            tools_context = ToolsContext()
             response = model.chain(
                 "Please review my merge request using the provided tools.",
                 system=system_prompt,
                 tools=get_review_tools(),
-                before_call=before_tool_call,
-                after_call=after_tool_call,
+                before_call=tools_context.before_tool_call,
+                after_call=tools_context.after_tool_call,
             )
             response_text = response.text()
             print("Response length:", len(response_text))
             if len(response_text) > 10:
+                with open(".bots/response/tool-results.json", "w") as f:
+                    json.dump(f, tools_context.results)
                 return response_text
             else:
-                print("Received invalid response:",
-                      response_text, file=sys.stderr)
+                print(
+                    "Received invalid response:", response_text, file=sys.stderr
+                )
     except Exception as e:
         print(f"Error generating LLM response: {str(e)}", file=sys.stderr)
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
