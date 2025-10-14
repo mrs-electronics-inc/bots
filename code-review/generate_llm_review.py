@@ -13,7 +13,7 @@ and generates a structured review using the specified LLM model.
 import os
 import sys
 import llm
-from tools import get_review_tools, before_tool_call, after_tool_call
+from tools import get_review_tools, ToolsContext
 
 MAX_RETRIES = 3
 
