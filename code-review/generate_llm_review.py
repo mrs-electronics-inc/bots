@@ -74,7 +74,7 @@ def get_response_text(model, system_prompt):
             print("Response length:", len(response_text))
             if len(response_text) > 3:
                 with open(".bots/response/tool-results.json", "w") as f:
-                    json.dump(f, tools_context.results)
+                    json.dump(tools_context.results, f)
                 return response_text
             else:
                 print(
