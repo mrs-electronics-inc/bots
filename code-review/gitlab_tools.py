@@ -1,6 +1,7 @@
 import os
 import json
 import gitlab
+import requests
 import utils
 
 
@@ -19,7 +20,7 @@ def get_details() -> str:
             "description": mr.description,
             "author": mr.author["username"],
             "state": mr.state,
-            "created_at": mr.created_at.isoformat(),
+            "created_at": mr.created_at,
             "url": mr.web_url,
             "base_branch": mr.target_branch,
             "head_branch": mr.source_branch,
@@ -59,7 +60,12 @@ def get_changed_files() -> str:
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
 
-    return "\n".join(list(set(mr.changes().keys())))
+    changes = merge_request.changes()
+    print('CHANGES:', changes)
+    changed_files = list(set([change['new_path'] for change in changes['changes']]))
+    return changed_files
+
+    return list(set(mr.changes().keys()))
 
 
 def get_diffs() -> str:
@@ -70,9 +76,15 @@ def get_diffs() -> str:
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
 
-    diffs = mr.diffs.list()
-    diff_texts = [d.diff for d in diffs]
-    return "\n".join(diff_texts)
+    web_url = mr.web_url
+    print("WEB URL:", web_url)
+    diff_url = web_url.rstrip("/") + ".diff"
+    print("DIFF URL:", diff_url")
+
+    headers = {"PRIVATE-TOKEN":os.environ.get("GITLAB_TOKEN")}
+    resp = requests.get(diff_url, headers=headers)
+    resp.raise_for_status()
+    return resp.text
 
 
 def get_comments() -> str:
@@ -83,7 +95,7 @@ def get_comments() -> str:
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
 
-    notes = mr.notes.list()
+    notes = mr.notes.list(get_all=True)
     # Reverse to oldest first
     notes.reverse()
     comment_list = []
