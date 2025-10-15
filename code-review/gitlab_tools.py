@@ -64,7 +64,7 @@ def get_changed_files() -> str:
     changed_files = list(
         set([change["new_path"] for change in changes["changes"]])
     )
-    return changed_files
+    return json.dumps(changed_files)
 
 
 def get_diffs() -> str:
