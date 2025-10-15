@@ -61,7 +61,6 @@ def get_changed_files() -> str:
         return json.dumps({"error": "Missing GitLab environment variables"})
 
     changes = mr.changes()
-    print("CHANGES:", changes)
     changed_files = list(
         set([change["new_path"] for change in changes["changes"]])
     )
