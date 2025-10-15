@@ -1,7 +1,7 @@
 import os
 import json
 import gitlab
-import requests
+import subprocess
 import utils
 
 
@@ -60,14 +60,12 @@ def get_changed_files() -> str:
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
 
-    changes = merge_request.changes()
+    changes = mr.changes()
     print("CHANGES:", changes)
     changed_files = list(
         set([change["new_path"] for change in changes["changes"]])
     )
     return changed_files
-
-    return list(set(mr.changes().keys()))
 
 
 def get_diffs() -> str:
@@ -78,15 +76,15 @@ def get_diffs() -> str:
     if mr is None:
         return json.dumps({"error": "Missing GitLab environment variables"})
 
-    web_url = mr.web_url
-    print("WEB URL:", web_url)
-    diff_url = web_url.rstrip("/") + ".diff"
-    print("DIFF URL:", diff_url)
-
-    headers = {"PRIVATE-TOKEN": os.environ.get("GITLAB_TOKEN")}
-    resp = requests.get(diff_url, headers=headers)
-    resp.raise_for_status()
-    return resp.text
+    # The GitLab API doesn't provide a simple way to get diffs,
+    # so we use the CLI
+    result = subprocess.run(
+        ["glab", "mr", "diff", mr.iid]
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return result.stdout
 
 
 def get_comments() -> str:
