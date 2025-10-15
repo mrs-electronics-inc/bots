@@ -16,8 +16,8 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | g
     && apt update && apt install -y gh;
 
 # Install GitLab CLI
-RUN wget https://gitlab.com/gitlab-org/cli/-/releases/v1.67.0/downloads/glab_1.67.0_linux_amd64.deb \
-    && dpkg -i glab_1.67.0_linux_amd64.deb
+RUN wget https://gitlab.com/gitlab-org/cli/-/releases/v1.74.0/downloads/glab_1.74.0_linux_amd64.deb \
+    && dpkg -i glab_1.74.0_linux_amd64.deb
 
 # Clean up to reduce image size
 RUN rm -rf /var/lib/apt/lists/*

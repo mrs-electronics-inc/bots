@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.1
+
+- [#55](https://github.com/mrs-electronics-inc/bots/pull/55) - fix: gitlab tools
+
 ## v0.12.0
 
 - [#48](https://github.com/mrs-electronics-inc/bots/pull/48) - feat: tool-based system
