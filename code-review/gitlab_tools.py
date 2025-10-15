@@ -61,8 +61,10 @@ def get_changed_files() -> str:
         return json.dumps({"error": "Missing GitLab environment variables"})
 
     changes = merge_request.changes()
-    print('CHANGES:', changes)
-    changed_files = list(set([change['new_path'] for change in changes['changes']]))
+    print("CHANGES:", changes)
+    changed_files = list(
+        set([change["new_path"] for change in changes["changes"]])
+    )
     return changed_files
 
     return list(set(mr.changes().keys()))
@@ -79,9 +81,9 @@ def get_diffs() -> str:
     web_url = mr.web_url
     print("WEB URL:", web_url)
     diff_url = web_url.rstrip("/") + ".diff"
-    print("DIFF URL:", diff_url")
+    print("DIFF URL:", diff_url)
 
-    headers = {"PRIVATE-TOKEN":os.environ.get("GITLAB_TOKEN")}
+    headers = {"PRIVATE-TOKEN": os.environ.get("GITLAB_TOKEN")}
     resp = requests.get(diff_url, headers=headers)
     resp.raise_for_status()
     return resp.text
