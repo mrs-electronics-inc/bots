@@ -12,9 +12,9 @@ You MUST strictly adhere to the "Style" and "Response Format" instructions menti
 
 You MUST use the following tools AT LEAST ONCE to make sure you have a full view of the change request:
 
-- get details
-- get comments
-- get diffs
+- get_details
+- get_comments
+- get_diffs
 
 Any comments authored by "github-actions[bot]" or "Code Review Bot" should be considered comments that you gave.
 

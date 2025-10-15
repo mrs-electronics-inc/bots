@@ -64,7 +64,7 @@ def get_response_text(model, system_prompt):
         for i in range(MAX_RETRIES):
             tools_context = ToolsContext()
             response = model.chain(
-                "Please review my merge request using the provided tools. Which tools were you provided?",
+                "Please review my merge request using the provided tools.",
                 system=system_prompt,
                 tools=get_review_tools(),
                 before_call=tools_context.before_tool_call,
