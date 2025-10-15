@@ -9,6 +9,7 @@ RUN apt update \
 # Install python packages
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN rm requirements.txt
 
 # Install GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
@@ -18,13 +19,10 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | g
 # Install GitLab CLI
 RUN wget https://gitlab.com/gitlab-org/cli/-/releases/v1.74.0/downloads/glab_1.74.0_linux_amd64.deb \
     && dpkg -i glab_1.74.0_linux_amd64.deb
+RUN rm glab_1.74.0_linux_amd64.deb
 
 # Clean up to reduce image size
 RUN rm -rf /var/lib/apt/lists/*
-
-# This is where the git repo will be mounted.
-WORKDIR /repo
-RUN git config --global --add safe.directory /repo
 
 # Add scripts
 COPY gitlab_code_review.sh /bin

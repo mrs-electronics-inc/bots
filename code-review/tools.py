@@ -42,7 +42,7 @@ def get_file_contents(file_name: str) -> str:
     """
     Get the current contents of the given file, with line numbers.
     """
-    full_path = os.path.join("/repo", file_name)
+    full_path = os.path.join(os.getcwd(), file_name)
     print("full path:", full_path)
     file_exists = os.path.exists(full_path)
     print("exists:", file_exists)

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.2
+
+- [#56](https://github.com/mrs-electronics-inc/bots/pull/56) - fix: file contents tool
+
 ## v0.12.1
 
 - [#55](https://github.com/mrs-electronics-inc/bots/pull/55) - fix: gitlab tools
