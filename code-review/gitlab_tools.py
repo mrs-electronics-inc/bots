@@ -79,7 +79,7 @@ def get_diffs() -> str:
     # The GitLab API doesn't provide a simple way to get diffs,
     # so we use the CLI
     result = subprocess.run(
-        ["glab", "mr", "diff", mr.iid]
+        ["glab", "mr", "diff", str(mr.iid)],
         capture_output=True,
         text=True,
         check=True,
