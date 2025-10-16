@@ -2,14 +2,14 @@ import { Gitlab } from '@gitbeaker/rest';
 
 type GitlabInstance = InstanceType<typeof Gitlab>;
 
-// Common interfaces
+// This defines an interface for the components of an issue that we care about.
 export interface Issue {
-  iid: number;
+  // On Gitlab, this will be issue.iid, not issue.id.
+  id: number;
   title: string;
-  labels: string[];
+  labels: Label[];
   state: 'open' | 'closed';
-  project_id?: number;
-  repository?: string;
+  projectId: string | number;
 }
 
 export interface Label {
@@ -22,22 +22,38 @@ export interface Comment {
   author: { name: string };
 }
 
+// This is the type of the object that will be included in the job payload.
+export enum IssueEventType {
+  issue,
+  comment,
+  unknown,
+}
+export interface IssueEvent {
+  eventType: IssueEventType;
+  user: { name: string };
+  issue: { id: number };
+  project: { id: number };
+  repository: { name: string };
+}
+
 // These are all of the methods that the issue bot will need to use.
 // These are platform-agnostic, which means that the same methods will be used on both GitHub and GitLab.
 export interface IssueBotAPI {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parseIssueEvent(eventBody: any): IssueEvent;
   getIssue(projectId: string | number, issueId: number): Promise<Issue>;
   editIssue(
     projectId: string | number,
     issueId: number,
-    options: { addLabels?: string[] }
+    options: { addLabel: Label }
   ): Promise<void>;
   getLabels(projectId: string | number): Promise<Label[]>;
-  createComment(projectId: string | number, issueId: number, comment: string): Promise<void>;
+  createComment(projectId: string | number, issueId: number, body: string): Promise<void>;
   editComment(
     projectId: string | number,
     issueId: number,
     commentId: number,
-    comment: string
+    newBody: string
   ): Promise<void>;
   getComments(projectId: string | number, issueId: number): Promise<Comment[]>;
 }
@@ -46,24 +62,50 @@ export interface IssueBotAPI {
 export class GitLabAPI implements IssueBotAPI {
   constructor(private api: GitlabInstance) {}
 
-  async getIssue(projectId: number, issueId: number): Promise<Issue> {
-    const issue = await this.api.Issues.show(issueId, { projectId });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parseIssueEvent(eventBody: any): IssueEvent {
+    let eventType = IssueEventType.unknown;
+    if (eventBody!.event_type == 'issue') {
+      eventType = IssueEventType.issue;
+    } else if (
+      eventBody!.event_type == 'note' &&
+      eventBody.object_attributes.noteable_type == 'Issue'
+    ) {
+      eventType = IssueEventType.comment;
+    }
+
     return {
-      iid: issue.iid,
-      title: issue.title,
-      labels: issue.labels as string[],
-      state: issue.state === 'opened' ? 'open' : 'closed',
-      project_id: issue.project_id as number,
+      eventType,
+      user: {
+        name: eventBody.user.name,
+      },
+      issue: {
+        id:
+          eventType == IssueEventType.issue ? eventBody.object_attributes.iid : eventBody.issue.iid,
+      },
+      project: {
+        id: eventBody.project.id,
+      },
+      repository: {
+        name: eventBody.repository.name,
+      },
     };
   }
 
-  async editIssue(
-    projectId: number,
-    issueId: number,
-    options: { addLabels?: string[] }
-  ): Promise<void> {
-    if (options.addLabels) {
-      await this.api.Issues.edit(projectId, issueId, { addLabels: options.addLabels[0] });
+  async getIssue(projectId: number, issueId: number): Promise<Issue> {
+    const issue = await this.api.Issues.show(issueId, { projectId });
+    return {
+      id: issue.iid,
+      title: issue.title,
+      labels: issue.labels as Label[],
+      state: issue.state === 'opened' ? 'open' : 'closed',
+      projectId: issue.project_id as number,
+    };
+  }
+
+  async editIssue(projectId: number, issueId: number, options: { addLabel: Label }): Promise<void> {
+    if (options.addLabel) {
+      await this.api.Issues.edit(projectId, issueId, { addLabels: options.addLabel.name });
     }
   }
 

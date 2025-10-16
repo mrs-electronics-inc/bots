@@ -1,31 +1,42 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { GitLabAPI } from '../src/apis';
-import { IssueEvent, issueBotHandler } from '../src/issue-bot-handler';
+import { issueBotHandler } from '../src/issue-bot-backend';
 
-// Mock fs for reading labels.json
+// Mock fs for reading config file
 jest.mock('fs', () => ({
   readFileSync: jest.fn(() =>
     JSON.stringify({
-      fix: 'Type::Bug',
-      feat: 'Type::Feature',
-      chore: 'Type::Chore',
-      refactor: 'Type::Refactor',
-      docs: 'Type::Documentation',
-      perf: 'Type::Performance',
-      test: 'Type::Testing',
-      debt: 'Type::Technical Debt',
-      release: 'Type::Release',
-      notes: 'Type::Notes',
-      ci: 'Type::CI/CD',
+      typeLabels: {
+        fix: 'Type::Bug',
+        feat: 'Type::Feature',
+        chore: 'Type::Chore',
+        refactor: 'Type::Refactor',
+        docs: 'Type::Documentation',
+        perf: 'Type::Performance',
+        test: 'Type::Testing',
+        debt: 'Type::Technical Debt',
+        release: 'Type::Release',
+        notes: 'Type::Notes',
+        ci: 'Type::CI/CD',
+      },
+      priorityLabels: [
+        'Priority::Normal',
+        'Priority::Important',
+        'Priority::Must Have',
+        'Priority::Hot Fix',
+      ],
+      defaultPriorityLabel: 'Priority::Normal',
     })
   ),
   existsSync: jest.fn(() => true),
 }));
 
-describe('issueBotHandler (GitLab)', () => {
+describe('issue bot', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockApi: any;
   let api: GitLabAPI;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let fakeEvent: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -55,20 +66,13 @@ describe('issueBotHandler (GitLab)', () => {
 
     api = new GitLabAPI(mockApi);
 
-    // Set up environment variables
-    process.env.TOKEN_ISSUE_BOT = 'fake-token';
-    process.env.PAYLOAD = JSON.stringify({
+    fakeEvent = {
       event_type: 'issue',
       user: { name: 'TestUser' },
       object_attributes: { iid: 123 },
       project: { id: 456 },
-    });
-    process.env.PAYLOAD = JSON.stringify({
-      event_type: 'issue',
-      user: { name: 'TestUser' },
-      object_attributes: { iid: 123 },
-      project: { id: 456 },
-    });
+      repository: { name: 'issue-bot-test' },
+    };
   });
 
   it('should add type label for valid issue title', async () => {
@@ -80,14 +84,7 @@ describe('issueBotHandler (GitLab)', () => {
       project_id: 456,
     });
 
-    const event: IssueEvent = {
-      event_type: 'issue',
-      user: { name: 'TestUser' },
-      object_attributes: { iid: 123 },
-      project: { id: 456 },
-    };
-
-    const result = await issueBotHandler(api, event);
+    const result = await issueBotHandler(api, fakeEvent);
 
     expect(result.success).toBe(true);
     expect(mockApi.Issues.edit).toHaveBeenCalledWith(456, 123, { addLabels: 'Type::Bug' });
@@ -102,14 +99,7 @@ describe('issueBotHandler (GitLab)', () => {
       project_id: 456,
     });
 
-    const event: IssueEvent = {
-      event_type: 'issue',
-      user: { name: 'TestUser' },
-      object_attributes: { iid: 123 },
-      project: { id: 456 },
-    };
-
-    const result = await issueBotHandler(api, event);
+    const result = await issueBotHandler(api, fakeEvent);
 
     expect(result.success).toBe(false);
     expect(mockApi.Issues.edit).not.toHaveBeenCalled();
@@ -125,28 +115,16 @@ describe('issueBotHandler (GitLab)', () => {
     });
     mockApi.IssueNotes.all.mockResolvedValue([]);
 
-    const event: IssueEvent = {
-      event_type: 'issue',
-      user: { name: 'TestUser' },
-      object_attributes: { iid: 123 },
-      project: { id: 456 },
-    };
-
-    const result = await issueBotHandler(api, event);
+    const result = await issueBotHandler(api, fakeEvent);
 
     expect(result.success).toBe(true);
     expect(mockApi.IssueNotes.create).toHaveBeenCalled();
   });
 
   it('should skip events triggered by bots', async () => {
-    const event: IssueEvent = {
-      event_type: 'issue',
-      user: { name: 'Issue Bot' },
-      object_attributes: { iid: 123 },
-      project: { id: 456 },
-    };
+    fakeEvent.user.name = 'Fake Issue Bot';
 
-    const result = await issueBotHandler(api, event);
+    const result = await issueBotHandler(api, fakeEvent);
 
     expect(result.success).toBe(false);
   });

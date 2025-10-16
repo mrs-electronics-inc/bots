@@ -10,17 +10,26 @@ An example file might look like this:
 
 ```json
 {
-  "fix": "Type::Bug",
-  "feat": "Type::Feature",
-  "chore": "Type::Chore",
-  "refactor": "Type::Refactor",
-  "docs": "Type::Documentation",
-  "perf": "Type::Performance",
-  "test": "Type::Testing",
-  "debt": "Type::Technical Debt",
-  "release": "Type::Release",
-  "notes": "Type::Notes",
-  "ci": "Type::CI/CD"
+  "typeLabels": {
+    "fix": "Type::Bug",
+    "feat": "Type::Feature",
+    "chore": "Type::Chore",
+    "refactor": "Type::Refactor",
+    "docs": "Type::Documentation",
+    "perf": "Type::Performance",
+    "test": "Type::Testing",
+    "debt": "Type::Technical Debt",
+    "release": "Type::Release",
+    "notes": "Type::Notes",
+    "ci": "Type::CI/CD"
+  },
+  "priorityLabels": [
+    "Priority::Normal",
+    "Priority::Important",
+    "Priority::Must Have",
+    "Priority::Hot Fix",
+  ],
+  "defaultPriorityLabel": "Priority::Normal",
 }
 ```
 
@@ -46,5 +55,5 @@ run_issue_bot:
     GITLAB_TOKEN: $TOKEN_ISSUE_BOT
   script:
     - export PAYLOAD=$(cat $TRIGGER_PAYLOAD)
-    - npx tsx /bin/issue-bot-handler.ts
+    - npx tsx /bin/issue-bot.ts
 ```

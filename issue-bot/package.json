@@ -5,8 +5,9 @@
   "type": "module",
   "dependencies": {
     "@gitbeaker/rest": "^43.5.0",
-    "typescript": "^5.9.3",
-    "tsx": "^4.16.2"
+    "ts-command-line-args": "^2.5.1",
+    "tsx": "^4.16.2",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
