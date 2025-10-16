@@ -8,16 +8,16 @@ A collection of helpful agents that automate and streamline our software develop
 
 ## Definition of Name
 
-- **Benevolent:** Do `bots` aim to improve the lives of developers and the systems they maintain?
+- **Benevolent:** Do they aim to improve the lives of developers and the quality of the systems they maintain?
   - **YES**
 
-- **Orchestrators:** Do they coordinate and automate complex workflows to achieve seamless results?
+- **Orchestrators:** Do they coordinate and automate complex workflows to achieve more efficient processes?
   - **YES**
 
 - **Technological:** Are they built to interact intelligently with modern development platforms and tools?
   - **YES**
 
-- **Systems:** Do they integrate across diverse environments to maintain a cohesive ecosystem?
+- **Systems:** Do they seamlessly integrate across diverse environments?
   - **YES**[^1]
 
 [^1]: _usually_
