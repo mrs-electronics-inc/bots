@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.12.2-rc2
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:latest
 
     permissions:
       pull-requests: write
@@ -31,4 +31,3 @@ jobs:
           name: bots-directory
           path: .bots/
           include-hidden-files: true
-
