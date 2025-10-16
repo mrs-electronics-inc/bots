@@ -31,6 +31,10 @@ jest.mock('fs', () => ({
   existsSync: jest.fn(() => true),
 }));
 
+// Mute output
+console.warn = jest.fn();
+console.error = jest.fn();
+
 describe('issue bot', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockApi: any;
