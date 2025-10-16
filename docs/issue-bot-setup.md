@@ -55,5 +55,5 @@ run_issue_bot:
     GITLAB_TOKEN: $TOKEN_ISSUE_BOT
   script:
     - export PAYLOAD=$(cat $TRIGGER_PAYLOAD)
-    - npx tsx /bin/issue-bot.ts
+    - gitlab_issue_bot.sh
 ```

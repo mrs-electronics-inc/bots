@@ -79,6 +79,14 @@ describe('issue bot', () => {
     };
   });
 
+  it('should skip events triggered by bots', async () => {
+    fakeEvent.user.name = 'Fake Issue Bot';
+
+    const result = await issueBotHandler(api, fakeEvent);
+
+    expect(result.success).toBe(false);
+  });
+
   it('should add type label for valid issue title', async () => {
     mockApi.Issues.show.mockResolvedValue({
       iid: 123,
@@ -123,13 +131,5 @@ describe('issue bot', () => {
 
     expect(result.success).toBe(true);
     expect(mockApi.IssueNotes.create).toHaveBeenCalled();
-  });
-
-  it('should skip events triggered by bots', async () => {
-    fakeEvent.user.name = 'Fake Issue Bot';
-
-    const result = await issueBotHandler(api, fakeEvent);
-
-    expect(result.success).toBe(false);
   });
 });

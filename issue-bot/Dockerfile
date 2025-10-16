@@ -8,14 +8,16 @@ WORKDIR /
 # Copy the package.json and package-lock.json for the CI/CD dev setup
 COPY package*.json /
 
-# Install dependencies
+# Install backend dependencies
 RUN npm ci --verbose --no-audit --no-fund
+
+# Add backend.
+COPY src/* /app
+# Add entrypoint script.
+COPY gitlab_issue_bot.sh /bin
 
 # This is where the git repo will be mounted.
 WORKDIR /repo
 RUN git config --global --add safe.directory /repo
-
-# Add scripts.
-COPY src/* /bin
 
 CMD ["/bin/bash"]
