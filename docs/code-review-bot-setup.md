@@ -19,12 +19,6 @@ jobs:
 
     container:
       image: ghcr.io/mrs-electronics-inc/bots/code-review:latest
-      volumes:
-        - ${{ github.workspace }}:/repo
-
-    defaults:
-      run:
-        working-directory: /repo
 
     permissions:
       pull-requests: write
