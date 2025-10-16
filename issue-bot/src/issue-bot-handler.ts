@@ -1,15 +1,22 @@
-import { IssueBotAPI, Issue } from './apis';
-import fs from 'fs';
+import { Gitlab } from '@gitbeaker/rest';
+import { IssueBotAPI, Issue, GitLabAPI } from './apis';
+import * as fs from 'fs';
+import { exit } from 'process';
 
-const labelsPath = '.bots/labels.json';
-const labelsData = JSON.parse(fs.readFileSync(labelsPath, 'utf8'));
+// This is where the repo's labels should be defined.
+const LABELS_FILE_PATH = '.bots/labels.json';
+if (!fs.existsSync(LABELS_FILE_PATH)) {
+  console.error('Could not find file %s, exiting early.', LABELS_FILE_PATH);
+  exit(1);
+}
+const labelsData = JSON.parse(fs.readFileSync(LABELS_FILE_PATH, 'utf8'));
 const TYPE_LABELS: Record<string, string> = labelsData;
 
 const VALID_TYPES = Object.keys(TYPE_LABELS);
 
 type IssueType = (typeof VALID_TYPES)[number];
 
-interface IssueEvent {
+export interface IssueEvent {
   event_type: string;
   user: { name: string };
   object_attributes?: { iid: number };
@@ -66,8 +73,6 @@ export const issueBotHandler = async (
     for (const type of VALID_TYPES) {
       comment += `   - ${type}\n`;
     }
-    comment +=
-      '\n\nPlease see [this page](https://gitlab.com/mrs-electronics/spoke-zone/sz/-/blob/develop/apps/wiki/process/issues/labels/Type.md) for more information.';
     await addBotComment(api, projectId, issueIid, comment);
   } else {
     console.log('issue type:', type);
@@ -138,7 +143,7 @@ const addBotComment = async (
   comment: string
 ): Promise<void> => {
   const notes = await api.getComments(projectId, issueIid);
-  const botNotes = notes.filter((n) => n.author.name.includes('Bot'));
+  const botNotes = notes.filter((n) => n.author.name.includes('Issue Bot'));
   if (botNotes.length > 0) {
     // Use the most recent bot note
     const botNote = botNotes[botNotes.length - 1];
@@ -151,14 +156,13 @@ const addBotComment = async (
   }
 };
 
-// Example usage (for testing or standalone)
-// const token = process.env.TOKEN_ISSUE_BOT;
-// const payload = JSON.parse(process.env.PAYLOAD!);
-// const platform = process.env.PLATFORM || 'gitlab'; // 'gitlab' or 'github'
-// let api: IssueBotAPI;
-// if (platform === 'gitlab') {
-//     api = new GitLabAPI(new Gitlab({ token }));
-// } else {
-//     api = new GitHubAPI(new Octokit({ auth: token }));
-// }
-// issueBotHandler(api, payload);
+if (process.env.NODE_ENV !== 'test') {
+  const token = process.env.TOKEN_ISSUE_BOT || 'nothing';
+  const payload: IssueEvent = JSON.parse(process.env.PAYLOAD!);
+  const platform = process.env.PLATFORM || 'gitlab'; // 'gitlab' or 'github'
+  let api: IssueBotAPI;
+  if (platform === 'gitlab') {
+    api = new GitLabAPI(new Gitlab({ token }));
+    issueBotHandler(api, payload);
+  }
+}

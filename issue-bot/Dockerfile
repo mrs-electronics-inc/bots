@@ -16,6 +16,6 @@ WORKDIR /repo
 RUN git config --global --add safe.directory /repo
 
 # Add scripts.
-COPY issue-bot.ts /bin
+COPY src/* /bin
 
 CMD ["/bin/bash"]

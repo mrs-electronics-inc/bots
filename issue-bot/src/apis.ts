@@ -2,6 +2,28 @@ import { Gitlab } from '@gitbeaker/rest';
 
 type GitlabInstance = InstanceType<typeof Gitlab>;
 
+// Common interfaces
+export interface Issue {
+  iid: number;
+  title: string;
+  labels: string[];
+  state: 'open' | 'closed';
+  project_id?: number;
+  repository?: string;
+}
+
+export interface Label {
+  name: string;
+}
+
+export interface Comment {
+  id: number;
+  body: string;
+  author: { name: string };
+}
+
+// These are all of the methods that the issue bot will need to use.
+// These are platform-agnostic, which means that the same methods will be used on both GitHub and GitLab.
 export interface IssueBotAPI {
   getIssue(projectId: string | number, issueId: number): Promise<Issue>;
   editIssue(
@@ -18,26 +40,6 @@ export interface IssueBotAPI {
     comment: string
   ): Promise<void>;
   getComments(projectId: string | number, issueId: number): Promise<Comment[]>;
-}
-
-// Common interfaces
-export interface Issue {
-  iid: number;
-  title: string;
-  labels: string[];
-  state: 'open' | 'closed';
-  project_id?: number;
-  repository?: string;
-}
-
-interface Label {
-  name: string;
-}
-
-interface Comment {
-  id: number;
-  body: string;
-  author: { name: string };
 }
 
 // GitLab API implementation

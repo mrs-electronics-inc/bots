@@ -13,7 +13,7 @@ repos:
       - id: eslint
         name: eslint
         # TODO: only add staged files back
-        entry: cd issue-bot && npm run lint:fix
+        entry: bash -c "cd issue-bot && npm run lint:fix"
         language: system
         files: ^issue-bot(?:/.+)*\.ts$
         pass_filenames: false
@@ -21,7 +21,7 @@ repos:
       - id: prettier
         name: prettier
         # TODO: only add staged files back
-        entry: cd issue-bot && npm run format
+        entry: bash -c "cd issue-bot && npm run format"
         language: system
         files: ^issue-bot(?:/.+)*\.ts$
         pass_filenames: true
