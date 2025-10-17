@@ -12,7 +12,7 @@ COPY package*.json /
 RUN npm ci --verbose --no-audit --no-fund
 
 # Add backend.
-COPY src/* /app
+COPY src/* /root
 # Add entrypoint script.
 COPY gitlab_issue_bot.sh /bin
 

@@ -53,6 +53,7 @@ export const issueBotHandler = async (
   // Parse out the issue bot configuration. Return early if there was a problem doing so.
   const { config, success: ok } = parseIssueBotConfig();
   if (!ok) {
+    console.error('Could not parse issue bot configuration!!');
     return { success: false };
   }
 

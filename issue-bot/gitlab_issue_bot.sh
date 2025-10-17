@@ -7,4 +7,4 @@ set -e
 
 export PLATFORM="gitlab"
 
-npx tsx /app/issue-bot-cli.ts "$@"
+npx tsx /root/issue-bot-cli.ts "$@"
