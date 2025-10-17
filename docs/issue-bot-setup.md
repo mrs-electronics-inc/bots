@@ -2,37 +2,6 @@
 
 This page shows examples of how to set up the Issue Bot in Gitlab CI/CD and configure its operation.
 
-## Configuration
-
-Define the type labels for the bot to apply to issues by including a `.bots/labels.json` file in your repository.
-
-An example file might look like this:
-
-```json
-{
-  "typeLabels": {
-    "fix": "Type::Bug",
-    "feat": "Type::Feature",
-    "chore": "Type::Chore",
-    "refactor": "Type::Refactor",
-    "docs": "Type::Documentation",
-    "perf": "Type::Performance",
-    "test": "Type::Testing",
-    "debt": "Type::Technical Debt",
-    "release": "Type::Release",
-    "notes": "Type::Notes",
-    "ci": "Type::CI/CD"
-  },
-  "priorityLabels": [
-    "Priority::Normal",
-    "Priority::Important",
-    "Priority::Must Have",
-    "Priority::Hot Fix",
-  ],
-  "defaultPriorityLabel": "Priority::Normal",
-}
-```
-
 ## GitLab Pipeline
 
 ### Token and Webhook Setup
@@ -97,4 +66,35 @@ run_issue_bot:
   script:
     - export PAYLOAD=$(cat $TRIGGER_PAYLOAD)
     - gitlab_issue_bot.sh
+```
+
+## Configuration
+
+Define the type labels for the bot to apply to issues by including a `.bots/labels.json` file in your repository.
+
+An example file might look like this:
+
+```json
+{
+  "typeLabels": {
+    "fix": "Type::Bug",
+    "feat": "Type::Feature",
+    "chore": "Type::Chore",
+    "refactor": "Type::Refactor",
+    "docs": "Type::Documentation",
+    "perf": "Type::Performance",
+    "test": "Type::Testing",
+    "debt": "Type::Technical Debt",
+    "release": "Type::Release",
+    "notes": "Type::Notes",
+    "ci": "Type::CI/CD"
+  },
+  "priorityLabels": [
+    "Priority::Normal",
+    "Priority::Important",
+    "Priority::Must Have",
+    "Priority::Hot Fix",
+  ],
+  "defaultPriorityLabel": "Priority::Normal",
+}
 ```
