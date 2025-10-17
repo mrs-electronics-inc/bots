@@ -35,4 +35,4 @@ jobs:
       run: cd issue-bot && npm run format:check
 
     - name: Run tests
-      run: cd issue-bot && npm test
+      run: cd issue-bot && npm run test:ci

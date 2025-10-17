@@ -24,6 +24,7 @@
   },
   "scripts": {
     "test": "jest --verbose",
+    "test:ci": "jest --verbose --ci",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
