@@ -1,8 +1,9 @@
 name: Code Review Bot
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+  # pull_request:
+  #   types: [opened, reopened, synchronize]
 
 jobs:
   run_code_review_bot:
