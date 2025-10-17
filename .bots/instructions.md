@@ -5,3 +5,4 @@
 	- The scope portion is NOT required in the PR title.
 - Make sure that the `CHANGELOG.md` file is included in the diffs.
 	- Remind the PR author that the changelog must be updated with each PR.
+- Before making ANY COMMENTS on a PR be VERY CERTAIN that what you are about to say is not repetitive/redundant. It is extremely annoying to devs when you make multiple comments about the same trivial issue.

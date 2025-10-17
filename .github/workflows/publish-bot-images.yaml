@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        bot: [code-review]
+        bot: [code-review, issue]
     permissions:
       contents: read
       packages: write
@@ -44,7 +44,7 @@ jobs:
         id: push
         uses: docker/build-push-action@v6.18.0
         with:
-          context: ${{ matrix.bot }}
+          context: ${{ matrix.bot }}-bot
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

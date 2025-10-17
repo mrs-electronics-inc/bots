@@ -5,7 +5,7 @@ SHELL ["/bin/bash", "-c"]
 # Install core packages
 RUN apt update \
     && apt install -y git wget gpg curl jq gettext file bat
- 
+
 # Install python packages
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
