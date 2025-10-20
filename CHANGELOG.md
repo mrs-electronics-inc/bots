@@ -3,6 +3,7 @@
 ## v0.13.0 (upcoming)
 
 - [#51](https://github.com/mrs-electronics-inc/bots/pull/51) - feat: add issue bot
+- [#59](https://github.com/mrs-electronics-inc/bots/pull/59) - docs: definition of name
 
 ## v0.12.2
 
