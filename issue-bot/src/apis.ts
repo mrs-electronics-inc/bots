@@ -26,7 +26,6 @@ export interface Comment {
 export enum IssueEventType {
   issue,
   comment,
-  unknown,
 }
 export interface IssueEvent {
   eventType: IssueEventType;
@@ -40,7 +39,7 @@ export interface IssueEvent {
 // These are platform-agnostic, which means that the same methods will be used on both GitHub and GitLab.
 export interface IssueBotAPI {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  parseIssueEvent(eventBody: any): IssueEvent;
+  parseIssueEvent(eventBody: any): IssueEvent | undefined;
   getIssue(projectId: string | number, issueId: number): Promise<Issue>;
   editIssue(
     projectId: string | number,
@@ -63,8 +62,8 @@ export class GitLabAPI implements IssueBotAPI {
   constructor(private api: GitlabInstance) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  parseIssueEvent(eventBody: any): IssueEvent {
-    let eventType = IssueEventType.unknown;
+  parseIssueEvent(eventBody: any): IssueEvent | undefined {
+    let eventType = IssueEventType.issue; // TODO: better default?
     if (eventBody!.event_type == 'issue') {
       eventType = IssueEventType.issue;
     } else if (
@@ -72,6 +71,10 @@ export class GitLabAPI implements IssueBotAPI {
       eventBody.object_attributes.noteable_type == 'Issue'
     ) {
       eventType = IssueEventType.comment;
+    } else {
+      // If we can't figure what type the event is then don't continue trying to parse it.
+      // Doing so could cause errors, and it's clearly not an event we care about.
+      return undefined;
     }
 
     return {

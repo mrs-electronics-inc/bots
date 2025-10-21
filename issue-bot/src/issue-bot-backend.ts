@@ -1,4 +1,4 @@
-import { IssueBotAPI, Issue, IssueEventType, Label } from './apis';
+import { IssueBotAPI, Issue, Label } from './apis';
 import { parseIssueBotConfig } from './config-parser';
 
 // eslint-disable-next-line no-undef
@@ -20,23 +20,21 @@ export const issueBotHandler = async (
     logger = console;
   }
 
-  // Make sure an event was actually passed.
+  // Make sure a valid issue event was actually passed.
   if (!event) {
     console.error('No event was passed!');
     return { success: false };
   }
   logger?.log('Event:', event);
   const parsedEvent = api.parseIssueEvent(event);
+  if (!parsedEvent) {
+    console.warn('Ignoring this event, it is irrelevant');
+    return { success: false };
+  }
 
   // Prevent a loop of bots triggering more bots.
   if (parsedEvent.user.name.includes('Issue Bot')) {
     console.warn('Handler triggered by another issue bot. Exiting early.');
-    return { success: false };
-  }
-
-  // Do not do anything for unrecognized events.
-  if (parsedEvent.eventType == IssueEventType.unknown) {
-    console.warn('Ignoring this event');
     return { success: false };
   }
 
