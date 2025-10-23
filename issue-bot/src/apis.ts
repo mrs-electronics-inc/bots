@@ -63,7 +63,7 @@ export class GitLabAPI implements IssueBotAPI {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parseIssueEvent(eventBody: any): IssueEvent | undefined {
-    let eventType = IssueEventType.issue; // TODO: better default?
+    let eventType: IssueEventType;
     if (eventBody!.event_type == 'issue') {
       eventType = IssueEventType.issue;
     } else if (

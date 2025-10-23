@@ -7,6 +7,7 @@ async function main() {
   // Parse out the command-line arguments.
   const options = parse<IssueBotOptions>(
     {
+      silent: { type: Boolean, optional: true, description: 'Mute all logging information' },
       verbose: { type: Boolean, optional: true, description: 'Print all logging information' },
       help: { type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide' },
     },

@@ -31,10 +31,6 @@ jest.mock('fs', () => ({
   existsSync: jest.fn(() => true),
 }));
 
-// Mute output
-console.warn = jest.fn();
-console.error = jest.fn();
-
 describe('issue bot', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockApi: any;
@@ -82,7 +78,7 @@ describe('issue bot', () => {
   it('should skip events triggered by bots', async () => {
     fakeEvent.user.name = 'Fake Issue Bot';
 
-    const result = await issueBotHandler(api, fakeEvent);
+    const result = await issueBotHandler(api, fakeEvent, { silent: true });
 
     expect(result.success).toBe(false);
   });
@@ -96,7 +92,7 @@ describe('issue bot', () => {
       project_id: 456,
     });
 
-    const result = await issueBotHandler(api, fakeEvent);
+    const result = await issueBotHandler(api, fakeEvent, { silent: true });
 
     expect(result.success).toBe(true);
     expect(mockApi.Issues.edit).toHaveBeenCalledWith(456, 123, { addLabels: 'Type::Bug' });
@@ -111,7 +107,7 @@ describe('issue bot', () => {
       project_id: 456,
     });
 
-    const result = await issueBotHandler(api, fakeEvent);
+    const result = await issueBotHandler(api, fakeEvent, { silent: true });
 
     expect(result.success).toBe(false);
     expect(mockApi.Issues.edit).not.toHaveBeenCalled();
@@ -128,7 +124,7 @@ describe('issue bot', () => {
     });
     mockApi.IssueNotes.all.mockResolvedValue([]);
 
-    const result = await issueBotHandler(api, fakeEvent);
+    const result = await issueBotHandler(api, fakeEvent, { silent: true });
 
     expect(result.success).toBe(true);
     expect(mockApi.IssueNotes.create).toHaveBeenCalled();

@@ -2,9 +2,15 @@ import { IssueBotAPI, Issue, Label } from './apis';
 import { parseIssueBotConfig } from './config-parser';
 
 // eslint-disable-next-line no-undef
-var logger: Console;
+var logger: Console = {
+  ...console,
+  log: () => undefined,
+  debug: () => undefined,
+  info: () => undefined,
+};
 
 export interface IssueBotOptions {
+  silent?: boolean;
   verbose?: boolean;
   help?: boolean;
 }
@@ -15,43 +21,52 @@ export const issueBotHandler = async (
   event: any,
   options?: IssueBotOptions
 ): Promise<{ success: boolean; timestamp?: number }> => {
-  // If we are instructed to be verbose then allow regular messages to go to the console.
+  // If we are instructed to be verbose then allow regular messages to go to the console too
+  // instead of just warning and error messages.
   if (options?.verbose) {
-    logger = console;
+    logger.log = console.log;
+    logger.debug = console.debug;
+    logger.info = console.info;
+  }
+  // If we are instructed to be silent then do not allow any messages to go through.
+  // Note that silent and verbose are mutually exclusive options.
+  else if (options?.silent) {
+    logger.error = () => undefined;
+    logger.warn = () => undefined;
   }
 
   // Make sure a valid issue event was actually passed.
   if (!event) {
-    console.error('No event was passed!');
+    logger.error('No event was passed!');
     return { success: false };
   }
-  logger?.log('Event:', event);
+  logger.log('Event:', event);
   const parsedEvent = api.parseIssueEvent(event);
   if (!parsedEvent) {
-    console.warn('Ignoring this event, it is irrelevant');
+    logger.warn('Ignoring this event, it is irrelevant');
     return { success: false };
   }
 
   // Prevent a loop of bots triggering more bots.
   if (parsedEvent.user.name.includes('Issue Bot')) {
-    console.warn('Handler triggered by another issue bot. Exiting early.');
+    logger.warn('Handler triggered by another issue bot. Exiting early.');
     return { success: false };
   }
 
-  logger?.log('project/repo id: %s issue id: %s', parsedEvent.project.id, parsedEvent.issue.id);
+  logger.log('project/repo id: %s issue id: %s', parsedEvent.project.id, parsedEvent.issue.id);
 
   const issue: Issue = await api.getIssue(parsedEvent.project.id, parsedEvent.issue.id);
 
   // Do not do anything to closed issues.
   if (issue.state === 'closed') {
-    console.warn('Leaving early, this issue is closed.');
+    logger.warn('Leaving early, this issue is closed.');
     return { success: false };
   }
 
   // Parse out the issue bot configuration. Return early if there was a problem doing so.
   const { config, success: ok } = parseIssueBotConfig();
   if (!ok) {
-    console.error('Could not parse issue bot configuration!!');
+    logger.error('Could not parse issue bot configuration!!');
     return { success: false };
   }
 
@@ -79,14 +94,14 @@ const checkIssueType = async (
 ): Promise<void> => {
   const issueType = extractIssueType(issue.title, validTypes);
   if (issueType == null) {
-    console.error('issue must have a valid type!');
+    logger.error('issue must have a valid type!');
     let comment = 'The issue title must begin with one of the following prefixes:\n';
     for (const type of validTypes) {
       comment += `   - ${type}\n`;
     }
     await addBotComment(api, issue, comment);
   } else {
-    logger?.log('issue type:', issueType);
+    logger.log('issue type:', issueType);
     const label = typeLabels[issueType];
     if (!issue.labels.map((l) => l.name).includes(label.name)) {
       await api.editIssue(issue.projectId, issue.id, { addLabel: label });
@@ -111,11 +126,11 @@ const checkHasRequiredLabel = async (
   labelList: Label[],
   defaultLabel: Label
 ): Promise<void> => {
-  logger?.log(
+  logger.log(
     'required label list:',
     labelList.map((l) => l.name)
   );
-  logger?.log('default label:', defaultLabel.name);
+  logger.log('default label:', defaultLabel.name);
 
   // Determine whether the given issue has one of the labels from the required list already.
   const hasRequiredLabel = issue.labels.some((l) => labelList.includes(l));
