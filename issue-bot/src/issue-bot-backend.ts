@@ -8,9 +8,6 @@ const ISSUE_BOT_NAME = 'Issue Bot';
 // eslint-disable-next-line no-undef
 var logger: Console = {
   ...console,
-  log: () => undefined,
-  debug: () => undefined,
-  info: () => undefined,
 };
 
 export interface IssueBotOptions {
@@ -24,19 +21,7 @@ export const issueBotHandler = async (
   event: unknown,
   options?: IssueBotOptions
 ): Promise<{ success: boolean; timestamp?: number }> => {
-  // If we are instructed to be verbose then allow regular messages to go to the console too
-  // instead of just warning and error messages.
-  if (options?.verbose) {
-    logger.log = console.log;
-    logger.debug = console.debug;
-    logger.info = console.info;
-  }
-  // If we are instructed to be silent then do not allow any messages to go through.
-  // Note that silent and verbose are mutually exclusive options.
-  else if (options?.silent) {
-    logger.error = () => undefined;
-    logger.warn = () => undefined;
-  }
+  setUpLogger(options);
 
   // Make sure a valid issue event was actually passed.
   if (!event) {
@@ -100,7 +85,7 @@ const checkIssueType = async (
     logger.error('issue must have a valid type!');
     let comment = 'The issue title must begin with one of the following prefixes:\n';
     for (const type of validTypes) {
-      comment += `   - ${type}\n`;
+      comment += `- ${type}\n`;
     }
     await addBotComment(api, issue, comment);
   } else {
@@ -136,7 +121,8 @@ const checkHasRequiredLabel = async (
   logger.log('default label:', defaultLabel.name);
 
   // Determine whether the given issue has one of the labels from the required list already.
-  const hasRequiredLabel = issue.labels.some((l) => labelList.includes(l));
+  // Note that we have to do this by label name and not by the actual object.
+  const hasRequiredLabel = issue.labels.some((l) => labelList.map((l) => l.name).includes(l.name));
 
   // If it does not, then add the default.
   // Add a comment on the issue explaining what happened.
@@ -164,4 +150,25 @@ const addBotComment = async (api: IssueBotAPI, issue: Issue, comment: string): P
     // No existing bot comments, create a new one
     await api.createComment(issue.projectId, issue.id, comment);
   }
+};
+
+const setUpLogger = (options?: IssueBotOptions) => {
+  logger = { ...console };
+
+  // If we are instructed to be verbose then allow all messages to go through: warning, error, and debug.
+  if (options?.verbose) {
+    return;
+  }
+
+  // If we are instructed to be silent then do not allow any messages to go through.
+  // Note that silent and verbose are effectively mutually exclusive options.
+  if (options?.silent) {
+    logger.error = () => undefined;
+    logger.warn = () => undefined;
+  }
+
+  // This is the default setting: only error and warning messages go through.
+  logger.log = () => undefined;
+  logger.debug = () => undefined;
+  logger.info = () => undefined;
 };

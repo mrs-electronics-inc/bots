@@ -51,18 +51,10 @@ describe('issue bot', () => {
         create: jest.fn(),
         edit: jest.fn(),
       },
-      ProjectLabels: {
-        all: jest.fn(),
-      },
     };
 
     // Set up mock return values
     mockApi.IssueNotes.all.mockResolvedValue([]);
-    mockApi.ProjectLabels.all.mockResolvedValue([
-      { name: 'priority::normal' },
-      { name: 'priority::high' },
-      { name: 'Type::Bug' },
-    ]);
 
     api = new GitLabAPI(mockApi);
 
@@ -71,7 +63,7 @@ describe('issue bot', () => {
       user: { name: 'TestUser' },
       object_attributes: { iid: 123 },
       project: { id: 456 },
-      repository: { name: 'issue-bot-test' },
+      repository: { name: 'issue-bot-gitlab-test' },
     };
   });
 
@@ -118,7 +110,7 @@ describe('issue bot', () => {
     mockApi.Issues.show.mockResolvedValue({
       iid: 123,
       title: 'invalid: some issue',
-      labels: [],
+      labels: [{ name: 'Priority::Normal' }],
       state: 'opened',
       project_id: 456,
     });
@@ -127,6 +119,50 @@ describe('issue bot', () => {
     const result = await issueBotHandler(api, fakeEvent, { silent: true });
 
     expect(result.success).toBe(true);
-    expect(mockApi.IssueNotes.create).toHaveBeenCalled();
+
+    const expectedComment = `The issue title must begin with one of the following prefixes:
+- fix
+- feat
+- chore
+- refactor
+- docs
+- perf
+- test
+- debt
+- release
+- notes
+- ci
+`;
+
+    expect(mockApi.IssueNotes.create).toHaveBeenCalledWith(456, 123, expectedComment);
+
+    // It should only be calling once to say something about the label type
+    expect(mockApi.IssueNotes.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('should add comment for missing priority label', async () => {
+    mockApi.Issues.show.mockResolvedValue({
+      iid: 123,
+      title: 'feat: some issue',
+      labels: [{ name: 'Type::Feature' }],
+      state: 'opened',
+      project_id: 456,
+    });
+    mockApi.IssueNotes.all.mockResolvedValue([]);
+
+    const result = await issueBotHandler(api, fakeEvent, { silent: true });
+
+    expect(result.success).toBe(true);
+
+    const expectedComment = `The issue must have one of the following labels:
+- ~"Priority::Normal"
+- ~"Priority::Important"
+- ~"Priority::Must Have"
+- ~"Priority::Hot Fix"
+\n\nI am assigning the default label ~"Priority::Normal". Please replace with the correct label if needed.`;
+    expect(mockApi.IssueNotes.create).toHaveBeenCalledWith(456, 123, expectedComment);
+
+    // It should only be calling once to say something about the priority label
+    expect(mockApi.IssueNotes.create).toHaveBeenCalledTimes(1);
   });
 });
