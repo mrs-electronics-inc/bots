@@ -21,8 +21,7 @@ export interface IssueBotOptions {
 
 export const issueBotHandler = async (
   api: IssueBotAPI,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  event: any,
+  event: unknown,
   options?: IssueBotOptions
 ): Promise<{ success: boolean; timestamp?: number }> => {
   // If we are instructed to be verbose then allow regular messages to go to the console too
