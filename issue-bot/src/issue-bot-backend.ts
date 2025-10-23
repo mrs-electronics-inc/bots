@@ -66,7 +66,7 @@ export const issueBotHandler = async (
     await checkHasRequiredLabel(api, issue, config.priorityLabels, config.defaultPriorityLabel);
   }
 
-  // TODO: apply epic label, or leave comment if epic is missing
+  // TODO(#63): apply epic label, or leave comment if epic is missing
 
   return { success: true, timestamp: Date.now() };
 };
