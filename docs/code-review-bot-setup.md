@@ -1,6 +1,6 @@
 # Setting Up the Code Review Bot
 
-This page shows examples of how to set up the Code Review Bot in GitHub and Gitlab CI/CD, along with steps for optional extra configuration.
+This page shows examples of how to set up the Code Review Bot in GitHub and GitLab CI/CD, along with steps for optional extra configuration.
 
 ## GitHub Workflow
 
@@ -55,7 +55,7 @@ run_code_review_bot:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: manual
-      allow_failure: true # Necessary so that Gitlab doesn't block the pipeline
+      allow_failure: true # Necessary so that GitLab doesn't block the pipeline
   variables:
     OPENROUTER_KEY: $API_KEY_CODE_REVIEW_BOT
     GITLAB_TOKEN: $TOKEN_CODE_REVIEW_BOT

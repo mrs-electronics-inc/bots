@@ -13,7 +13,7 @@ async function main() {
     {
       helpArg: 'help',
       headerContentSections: [
-        { header: 'MRS Issue Bot', content: 'Automated tooling for Gitlab issue management' },
+        { header: 'MRS Issue Bot', content: 'Automated tooling for GitLab issue management' },
       ],
     }
   );

@@ -4,7 +4,7 @@ type GitlabInstance = InstanceType<typeof Gitlab>;
 
 // This defines an interface for the components of an issue that we care about.
 export interface Issue {
-  // On Gitlab, this will be issue.iid, not issue.id.
+  // On GitLab, this will be issue.iid, not issue.id.
   id: number;
   title: string;
   labels: Label[];

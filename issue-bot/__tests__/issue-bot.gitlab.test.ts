@@ -115,6 +115,7 @@ describe('issue bot', () => {
 
     expect(result.success).toBe(false);
     expect(mockApi.Issues.edit).not.toHaveBeenCalled();
+    expect(mockApi.IssueNotes.create).not.toHaveBeenCalled();
   });
 
   it('should add comment for invalid issue type', async () => {

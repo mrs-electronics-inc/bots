@@ -1,12 +1,16 @@
 # Setting Up the Issue Bot
 
-This page shows examples of how to set up the Issue Bot in Gitlab CI/CD and configure its operation.
+This page shows examples of how to set up the Issue Bot in GitLab CI/CD and configure its operation.
+
+## GitHub Workflow
+
+Coming soon...
 
 ## GitLab Pipeline
 
 ### Token and Webhook Setup
 
-To run the issue bot, you will first need to set up an access token so that it's able to access your Gitlab projects. Create the token at the group level so that only one token is needed.
+To run the issue bot, you will first need to set up an access token so that it's able to access your GitLab projects. Create the token at the group level so that only one token is needed.
 
 1. Go to **Settings > Access tokens** in your group.
 2. Click on **Add new token**.
@@ -39,7 +43,7 @@ You've now created the webhook for triggering the issue bot! All that's left is 
 
 The basic flow is:
 
-- Create Gitlab access token for the bot scripts to use when running in CI/CD jobs
+- Create GitLab access token for the bot scripts to use when running in CI/CD jobs
 - Create pipeline trigger token and webhook to trigger pipelines on certain project events
 
 Here are some helpful links if you want more information:

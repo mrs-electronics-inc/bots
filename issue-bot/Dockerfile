@@ -16,8 +16,4 @@ COPY src/* /root
 # Add entrypoint script.
 COPY gitlab_issue_bot.sh /bin
 
-# This is where the git repo will be mounted.
-WORKDIR /repo
-RUN git config --global --add safe.directory /repo
-
 CMD ["/bin/bash"]
