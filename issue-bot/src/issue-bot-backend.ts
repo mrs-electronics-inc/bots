@@ -1,6 +1,10 @@
 import { IssueBotAPI, Issue, Label } from './apis';
 import { parseIssueBotConfig } from './config-parser';
 
+// This is the name that the bot should have in projects,
+// assuming users follow the setup steps correctly.
+const ISSUE_BOT_NAME = 'Issue Bot';
+
 // eslint-disable-next-line no-undef
 var logger: Console = {
   ...console,
@@ -48,7 +52,7 @@ export const issueBotHandler = async (
   }
 
   // Prevent a loop of bots triggering more bots.
-  if (parsedEvent.user.name.includes('Issue Bot')) {
+  if (parsedEvent.user.name.includes(ISSUE_BOT_NAME)) {
     logger.warn('Handler triggered by another issue bot. Exiting early.');
     return { success: false };
   }
@@ -150,7 +154,7 @@ const checkHasRequiredLabel = async (
 
 const addBotComment = async (api: IssueBotAPI, issue: Issue, comment: string): Promise<void> => {
   const notes = await api.getComments(issue.projectId, issue.id);
-  const botNotes = notes.filter((n) => n.author.name.includes('Issue Bot'));
+  const botNotes = notes.filter((n) => n.author.name.includes(ISSUE_BOT_NAME));
   if (botNotes.length > 0) {
     // Use the most recent bot note
     const botNote = botNotes[botNotes.length - 1];

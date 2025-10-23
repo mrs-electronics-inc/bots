@@ -14,7 +14,7 @@ To run the issue bot, you will first need to set up an access token so that it's
 
 1. Go to **Settings > Access tokens** in your group.
 2. Click on **Add new token**.
-3. Name the token whatever you want. "Issue Bot" is fine.
+3. Name the token "Issue Bot".
 4. Use the `Developer` role for the token, and give it `api` and `read_api` permissions only.
 5. Click **Create group access token** to create the token. Make sure you copy the token's value before you leave the page!
 6. Next, go to **Settings > CI/CD**, and expand the **Variables** section.
