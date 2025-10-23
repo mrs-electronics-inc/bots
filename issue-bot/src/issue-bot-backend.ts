@@ -28,7 +28,7 @@ export const issueBotHandler = async (
     logger.error('No event was passed!');
     return { success: false };
   }
-  logger.log('Event:', event);
+  logger.log('Raw event:', event);
   const parsedEvent = api.parseIssueEvent(event);
   if (!parsedEvent) {
     logger.warn('Ignoring this event, it is irrelevant');
@@ -43,7 +43,8 @@ export const issueBotHandler = async (
 
   logger.log('project/repo id: %s issue id: %s', parsedEvent.project.id, parsedEvent.issue.id);
 
-  const issue: Issue = await api.getIssue(parsedEvent.project.id, parsedEvent.issue.id);
+  const issue = await api.getIssue(parsedEvent.project.id, parsedEvent.issue.id);
+  logger.log('Fetched issue:', issue);
 
   // Do not do anything to closed issues.
   if (issue.state === 'closed') {

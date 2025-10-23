@@ -21,7 +21,7 @@ async function main() {
 
   const token = process.env.TOKEN_ISSUE_BOT!;
   const payload = JSON.parse(process.env.PAYLOAD!);
-  let api = new GitLabAPI(new Gitlab({ token }));
+  let api = new GitLabAPI(new Gitlab({ token, camelize: false }));
   return await issueBotHandler(api, payload, options);
 }
 

@@ -165,4 +165,20 @@ describe('issue bot', () => {
     // It should only be calling once to say something about the priority label
     expect(mockApi.IssueNotes.create).toHaveBeenCalledTimes(1);
   });
+
+  it('should not add comment if priority label is present', async () => {
+    mockApi.Issues.show.mockResolvedValue({
+      iid: 123,
+      title: 'feat: some issue',
+      labels: ['Priority::Normal'],
+      state: 'opened',
+      project_id: 456,
+    });
+    mockApi.IssueNotes.all.mockResolvedValue([]);
+
+    const result = await issueBotHandler(api, fakeEvent, { silent: true });
+
+    expect(result.success).toBe(true);
+    expect(mockApi.IssueNotes.create).toHaveBeenCalledTimes(0);
+  });
 });

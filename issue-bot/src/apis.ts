@@ -1,4 +1,4 @@
-import { Gitlab } from '@gitbeaker/rest';
+import { Gitlab, IssueSchema, SimpleLabelSchema } from '@gitbeaker/rest';
 
 type GitlabInstance = InstanceType<typeof Gitlab>;
 
@@ -96,11 +96,24 @@ export class GitLabAPI implements IssueBotAPI {
   }
 
   async getIssue(projectId: number, issueId: number): Promise<Issue> {
-    const issue = await this.api.Issues.show(issueId, { projectId });
+    const issue = (await this.api.Issues.show(issueId, { projectId })) as IssueSchema;
+
+    // Figure out whether the labels were returned as objects or strings and parse out accordingly.
+    var labels: Label[] = [];
+    const labelsAsStrings = issue.labels as string[];
+    const labelsAsSchema = issue.labels as SimpleLabelSchema[];
+    if (issue.labels.length > 0) {
+      if (typeof issue.labels[0] === 'string') {
+        labels = labelsAsStrings.map((l) => ({ name: l }));
+      } else {
+        labels = labelsAsSchema.map((l) => ({ name: l.name }));
+      }
+    }
+
     return {
       id: issue.iid,
       title: issue.title,
-      labels: issue.labels as Label[],
+      labels,
       state: issue.state === 'opened' ? 'open' : 'closed',
       projectId: issue.project_id as number,
     };
