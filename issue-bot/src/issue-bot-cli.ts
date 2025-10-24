@@ -1,5 +1,5 @@
 import { Gitlab } from '@gitbeaker/rest';
-import { GitLabAPI } from './apis';
+import { IssueBotGitlabAPI } from './apis';
 import { issueBotHandler, IssueBotOptions } from './issue-bot-backend';
 import { parse } from 'ts-command-line-args';
 
@@ -21,7 +21,7 @@ async function main() {
 
   const token = process.env.TOKEN_ISSUE_BOT!;
   const payload = JSON.parse(process.env.PAYLOAD!);
-  let api = new GitLabAPI(new Gitlab({ token, camelize: false }));
+  let api = new IssueBotGitlabAPI(new Gitlab({ token, camelize: false }));
   return await issueBotHandler(api, payload, options);
 }
 

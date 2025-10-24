@@ -1,5 +1,5 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { GitLabAPI } from '../src/apis';
+import { GitlabIssueEventBody, IssueBotGitlabAPI } from '../src/apis';
 import { issueBotHandler } from '../src/issue-bot-backend';
 
 // Mock fs for reading config file
@@ -32,11 +32,12 @@ jest.mock('fs', () => ({
 }));
 
 describe('issue bot', () => {
+  // This mocks the Gitlab API in a fairly simplistic way. It might be good to create a better mock eventually
+  // but it would take some work.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockApi: any;
-  let api: GitLabAPI;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let fakeEvent: any;
+  let api: IssueBotGitlabAPI;
+  let fakeEvent: GitlabIssueEventBody;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -56,7 +57,7 @@ describe('issue bot', () => {
     // Set up mock return values
     mockApi.IssueNotes.all.mockResolvedValue([]);
 
-    api = new GitLabAPI(mockApi);
+    api = new IssueBotGitlabAPI(mockApi);
 
     fakeEvent = {
       event_type: 'issue',

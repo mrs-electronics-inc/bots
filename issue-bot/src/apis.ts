@@ -38,8 +38,7 @@ export interface IssueEvent {
 // These are all of the methods that the issue bot will need to use.
 // These are platform-agnostic, which means that the same methods will be used on both GitHub and GitLab.
 export interface IssueBotAPI {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  parseIssueEvent(eventBody: any): IssueEvent | undefined;
+  parseIssueEvent(eventBody: unknown): IssueEvent | undefined;
   getIssue(projectId: string | number, issueId: number): Promise<Issue>;
   editIssue(
     projectId: string | number,
@@ -57,12 +56,51 @@ export interface IssueBotAPI {
   getComments(projectId: string | number, issueId: number): Promise<Comment[]>;
 }
 
+// ---------------------------------------------------------------------------------------------
 // GitLab API implementation
-export class GitLabAPI implements IssueBotAPI {
+// ---------------------------------------------------------------------------------------------
+
+// This interface defines all the important parts of the GitLab event.
+export interface GitlabIssueEventBody {
+  event_type: string;
+  object_attributes: {
+    noteable_type?: string;
+    iid?: number;
+  };
+  issue?: {
+    iid: number;
+  };
+  user: {
+    name: string;
+  };
+  project: {
+    id: number;
+  };
+  repository: {
+    name: string;
+  };
+}
+
+function isGitlabIssueEventBody(body: unknown): body is GitlabIssueEventBody {
+  return (
+    typeof body === 'object' &&
+    body !== null &&
+    'event_type' in body &&
+    'user' in body &&
+    'project' in body &&
+    'repository' in body
+  );
+}
+
+export class IssueBotGitlabAPI implements IssueBotAPI {
   constructor(private api: GitlabInstance) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  parseIssueEvent(eventBody: any): IssueEvent | undefined {
+  parseIssueEvent(eventBody: GitlabIssueEventBody): IssueEvent | undefined {
+    // Return early with undefined if the payload does not match what we're expecting.
+    if (!isGitlabIssueEventBody(eventBody)) {
+      return undefined;
+    }
+
     let eventType: IssueEventType;
     if (eventBody!.event_type == 'issue') {
       eventType = IssueEventType.issue;
@@ -77,14 +115,22 @@ export class GitLabAPI implements IssueBotAPI {
       return undefined;
     }
 
+    // Make sure we can determine a valid issue ID.
+    const issueId =
+      (eventType == IssueEventType.issue
+        ? eventBody.object_attributes.iid
+        : eventBody.issue?.iid) ?? -1;
+    if (issueId < 0) {
+      return undefined;
+    }
+
     return {
       eventType,
       user: {
         name: eventBody.user.name,
       },
       issue: {
-        id:
-          eventType == IssueEventType.issue ? eventBody.object_attributes.iid : eventBody.issue.iid,
+        id: issueId,
       },
       project: {
         id: eventBody.project.id,
