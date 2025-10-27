@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import pathlib
 
 
@@ -99,36 +100,36 @@ def test_verify_review_content_duplicate_section():
     )
 
 
-def test_rate_limit_decorator_enforces_limit_and_preserves_name():
+def test_rate_limit_tool_decorator_enforces_limit_and_preserves_name():
     utils = load_utils_module()
 
-    @utils.rate_limit(limit=2, error="too many")
+    @utils.rate_limit_tool(limit=2, error="too many")
     def multiply(x):
-        return x * 2
+        return json.dumps({"result": x * 2})
 
     # decorator should preserve function name via functools.wraps
     assert multiply.__name__ == "multiply"
 
-    assert multiply(2) == 4
-    assert multiply(3) == 6
+    assert multiply(2) == '{"result": 4}'
+    assert multiply(3) == '{"result": 6}'
     # third call exceeds limit -> returns error dict
     assert multiply(5) == '{"error": "too many"}'
 
 
-def test_rate_limit_decorator_isolated_counts():
+def test_rate_limit_tool_decorator_isolated_counts():
     utils = load_utils_module()
 
-    @utils.rate_limit(limit=1, error="first limit")
+    @utils.rate_limit_tool(limit=1, error="first limit")
     def a():
-        return "a"
+        return '{"result": "a"}'
 
-    @utils.rate_limit(limit=2, error="second limit")
+    @utils.rate_limit_tool(limit=2, error="second limit")
     def b():
-        return "b"
+        return '{"result": "b"}'
 
-    assert a() == "a"
+    assert a() == '{"result": "a"}'
     assert a() == '{"error": "first limit"}'
 
-    assert b() == "b"
-    assert b() == "b"
+    assert b() == '{"result": "b"}'
+    assert b() == '{"result": "b"}'
     assert b() == '{"error": "second limit"}'

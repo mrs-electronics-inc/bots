@@ -38,7 +38,7 @@ def verify_review_content(content: str):
     return ""
 
 
-def rate_limit(*, limit: int, error: str):
+def rate_limit_tool(*, limit: int, error: str):
     """
     Decorator that enforces the given rate limit on the decorated function.
     It is intended for rate limiting our tool functions, which return serialized
