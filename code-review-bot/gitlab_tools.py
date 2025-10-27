@@ -130,7 +130,7 @@ def post_comment(content: str, reason: str):
 
     error = utils.verify_comment_reason(reason)
     if error:
-        return {"error": error}
+        return json.dumps({"error": error})
 
     mr.notes.create({"body": content})
     return json.dumps({"success": "Created new GitLab comment"})
@@ -147,7 +147,7 @@ def post_review(content: str):
     """
     error = utils.verify_review_content(content)
     if error:
-        return {"error": error}
+        return json.dumps({"error": error})
 
     mr = _get_mr()
     if mr is None:

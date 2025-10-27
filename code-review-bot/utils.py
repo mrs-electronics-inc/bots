@@ -42,7 +42,8 @@ def rate_limit_tool(*, limit: int, error: str):
     """
     Decorator that enforces the given rate limit on the decorated function.
     It is intended for rate limiting our tool functions, which return serialized
-    JSON objects.
+    JSON objects and run in a single-threaded environment.
+    It is NOT designed to be thread-safe.
     When the limit is hit, it will return a string which serializes
     {"error": error}
     """
