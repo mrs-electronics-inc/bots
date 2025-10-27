@@ -33,3 +33,15 @@ def verify_review_content(content: str):
         if content.count(section) != 1:
             return f'Message must contain exactly one "{section}" section'
     return ""
+
+
+class RateLimiter:
+    def __init__(self, limit):
+        self._limit = limit
+        self._count = 0
+
+    def is_limited(self) -> bool:
+        if self._count >= self._limit:
+            return True
+        self._count += 1
+        return False
