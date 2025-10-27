@@ -45,6 +45,8 @@ def rate_limit(limit: int, error: str):
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            nonlocal count
+
             if count >= limit:
                 return {"error": error}
             count += 1
