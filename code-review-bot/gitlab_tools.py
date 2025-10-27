@@ -4,12 +4,6 @@ import gitlab
 import subprocess
 import utils
 
-# Maximum of 5 comments per review session
-comment_rate_limiter = utils.RateLimiter(5)
-
-# Maximum of 1 review comment per review session
-review_rate_limiter = utils.RateLimiter(1)
-
 
 def get_details() -> str:
     """
@@ -117,6 +111,10 @@ def get_comments() -> str:
     return json.dumps(comment_list)
 
 
+@utils.rate_limit(
+    limit=5,
+    error="You have already posted the maximum number of comments for this review session. DO NOT try again!",
+)
 def post_comment(content: str, reason: str):
     """
     Post a comment on the change request.
@@ -134,15 +132,14 @@ def post_comment(content: str, reason: str):
     if error:
         return {"error": error}
 
-    if comment_rate_limiter.is_limited():
-        return {
-            "error": "You have posted the maximum number of comments comments for this review session. DO NOT try again!"
-        }
-
     mr.notes.create({"body": content})
     return json.dumps({"success": "Created new GitLab comment"})
 
 
+@utils.rate_limit(
+    limit=1,
+    error="You have already posted the overall review comment for this review session. DO NOT try again!",
+)
 def post_review(content: str):
     """
     Update the overall review comment.
@@ -166,11 +163,6 @@ def post_review(content: str):
         if is_author and utils.is_review_comment(note.body):
             comment_id = note.id
             break
-
-    if review_rate_limiter.is_limited():
-        return {
-            "error": "You have already posted the overall review comment for this review sessions. DO NOT try again!"
-        }
 
     # Create or update the comment
     if comment_id:

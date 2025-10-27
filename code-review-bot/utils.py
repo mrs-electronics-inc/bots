@@ -1,3 +1,5 @@
+import functools
+
 # Prefixes for review comments
 required_prefixes = ["# Review", "# Changes Requested"]
 # Reasons to post a comment. We have these to force the bot to justify each
@@ -35,13 +37,19 @@ def verify_review_content(content: str):
     return ""
 
 
-class RateLimiter:
-    def __init__(self, limit):
-        self._limit = limit
-        self._count = 0
+def rate_limit(limit: int, error: str):
+    """Decorator that enforces a limiter created from `limit` for the decorated function."""
 
-    def is_limited(self) -> bool:
-        if self._count >= self._limit:
-            return True
-        self._count += 1
-        return False
+    def decorator(func):
+        count = 0
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if count >= limit:
+                return {"error": error}
+            count += 1
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
