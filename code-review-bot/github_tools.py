@@ -7,6 +7,7 @@ import utils
 # In the future we may make this configurable.
 BOT_USERNAME = "github-actions[bot]"
 
+
 def get_details() -> str:
     """
     Get the overall details for the change request.
@@ -112,7 +113,7 @@ def get_comments() -> str:
     return json.dumps(comment_list)
 
 
-@utils.rate_limit(
+@utils.rate_limit_tool(
     limit=5,
     error="You have already posted the maximum number of comments for this review session. DO NOT try again!",
 )
@@ -137,7 +138,7 @@ def post_comment(content: str, reason: str):
     return json.dumps({"success": "Created new GitHub comment"})
 
 
-@utils.rate_limit(
+@utils.rate_limit_tool(
     limit=1,
     error="You have already posted the overall review comment for this review session. DO NOT try again!",
 )
@@ -162,7 +163,7 @@ def post_review(content: str):
     # Look for an existing review comment
     bot_comment = None
     for comment in reversed(comments):
-        is_author = comment.user.login == BOT_USERNAME:
+        is_author = comment.user.login == BOT_USERNAME
         if is_author and utils.is_review_comment(comment.body):
             bot_comment = comment
             break
