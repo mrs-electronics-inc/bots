@@ -3,6 +3,9 @@ import json
 import github
 import utils
 
+# This is currently the only support bot username for now.
+# In the future we may make this configurable.
+BOT_USERNAME = "github-actions[bot]"
 
 def get_details() -> str:
     """
@@ -151,13 +154,15 @@ def post_review(content: str):
     if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
 
-    # Get all comments on the PR
+    # Get all "issue comments" on the PR
+    # We ONLY need to check the "issue comments" because those are the ONLY way
+    # we post the overall review comments
     comments = list(pr.get_issue_comments())
 
     # Look for an existing review comment
     bot_comment = None
     for comment in reversed(comments):
-        is_author = comment.user.login == "github-actions[bot]"
+        is_author = comment.user.login == BOT_USERNAME:
         if is_author and utils.is_review_comment(comment.body):
             bot_comment = comment
             break
