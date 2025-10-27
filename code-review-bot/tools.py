@@ -110,9 +110,14 @@ class ToolsContext:
         """
         Callback function called after a tool is executed.
         """
-        print(
-            f"Called tool {tool.name} with arguments {tool_call.arguments}, response length: {len(tool_result.output)}"
-        )
+        if len(tool_result.output) < 100:
+            print(
+                f"Called tool {tool.name} with arguments {tool_call.arguments}, response: {tool_result.output}"
+            )
+        else:
+            print(
+                f"Called tool {tool.name} with arguments {tool_call.arguments}, response length: {len(tool_result.output)}"
+            )
         self.results.append(
             {
                 "name": tool.name,
