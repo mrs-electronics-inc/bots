@@ -1,0 +1,33 @@
+name: Test code-review-bot
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'code-review-bot/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'code-review-bot/**'
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r code-review-bot/requirements.txt
+
+      - name: Run pytest
+        run: pytest code-review-bot/__tests__ -q

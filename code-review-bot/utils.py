@@ -37,7 +37,7 @@ def verify_review_content(content: str):
     return ""
 
 
-def rate_limit(limit: int, error: str):
+def rate_limit(*, limit: int, error: str):
     """Decorator that enforces a limiter created from `limit` for the decorated function."""
 
     def decorator(func):

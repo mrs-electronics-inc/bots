@@ -1,4 +1,5 @@
 llm==0.27.1
 llm-openrouter==0.5
+pytest==8.4.2
 python-gitlab==6.3.0
 PyGitHub==2.8.1
