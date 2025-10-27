@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.13.0-rc6
+      image: ghcr.io/mrs-electronics-inc/bots/code-review:0.13.0-rc7
 
     permissions:
       pull-requests: write
