@@ -12,7 +12,6 @@ repos:
     hooks:
       - id: eslint
         name: eslint
-        # TODO: only add staged files back
         entry: bash -c "cd issue-bot && npm run lint:fix"
         language: system
         files: ^issue-bot(?:/.+)*\.ts$
@@ -20,7 +19,6 @@ repos:
 
       - id: prettier
         name: prettier
-        # TODO: only add staged files back
         entry: bash -c "cd issue-bot && npm run format"
         language: system
         files: ^issue-bot(?:/.+)*\.ts$
