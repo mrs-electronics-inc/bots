@@ -3,7 +3,7 @@
 Generate LLM code review using the LLM Python API.
 
 Environment Variables:
-- REVIEW_MODEL: Model to use (default: 'openrouter/qwen/qwen3-coder')
+- REVIEW_MODEL: Model to use (optional, will default to something reasonable and cost-effective)
 - PLATFORM: 'github' or 'gitlab' (default: 'github')
 
 The script reads the system prompt template, substitutes environment variables,
@@ -21,7 +21,7 @@ MAX_RETRIES = 3
 
 def main():
     # Get environment variables
-    review_model = os.getenv("REVIEW_MODEL", "openrouter/x-ai/grok-code-fast-1")
+    review_model = os.getenv("REVIEW_MODEL", "openrouter/openai/gpt-5-mini")
     platform = os.getenv("PLATFORM", "github")
 
     # Get model
