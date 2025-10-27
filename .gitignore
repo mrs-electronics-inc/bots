@@ -1,5 +1,6 @@
 .env
 .aider*
+*.orig
 
 # Python
 __pycache__/

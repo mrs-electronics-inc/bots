@@ -1,0 +1,25 @@
+fail_fast: true
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        entry: bash -c "cd issue-bot && npm run lint:fix"
+        language: system
+        files: ^issue-bot(?:/.+)*\.ts$
+        pass_filenames: false
+
+      - id: prettier
+        name: prettier
+        entry: bash -c "cd issue-bot && npm run format"
+        language: system
+        files: ^issue-bot(?:/.+)*\.ts$
+        pass_filenames: true
