@@ -111,7 +111,7 @@ def get_comments() -> str:
     return json.dumps(comment_list)
 
 
-@utils.rate_limit(
+@utils.rate_limit_tool(
     limit=5,
     error="You have already posted the maximum number of comments for this review session. DO NOT try again!",
 )
@@ -136,7 +136,7 @@ def post_comment(content: str, reason: str):
     return json.dumps({"success": "Created new GitLab comment"})
 
 
-@utils.rate_limit(
+@utils.rate_limit_tool(
     limit=1,
     error="You have already posted the overall review comment for this review session. DO NOT try again!",
 )
