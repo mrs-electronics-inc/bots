@@ -39,7 +39,13 @@ def verify_review_content(content: str):
 
 
 def rate_limit(*, limit: int, error: str):
-    """Decorator that enforces a limiter created from `limit` for the decorated function."""
+    """
+    Decorator that enforces the given rate limit on the decorated function.
+    It is intended for rate limiting our tool functions, which return serialized
+    JSON objects.
+    When the limit is hit, it will return a string which serializes
+    {"error": error}
+    """
 
     def decorator(func):
         count = 0
