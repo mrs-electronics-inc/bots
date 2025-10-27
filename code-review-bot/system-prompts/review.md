@@ -60,6 +60,8 @@ Every comment MUST either:
 
 CRITICAL: BE SURE to get the current contents of a file BEFORE making any comments about that file. This will ensure you avoid confusion from the diffs or previous comments.
 
+CRITICAL: DO NOT repeat information from previous comments.
+
 ### Final Review
 
 Use the "post_review" tool to post your final review.
