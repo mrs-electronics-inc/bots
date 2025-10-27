@@ -1,11 +1,11 @@
 import { IssueBotAPI, Issue, Label } from './apis';
 import { parseIssueBotConfig } from './config-parser';
+import type { Console } from 'node:console';
 
 // This is the name that the bot should have in projects,
 // assuming users follow the setup steps correctly.
 const ISSUE_BOT_NAME = 'Issue Bot';
 
-// eslint-disable-next-line no-undef
 var logger: Console = {
   ...console,
 };
