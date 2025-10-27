@@ -112,7 +112,7 @@ def test_rate_limit_decorator_enforces_limit_and_preserves_name():
     assert multiply(2) == 4
     assert multiply(3) == 6
     # third call exceeds limit -> returns error dict
-    assert multiply(5) == {"error": "too many"}
+    assert multiply(5) == '{"error": "too many"}'
 
 
 def test_rate_limit_decorator_isolated_counts():
@@ -127,8 +127,8 @@ def test_rate_limit_decorator_isolated_counts():
         return "b"
 
     assert a() == "a"
-    assert a() == {"error": "first limit"}
+    assert a() == '{"error": "first limit"}'
 
     assert b() == "b"
     assert b() == "b"
-    assert b() == {"error": "second limit"}
+    assert b() == '{"error": "second limit"}'

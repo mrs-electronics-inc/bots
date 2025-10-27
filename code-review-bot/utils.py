@@ -1,4 +1,5 @@
 import functools
+import json
 
 # Prefixes for review comments
 required_prefixes = ["# Review", "# Changes Requested"]
@@ -48,7 +49,7 @@ def rate_limit(*, limit: int, error: str):
             nonlocal count
 
             if count >= limit:
-                return {"error": error}
+                return json.dumps({"error": error})
             count += 1
             return func(*args, **kwargs)
 
