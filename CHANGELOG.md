@@ -1,7 +1,8 @@
 # Changelog
 
-## v0.13.0 (upcoming)
+## v0.13.0
 
+- [#65](https://github.com/mrs-electronics-inc/bots/pull/65) - fix: comment repetitions
 - [#51](https://github.com/mrs-electronics-inc/bots/pull/51) - feat: add issue bot
 - [#59](https://github.com/mrs-electronics-inc/bots/pull/59) - docs: definition of name
 

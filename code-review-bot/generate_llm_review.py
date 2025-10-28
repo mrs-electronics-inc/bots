@@ -3,7 +3,8 @@
 Generate LLM code review using the LLM Python API.
 
 Environment Variables:
-- REVIEW_MODEL: Model to use (default: 'openrouter/qwen/qwen3-coder')
+- REVIEW_MODEL: Main model to use for review (optional, will default to something reasonable and cost-effective)
+- SECONDARY_MODEL: Model to use for secondary tasks like filtering review comments from the main review model
 - PLATFORM: 'github' or 'gitlab' (default: 'github')
 
 The script reads the system prompt template, substitutes environment variables,
@@ -21,14 +22,23 @@ MAX_RETRIES = 3
 
 def main():
     # Get environment variables
-    review_model = os.getenv("REVIEW_MODEL", "openrouter/x-ai/grok-code-fast-1")
+    review_model_id = os.getenv("REVIEW_MODEL", "openrouter/openai/gpt-5-mini")
+    secondary_model_id = os.getenv(
+        "SECONDARY_MODEL", "openrouter/openai/gpt-5-nano"
+    )
     platform = os.getenv("PLATFORM", "github")
 
-    # Get model
+    # Get review model
     try:
-        model = llm.get_model(review_model)
+        review_model = llm.get_model(review_model_id)
     except llm.UnknownModelError:
-        print(f"Error: Unknown model '{review_model}'", file=sys.stderr)
+        print(f"Error: Unknown model '{review_model_id}'", file=sys.stderr)
+        sys.exit(1)
+    # Get secondary model
+    try:
+        secondary_model = llm.get_model(secondary_model_id)
+    except llm.UnknownModelError:
+        print(f"Error: Unknown model '{secondary_model_id}'", file=sys.stderr)
         sys.exit(1)
 
     # Read system prompt template
@@ -52,37 +62,26 @@ def main():
         system_prompt += "\n\n# Repo-specific Instructions\n\nNone."
 
     # Generate response
-    response_text = get_response_text(model, system_prompt)
+    try:
+        tools_context = ToolsContext()
+        response = review_model.chain(
+            "Please review my merge request using the provided tools.",
+            system=system_prompt,
+            tools=get_review_tools(secondary_model),
+            before_call=tools_context.before_tool_call,
+            after_call=tools_context.after_tool_call,
+        )
+        response_text = response.text()
+        print("Response length:", len(response_text))
+        with open(".bots/response/tool-results.json", "w") as f:
+            json.dump(tools_context.results, f)
+    except Exception as e:
+        print(f"Error generating LLM response: {str(e)}", file=sys.stderr)
+        sys.exit(1)
 
     print("Response:", response_text)
 
     print("Review generated successfully")
-
-
-def get_response_text(model, system_prompt):
-    try:
-        for i in range(MAX_RETRIES):
-            tools_context = ToolsContext()
-            response = model.chain(
-                "Please review my merge request using the provided tools.",
-                system=system_prompt,
-                tools=get_review_tools(),
-                before_call=tools_context.before_tool_call,
-                after_call=tools_context.after_tool_call,
-            )
-            response_text = response.text()
-            print("Response length:", len(response_text))
-            if len(response_text) > 3:
-                with open(".bots/response/tool-results.json", "w") as f:
-                    json.dump(tools_context.results, f)
-                return response_text
-            else:
-                print(
-                    "Received invalid response:", response_text, file=sys.stderr
-                )
-    except Exception as e:
-        print(f"Error generating LLM response: {str(e)}", file=sys.stderr)
-        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -3,6 +3,10 @@ import json
 import github
 import utils
 
+# This is currently the only supported bot username.
+# In the future we may make this configurable.
+BOT_USERNAME = "github-actions[bot]"
+
 
 def get_details() -> str:
     """
@@ -65,7 +69,7 @@ def get_changed_files() -> str:
     if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
 
-    return "\n".join(list(set(f.filename for f in pr.get_files())))
+    return json.dumps(list(set(f.filename for f in pr.get_files())))
 
 
 def get_diffs() -> str:
@@ -80,19 +84,20 @@ def get_diffs() -> str:
     diffs = []
     for f in files:
         diffs.append(f"diff --git a/{f.filename} b/{f.filename}\n{f.patch}")
-    return "\n".join(diffs)
+    return json.dumps({"diffs": "\n".join(diffs)})
 
 
-def get_comments() -> str:
+def get_comments_api() -> str:
     """
-    Get the comments for the change request.
+    Low-level access to GitHub comments for a merge request.
     """
     pr = _get_pr()
     if pr is None:
-        return json.dumps({"error": "Missing GitHub environment variables"})
+        return {"error": "Missing GitHub environment variables"}
 
     # get_issue_comments returns the comments in the main conversation section
     conversation_comments = pr.get_issue_comments()
+    # get_review_comments returns the comments in the files section
     review_comments = pr.get_review_comments()
     comments = list(conversation_comments) + list(review_comments)
     comments.sort(key=lambda c: c.created_at)
@@ -106,30 +111,26 @@ def get_comments() -> str:
                 "id": c.id,
             }
         )
-    return json.dumps(comment_list)
+    return comment_list
 
 
-def post_comment(content: str, reason: str):
+def post_comment_api(content: str):
     """
-    Post a comment on the change request.
-    Reason must be one of the following:
-        - "suggestion"
-        - "clarification"
-        - "warning"
-        - "response"
+    Used by tools.create_post_comment_tool to create a tool
+    to post comments to GitHub
     """
     pr = _get_pr()
     if pr is None:
-        return json.dumps({"error": "Missing GitHub environment variables"})
-
-    error = utils.verify_comment_reason(reason)
-    if error:
-        return {"error": error}
+        return {"error": "Missing GitHub environment variables"}
 
     pr.create_issue_comment(content)
-    return json.dumps({"success": "Created new GitHub comment"})
+    return {"success": "Created new GitHub comment"}
 
 
+@utils.rate_limit_tool(
+    limit=1,
+    error="You have already posted the overall review comment for this review session. DO NOT try again!",
+)
 def post_review(content: str):
     """
     Update the overall review comment.
@@ -137,19 +138,21 @@ def post_review(content: str):
     """
     error = utils.verify_review_content(content)
     if error:
-        return {"error": error}
+        return json.dumps({"error": error})
 
     pr = _get_pr()
     if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
 
-    # Get all comments on the PR
+    # Get all "issue comments" on the PR
+    # We ONLY need to check the "issue comments" because those are the ONLY way
+    # we post the overall review comments
     comments = list(pr.get_issue_comments())
 
     # Look for an existing review comment
     bot_comment = None
     for comment in reversed(comments):
-        is_author = comment.user.login == "github-actions[bot]"
+        is_author = comment.user.login == BOT_USERNAME
         if is_author and utils.is_review_comment(comment.body):
             bot_comment = comment
             break

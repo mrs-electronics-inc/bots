@@ -1,3 +1,6 @@
+import functools
+import json
+
 # Prefixes for review comments
 required_prefixes = ["# Review", "# Changes Requested"]
 # Reasons to post a comment. We have these to force the bot to justify each
@@ -33,3 +36,30 @@ def verify_review_content(content: str):
         if content.count(section) != 1:
             return f'Message must contain exactly one "{section}" section'
     return ""
+
+
+def rate_limit_tool(*, limit: int, error: str):
+    """
+    Decorator that enforces the given rate limit on the decorated function.
+    It is intended for rate limiting our tool functions, which return serialized
+    JSON objects and run in a single-threaded environment.
+    It is NOT designed to be thread-safe. It is designed to be process-local.
+    When the limit is hit, it will return a string which serializes
+    {"error": error}
+    """
+
+    def decorator(func):
+        count = 0
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            nonlocal count
+
+            if count >= limit:
+                return json.dumps({"error": error})
+            count += 1
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

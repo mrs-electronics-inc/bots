@@ -60,6 +60,14 @@ Every comment MUST either:
 
 CRITICAL: BE SURE to get the current contents of a file BEFORE making any comments about that file. This will ensure you avoid confusion from the diffs or previous comments.
 
+CRITICAL: DO NOT repeat information from previous comments. If you are told in the comments that some previous feedback is wrong or incorrect, BE SURE to NOT repeat it!
+
+CRITICAL: ONLY post comments containing important information. You are only allowed to post a very small number of comments, so make certain they are high-impact.
+
+DO NOT waste the author's time with useless comments like:
+
+> The title uses `fix:` which is an allowed conventional commit type for this repo. The `Draft:` prefix is acceptable. No change needed.
+
 ### Final Review
 
 Use the "post_review" tool to post your final review.

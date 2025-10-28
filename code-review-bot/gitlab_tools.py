@@ -83,16 +83,16 @@ def get_diffs() -> str:
         text=True,
         check=True,
     )
-    return result.stdout
+    return json.dumps({"diffs": result.stdout})
 
 
-def get_comments() -> str:
+def get_comments_api() -> str:
     """
-    Get the comments for the change request.
+    Low-level access to GitLab comments for a merge request.
     """
     mr = _get_mr()
     if mr is None:
-        return json.dumps({"error": "Missing GitLab environment variables"})
+        return {"error": "Missing GitLab environment variables"}
 
     notes = mr.notes.list(get_all=True)
     # Reverse to oldest first
@@ -108,30 +108,26 @@ def get_comments() -> str:
                 "id": n.id,
             }
         )
-    return json.dumps(comment_list)
+    return comment_list
 
 
-def post_comment(content: str, reason: str):
+def post_comment_api(content: str):
     """
-    Post a comment on the change request.
-    Reason must be one of the following:
-        - "suggestion"
-        - "clarification"
-        - "warning"
-        - "response"
+    Used by tools.create_post_comment_tool to create a tool
+    to post comments to GitLab
     """
     mr = _get_mr()
     if mr is None:
-        return json.dumps({"error": "Missing GitLab environment variables"})
-
-    error = utils.verify_comment_reason(reason)
-    if error:
-        return {"error": error}
+        return {"error": "Missing GitLab environment variables"}
 
     mr.notes.create({"body": content})
-    return json.dumps({"success": "Created new GitLab comment"})
+    return {"success": "Created new GitLab comment"}
 
 
+@utils.rate_limit_tool(
+    limit=1,
+    error="You have already posted the overall review comment for this review session. DO NOT try again!",
+)
 def post_review(content: str):
     """
     Update the overall review comment.
@@ -139,7 +135,7 @@ def post_review(content: str):
     """
     error = utils.verify_review_content(content)
     if error:
-        return {"error": error}
+        return json.dumps({"error": error})
 
     mr = _get_mr()
     if mr is None:
