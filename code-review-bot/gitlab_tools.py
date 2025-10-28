@@ -86,13 +86,13 @@ def get_diffs() -> str:
     return json.dumps({"diffs": result.stdout})
 
 
-def get_comments() -> str:
+def get_comments_api() -> str:
     """
-    Get the comments for the change request.
+    Low-level access to GitLab comments for a merge request.
     """
     mr = _get_mr()
     if mr is None:
-        return json.dumps({"error": "Missing GitLab environment variables"})
+        return {"error": "Missing GitLab environment variables"}
 
     notes = mr.notes.list(get_all=True)
     # Reverse to oldest first
@@ -108,44 +108,20 @@ def get_comments() -> str:
                 "id": n.id,
             }
         )
-    return json.dumps(comment_list)
+    return comment_list
 
 
-@utils.rate_limit_tool(
-    limit=3,
-    error="You have already posted the maximum number of comments for this review session. DO NOT try again!",
-)
-def post_comment(
-    content: str,
-    reason: str,
-    duplicate_amount: float,
-):
+def post_comment_api(content: str):
     """
-    Post a comment on the change request.
-    reason must be one of the following:
-        - "suggestion"
-        - "clarification"
-        - "warning"
-        - "response"
-    duplicate_amount must indicate a value between 0.0 and 1.0 indicating how
-    much of the information in the comment was already given in previous comments
+    Used by tools.create_post_comment_tool to create a tool
+    to post comments to GitLab
     """
     mr = _get_mr()
     if mr is None:
-        return json.dumps({"error": "Missing GitLab environment variables"})
-
-    error = utils.verify_comment_reason(reason)
-    if error:
-        return json.dumps({"error": error})
-
-    if duplicate_amount <= 0:
-        return json.dumps({"error": "Inaccurate duplicate_amount"})
-
-    if duplicate_amount >= 0.5:
-        return json.dumps({"error": "Do NOT post duplicate comments!"})
+        return {"error": "Missing GitLab environment variables"}
 
     mr.notes.create({"body": content})
-    return json.dumps({"success": "Created new GitLab comment"})
+    return {"success": "Created new GitLab comment"}
 
 
 @utils.rate_limit_tool(

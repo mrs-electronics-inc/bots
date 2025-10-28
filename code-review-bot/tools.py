@@ -6,31 +6,43 @@ import github_tools
 import gitlab_tools
 
 
-def get_review_tools():
+def get_review_tools(cheap_model: llm.Model):
     """
     Get the list of review tools based on the platform.
     """
     platform = os.environ.get("PLATFORM")
     if platform == "github":
+        get_comments = create_get_comments_tool(github_tools.get_comments_api)
+        post_comment = create_post_comment_tool(
+            github_tools.get_comments_api,
+            github_tools.post_comment_api,
+            cheap_model,
+        )
         return [
             github_tools.get_details,
             github_tools.get_commits_details,
             github_tools.get_changed_files,
             github_tools.get_diffs,
             get_file_contents,
-            github_tools.get_comments,
-            github_tools.post_comment,
+            get_comments,
+            post_comment,
             github_tools.post_review,
         ]
     elif platform == "gitlab":
+        get_comments = create_get_comments_tool(gitlab_tools.get_comments_api)
+        post_comment = create_post_comment_tool(
+            gitlab_tools.get_comments_api,
+            gitlab_tools.post_comment_api,
+            cheap_model,
+        )
         return [
             gitlab_tools.get_details,
             gitlab_tools.get_commits_details,
             gitlab_tools.get_changed_files,
             gitlab_tools.get_diffs,
             get_file_contents,
-            gitlab_tools.get_comments,
-            gitlab_tools.post_comment,
+            get_comments,
+            post_comment(gitlab_tools.post_comment_api),
             gitlab_tools.post_review,
         ]
     else:
@@ -86,6 +98,103 @@ def get_file_contents(file_name: str) -> str:
 
     except Exception:
         return "ERROR READING FILE"
+
+
+def create_get_comments_tool(get_comments_api):
+    def get_comments() -> str:
+        """
+        Get the comments for the change request.
+        """
+        return json.dumps(get_comments_api())
+
+    return get_comments
+
+
+def create_post_comment_tool(
+    get_comments_api,
+    post_comment_api,
+    analysis_model,
+):
+    with open("/bots/system-prompts/comment-analysis.md", "r") as f:
+        system_prompt = f.read()
+
+    @utils.rate_limit_tool(
+        limit=3,
+        error="You have already posted the maximum number of comments for this review session. DO NOT try again!",
+    )
+    def post_comment(content: str):
+        """
+        Post a comment on the change request.
+        """
+
+        comments = get_comments_api()
+        scores = analyze_comment(
+            analysis_model, system_prompt, comments, content
+        )
+        if scores["duplication"] > 0.5:
+            return json.dumps(
+                {"error": "Do not post duplicate comments.", "scores": scores}
+            )
+        if scores["accuracy"] < 0.8:
+            return json.dumps(
+                {"error": "Do not post inaccurate comments.", "scores": scores}
+            )
+        if scores["usefulness"] < 0.5:
+            return json.dumps(
+                {"error": "Do not post useless comments.", "scores": scores}
+            )
+        if scores["urgency"] < 0.3:
+            return json.dumps(
+                {
+                    "error": "This comment is too trivial to post.",
+                    "scores": scores,
+                }
+            )
+
+        result = post_comment_api(content)
+        if "error" in result:
+            print("Posting error:", result["error"])
+            return json.dumps(
+                {"error": "Something went wrong. Do not try this tool again"}
+            )
+        else:
+            return json.dumps(
+                {"result": "Successfully posted comment!", "scores": scores}
+            )
+
+    return post_comment
+
+
+def analyze_comment(
+    analysis_model, system_prompt: str, previous_comments, content: str
+):
+    context = {
+        "previous_comments": previous_comments,
+        "incoming_comment": content,
+    }
+
+    schema = {
+        "type": "object",
+        "properties": {
+            "duplication": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "accuracy": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "usefulness": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "urgency": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        },
+        "required": [
+            "duplication",
+            "accuracy",
+            "usefulness",
+            "urgency",
+        ],
+    }
+
+    response = model.prompt(
+        json.dumps(context),
+        system=system_prompt,
+        schema=schema,
+    )
+    return json.loads(response.text())
 
 
 class ToolsContext:

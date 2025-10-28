@@ -87,16 +87,17 @@ def get_diffs() -> str:
     return json.dumps({"diffs": "\n".join(diffs)})
 
 
-def get_comments() -> str:
+def get_comments_api() -> str:
     """
-    Get the comments for the change request.
+    Low-level access to GitLab comments for a merge request.
     """
     pr = _get_pr()
     if pr is None:
-        return json.dumps({"error": "Missing GitHub environment variables"})
+        return {"error": "Missing GitHub environment variables"}
 
     # get_issue_comments returns the comments in the main conversation section
     conversation_comments = pr.get_issue_comments()
+    # get_review_comments returns the comments in the files section
     review_comments = pr.get_review_comments()
     comments = list(conversation_comments) + list(review_comments)
     comments.sort(key=lambda c: c.created_at)
@@ -110,44 +111,20 @@ def get_comments() -> str:
                 "id": c.id,
             }
         )
-    return json.dumps(comment_list)
+    return comment_list
 
 
-@utils.rate_limit_tool(
-    limit=3,
-    error="You have already posted the maximum number of comments for this review session. DO NOT try again!",
-)
-def post_comment(
-    content: str,
-    reason: str,
-    duplicate_amount: float,
-):
+def post_comment_api(content: str):
     """
-    Post a comment on the change request.
-    reason must be one of the following:
-        - "suggestion"
-        - "clarification"
-        - "warning"
-        - "response"
-    duplicate_amount must indicate a value between 0.0 and 1.0 indicating how
-    much of the information in the comment was already given in previous comments
+    Used by tools.create_post_comment_tool to create a tool
+    to post comments to GitHub
     """
     pr = _get_pr()
     if pr is None:
-        return json.dumps({"error": "Missing GitHub environment variables"})
-
-    error = utils.verify_comment_reason(reason)
-    if error:
-        return json.dumps({"error": error})
-
-    if duplicate_amount <= 0:
-        return json.dumps({"error": "Inaccurate duplicate_amount"})
-
-    if duplicate_amount >= 0.5:
-        return json.dumps({"error": "Do NOT post duplicate comments!"})
+        return {"error": "Missing GitHub environment variables"}
 
     pr.create_issue_comment(content)
-    return json.dumps({"success": "Created new GitHub comment"})
+    return {"success": "Created new GitHub comment"}
 
 
 @utils.rate_limit_tool(
