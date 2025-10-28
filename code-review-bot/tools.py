@@ -43,7 +43,7 @@ def get_review_tools(cheap_model: llm.Model):
             gitlab_tools.get_diffs,
             get_file_contents,
             get_comments,
-            post_comment(gitlab_tools.post_comment_api),
+            post_comment,
             gitlab_tools.post_review,
         ]
     else:
@@ -129,6 +129,12 @@ def create_post_comment_tool(
         """
 
         comments = get_comments_api()
+        if "error" in comments:
+            print("Get comments error:", result["error"])
+            return json.dumps(
+                {"error": "Something went wrong. Do not try this tool again"}
+            )
+
         scores = analyze_comment(
             analysis_model, system_prompt, comments, content
         )
@@ -167,7 +173,7 @@ def create_post_comment_tool(
 
 
 def analyze_comment(
-    analysis_model, system_prompt: str, previous_comments, content: str
+    model: llm.Model, system_prompt: str, previous_comments, content: str
 ):
     context = {
         "previous_comments": previous_comments,
