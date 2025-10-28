@@ -117,14 +117,20 @@ def get_comments() -> str:
     limit=3,
     error="You have already posted the maximum number of comments for this review session. DO NOT try again!",
 )
-def post_comment(content: str, reason: str):
+def post_comment(
+    content: str,
+    reason: str,
+    duplicate_amount: float,
+):
     """
     Post a comment on the change request.
-    Reason must be one of the following:
+    reason must be one of the following:
         - "suggestion"
         - "clarification"
         - "warning"
         - "response"
+    duplicate_amount must indicate a value between 0.0 and 1.0 indicating how
+    much of the information in the comment was already given in previous comments
     """
     pr = _get_pr()
     if pr is None:
@@ -133,6 +139,9 @@ def post_comment(content: str, reason: str):
     error = utils.verify_comment_reason(reason)
     if error:
         return json.dumps({"error": error})
+
+    if duplicate_amount >= 0.5:
+        return json.dumps({"error": "Do NOT post duplicate comments!"})
 
     pr.create_issue_comment(content)
     return json.dumps({"success": "Created new GitHub comment"})
