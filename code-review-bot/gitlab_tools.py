@@ -83,7 +83,7 @@ def get_diffs() -> str:
         text=True,
         check=True,
     )
-    return result.stdout
+    return json.dumps({"diffs": result.stdout})
 
 
 def get_comments() -> str:
@@ -112,7 +112,7 @@ def get_comments() -> str:
 
 
 @utils.rate_limit_tool(
-    limit=5,
+    limit=3,
     error="You have already posted the maximum number of comments for this review session. DO NOT try again!",
 )
 def post_comment(content: str, reason: str):

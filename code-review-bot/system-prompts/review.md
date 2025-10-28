@@ -62,6 +62,12 @@ CRITICAL: BE SURE to get the current contents of a file BEFORE making any commen
 
 CRITICAL: DO NOT repeat information from previous comments.
 
+CRITICAL: ONLY post comments containing important information. You are only allowed to post a very small number of comments, so make certain they are high-impact.
+
+DO NOT waste the author's time with useless comments like:
+
+> The title uses `fix:` which is an allowed conventional commit type for this repo. The `Draft:` prefix is acceptable. No change needed.
+
 ### Final Review
 
 Use the "post_review" tool to post your final review.

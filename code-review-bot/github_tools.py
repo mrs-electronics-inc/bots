@@ -69,7 +69,7 @@ def get_changed_files() -> str:
     if pr is None:
         return json.dumps({"error": "Missing GitHub environment variables"})
 
-    return "\n".join(list(set(f.filename for f in pr.get_files())))
+    return json.dumps(list(set(f.filename for f in pr.get_files())))
 
 
 def get_diffs() -> str:
@@ -84,7 +84,7 @@ def get_diffs() -> str:
     diffs = []
     for f in files:
         diffs.append(f"diff --git a/{f.filename} b/{f.filename}\n{f.patch}")
-    return "\n".join(diffs)
+    return json.dumps({"diffs": "\n".join(diffs)})
 
 
 def get_comments() -> str:
@@ -114,7 +114,7 @@ def get_comments() -> str:
 
 
 @utils.rate_limit_tool(
-    limit=5,
+    limit=3,
     error="You have already posted the maximum number of comments for this review session. DO NOT try again!",
 )
 def post_comment(content: str, reason: str):
