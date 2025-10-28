@@ -64,7 +64,7 @@ def main():
         response = review_model.chain(
             "Please review my merge request using the provided tools.",
             system=system_prompt,
-            tools=get_review_tools(),
+            tools=get_review_tools(cheap_model),
             before_call=tools_context.before_tool_call,
             after_call=tools_context.after_tool_call,
         )
