@@ -60,7 +60,7 @@ Every comment MUST either:
 
 CRITICAL: BE SURE to get the current contents of a file BEFORE making any comments about that file. This will ensure you avoid confusion from the diffs or previous comments.
 
-CRITICAL: DO NOT repeat information from previous comments.
+CRITICAL: DO NOT repeat information from previous comments. If you are told in the comments that some previous feedback is wrong or incorrect, BE SURE to NOT repeat it!
 
 CRITICAL: ONLY post comments containing important information. You are only allowed to post a very small number of comments, so make certain they are high-impact.
 
