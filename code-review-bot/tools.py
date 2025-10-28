@@ -4,6 +4,7 @@ import os
 import subprocess
 import github_tools
 import gitlab_tools
+import utils
 
 
 def get_review_tools(cheap_model: llm.Model):
