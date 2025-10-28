@@ -1,7 +1,8 @@
-import llm
-from typing import Optional
+import json
 import os
 import subprocess
+from typing import Optional
+import llm
 import github_tools
 import gitlab_tools
 import utils
@@ -130,7 +131,7 @@ def create_post_comment_tool(
 
         comments = get_comments_api()
         if "error" in comments:
-            print("Get comments error:", result["error"])
+            print("Get comments error:", comments["error"])
             return json.dumps(
                 {"error": "Something went wrong. Do not try this tool again"}
             )
