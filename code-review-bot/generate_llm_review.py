@@ -3,7 +3,8 @@
 Generate LLM code review using the LLM Python API.
 
 Environment Variables:
-- REVIEW_MODEL: Model to use (optional, will default to something reasonable and cost-effective)
+- REVIEW_MODEL: Main model to use for review (optional, will default to something reasonable and cost-effective)
+- SECONDARY_MODEL: Model to use for secondary tasks like filtering review comments from the main review model
 - PLATFORM: 'github' or 'gitlab' (default: 'github')
 
 The script reads the system prompt template, substitutes environment variables,
@@ -22,7 +23,9 @@ MAX_RETRIES = 3
 def main():
     # Get environment variables
     review_model_id = os.getenv("REVIEW_MODEL", "openrouter/openai/gpt-5-mini")
-    cheap_model_id = os.getenv("CHEAP_MODEL", "openrouter/openai/gpt-5-nano")
+    secondary_model_id = os.getenv(
+        "SECONDARY_MODEL", "openrouter/openai/gpt-5-nano"
+    )
     platform = os.getenv("PLATFORM", "github")
 
     # Get review model

@@ -3,7 +3,7 @@ import json
 import github
 import utils
 
-# This is currently the only support bot username for now.
+# This is currently the only supported bot username.
 # In the future we may make this configurable.
 BOT_USERNAME = "github-actions[bot]"
 
@@ -89,7 +89,7 @@ def get_diffs() -> str:
 
 def get_comments_api() -> str:
     """
-    Low-level access to GitLab comments for a merge request.
+    Low-level access to GitHub comments for a merge request.
     """
     pr = _get_pr()
     if pr is None:
