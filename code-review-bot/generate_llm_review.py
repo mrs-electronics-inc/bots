@@ -34,11 +34,11 @@ def main():
     except llm.UnknownModelError:
         print(f"Error: Unknown model '{review_model_id}'", file=sys.stderr)
         sys.exit(1)
-    # Get cheap model
+    # Get secondary model
     try:
-        cheap_model = llm.get_model(cheap_model_id)
+        secondary_model = llm.get_model(secondary_model_id)
     except llm.UnknownModelError:
-        print(f"Error: Unknown model '{cheap_model_id}'", file=sys.stderr)
+        print(f"Error: Unknown model '{secondary_model_id}'", file=sys.stderr)
         sys.exit(1)
 
     # Read system prompt template
@@ -67,7 +67,7 @@ def main():
         response = review_model.chain(
             "Please review my merge request using the provided tools.",
             system=system_prompt,
-            tools=get_review_tools(cheap_model),
+            tools=get_review_tools(secondary_model),
             before_call=tools_context.before_tool_call,
             after_call=tools_context.after_tool_call,
         )
