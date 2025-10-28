@@ -138,6 +138,9 @@ def post_comment(
     if error:
         return json.dumps({"error": error})
 
+    if duplicate_amount <= 0:
+        return json.dumps({"error": "Inaccurate duplicate_amount"})
+
     if duplicate_amount >= 0.5:
         return json.dumps({"error": "Do NOT post duplicate comments!"})
 
