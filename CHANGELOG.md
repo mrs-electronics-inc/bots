@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.14.0
+
+- [#XX](https://github.com/mrs-electronics-inc/bots/pull/XX) - refactor: replace Python code-review-bot with OpenCode + skills
+  - Uses OpenCode AI agent instead of custom Python implementation
+  - Skills guide the agent to use `gh` and `glab` CLIs directly
+  - Simpler, more maintainable architecture
+  - Default model: `google/gemini-3-flash-preview` via OpenRouter
+
 ## v0.13.0
 
 - [#65](https://github.com/mrs-electronics-inc/bots/pull/65) - fix: comment repetitions
