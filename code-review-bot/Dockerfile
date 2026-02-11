@@ -29,15 +29,12 @@ RUN GLAB_VERSION="1.52.0" \
 # Install opencode
 RUN npm install -g opencode-ai@latest
 
-# Create config directories
+# Create skill directories
 RUN mkdir -p /root/.config/opencode/skills
 
 # Copy skills
 COPY skills/github-code-review /root/.config/opencode/skills/github-code-review
 COPY skills/gitlab-code-review /root/.config/opencode/skills/gitlab-code-review
-
-# Copy opencode config
-COPY opencode.json /root/.config/opencode/
 
 # Copy entrypoint scripts
 COPY github_code_review.sh /usr/local/bin/
