@@ -2,21 +2,22 @@
 # GitHub Code Review Bot using OpenCode
 #
 # Required environment variables:
-#   - OPENROUTER_API_KEY: API key for OpenRouter
-#   - GH_TOKEN: GitHub token for gh CLI
+#   - OPENROUTER_KEY: API key for OpenRouter (also accepts OPENROUTER_API_KEY)
+#   - GITHUB_TOKEN: GitHub token for gh CLI (also accepts GH_TOKEN)
 #   - PULL_REQUEST_NUMBER: PR number to review
 #
 # Optional environment variables:
-#   - REVIEW_MODEL: Model to use (default: anthropic/claude-sonnet-4)
+#   - REVIEW_MODEL: Model to use (default: google/gemini-3-flash-preview)
 
 set -euo pipefail
 
-# Support both OPENROUTER_KEY (legacy) and OPENROUTER_API_KEY
-export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-$OPENROUTER_KEY}"
+# Map to the env vars the tools expect, preferring the simpler names
+export OPENROUTER_API_KEY="${OPENROUTER_KEY:-${OPENROUTER_API_KEY:-}}"
+export GH_TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
 
 # Validate required environment variables
-: "${OPENROUTER_API_KEY:?OPENROUTER_API_KEY or OPENROUTER_KEY is required}"
-: "${GH_TOKEN:?GH_TOKEN is required}"
+: "${OPENROUTER_API_KEY:?OPENROUTER_KEY or OPENROUTER_API_KEY is required}"
+: "${GH_TOKEN:?GITHUB_TOKEN or GH_TOKEN is required}"
 : "${PULL_REQUEST_NUMBER:?PULL_REQUEST_NUMBER is required}"
 
 # Set default model if not specified

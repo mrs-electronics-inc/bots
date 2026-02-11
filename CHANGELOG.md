@@ -2,7 +2,7 @@
 
 ## v0.14.0
 
-- [#XX](https://github.com/mrs-electronics-inc/bots/pull/XX) - refactor: replace Python code-review-bot with OpenCode + skills
+- [#74](https://github.com/mrs-electronics-inc/bots/pull/74) - refactor: replace Python code-review-bot with OpenCode + skills
   - Uses OpenCode AI agent instead of custom Python implementation
   - Skills guide the agent to use `gh` and `glab` CLIs directly
   - Simpler, more maintainable architecture

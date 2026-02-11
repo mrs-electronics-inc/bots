@@ -23,8 +23,8 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 # Install GitLab CLI
 RUN GLAB_VERSION="1.82.0" \
     && curl -fsSL "https://gitlab.com/gitlab-org/cli/-/releases/v${GLAB_VERSION}/downloads/glab_${GLAB_VERSION}_linux_amd64.deb" -o /tmp/glab.deb \
-    && dpkg -i /tmp/glab.deb \
-    && rm /tmp/glab.deb
+    && dpkg -i /tmp/glab.deb || (apt-get update && apt-get install -y --no-install-recommends -f && rm -rf /var/lib/apt/lists/*) \
+    && rm -f /tmp/glab.deb
 
 # Install opencode
 RUN npm install -g opencode-ai@latest

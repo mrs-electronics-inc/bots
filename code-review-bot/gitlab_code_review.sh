@@ -2,20 +2,20 @@
 # GitLab Code Review Bot using OpenCode
 #
 # Required environment variables:
-#   - OPENROUTER_API_KEY: API key for OpenRouter
+#   - OPENROUTER_KEY: API key for OpenRouter (also accepts OPENROUTER_API_KEY)
 #   - GITLAB_TOKEN: GitLab token for glab CLI
 #   - CI_MERGE_REQUEST_IID: MR number (auto-set in GitLab CI)
 #
 # Optional environment variables:
-#   - REVIEW_MODEL: Model to use (default: anthropic/claude-sonnet-4)
+#   - REVIEW_MODEL: Model to use (default: google/gemini-3-flash-preview)
 
 set -euo pipefail
 
-# Support both OPENROUTER_KEY (legacy) and OPENROUTER_API_KEY
-export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-$OPENROUTER_KEY}"
+# Map to the env var OpenRouter expects, preferring the simpler name
+export OPENROUTER_API_KEY="${OPENROUTER_KEY:-${OPENROUTER_API_KEY:-}}"
 
 # Validate required environment variables
-: "${OPENROUTER_API_KEY:?OPENROUTER_API_KEY or OPENROUTER_KEY is required}"
+: "${OPENROUTER_API_KEY:?OPENROUTER_KEY or OPENROUTER_API_KEY is required}"
 : "${GITLAB_TOKEN:?GITLAB_TOKEN is required}"
 : "${CI_MERGE_REQUEST_IID:?CI_MERGE_REQUEST_IID is required}"
 
