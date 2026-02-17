@@ -18,6 +18,7 @@ The code-review-bot uses [OpenCode](https://opencode.ai) as the AI agent runtime
 ## Git Rules
 
 - Never force push. If a commit is already pushed, make a new commit instead of amending.
+- Use conventional commit format for commit messages (e.g., `feat:`, `fix:`, `docs:`, `ci:`, `chore:`, `perf:`, `refactor:`).
 
 ## RC Process for Docker Image Changes
 
