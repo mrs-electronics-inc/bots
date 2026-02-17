@@ -2,6 +2,9 @@
 
 ## v0.14.0
 
+- [#77](https://github.com/mrs-electronics-inc/bots/pull/77) - chore(deps-dev): bump js-yaml from 3.14.1 to 3.14.2 in /issue-bot
+- [#76](https://github.com/mrs-electronics-inc/bots/pull/76) - chore(deps): bump glob from 10.4.5 to 10.5.0 in /issue-bot
+- [#75](https://github.com/mrs-electronics-inc/bots/pull/75) - chore(deps): bump qs from 6.14.0 to 6.15.0 in /issue-bot
 - [#74](https://github.com/mrs-electronics-inc/bots/pull/74) - refactor: replace Python code-review-bot with OpenCode + skills
   - Uses OpenCode AI agent instead of custom Python implementation
   - Skills guide the agent to use `gh` and `glab` CLIs directly
@@ -10,9 +13,6 @@
 
 ## v0.13.0
 
-- [#77](https://github.com/mrs-electronics-inc/bots/pull/77) - chore(deps-dev): bump js-yaml from 3.14.1 to 3.14.2 in /issue-bot
-- [#76](https://github.com/mrs-electronics-inc/bots/pull/76) - chore(deps): bump glob from 10.4.5 to 10.5.0 in /issue-bot
-- [#75](https://github.com/mrs-electronics-inc/bots/pull/75) - chore(deps): bump qs from 6.14.0 to 6.15.0 in /issue-bot
 - [#65](https://github.com/mrs-electronics-inc/bots/pull/65) - fix: comment repetitions
 - [#51](https://github.com/mrs-electronics-inc/bots/pull/51) - feat: add issue bot
 - [#59](https://github.com/mrs-electronics-inc/bots/pull/59) - docs: definition of name
