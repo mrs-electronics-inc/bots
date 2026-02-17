@@ -12,22 +12,26 @@ on:
 
 jobs:
   test:
-    name: Run tests
+    name: Validate scripts and skills
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
+      - name: Shell scripts are valid bash
         run: |
-          python -m pip install --upgrade pip
-          pip install -r code-review-bot/requirements.txt
+          bash -n code-review-bot/github_code_review.sh
+          bash -n code-review-bot/gitlab_code_review.sh
 
-      - name: Run pytest
-        run: pytest code-review-bot/__tests__ -q
+      - name: Skill files exist and have frontmatter
+        run: |
+          for skill in code-review-bot/skills/*/SKILL.md; do
+            echo "Checking $skill..."
+            head -1 "$skill" | grep -q '^---' || { echo "Missing frontmatter in $skill"; exit 1; }
+            grep -q '^name:' "$skill" || { echo "Missing name in $skill"; exit 1; }
+            grep -q '^description:' "$skill" || { echo "Missing description in $skill"; exit 1; }
+          done
+
+      - name: Dockerfile builds
+        run: docker build code-review-bot/ -t code-review-bot:test
