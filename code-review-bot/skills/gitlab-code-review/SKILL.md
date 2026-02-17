@@ -33,15 +33,11 @@ cat -n path/to/file
 
 Do NOT read files that are fully shown in the diff.
 
-## Step 3: Post Your Review
+## Step 3: Write Your Review
 
-```bash
-# Post your review as a note
-glab mr note "$CI_MERGE_REQUEST_IID" --message "Your review here"
+Write your complete review to `.bots/review-body.md`. The harness will post it.
 
-# If the MR is good, also approve it
-glab mr approve "$CI_MERGE_REQUEST_IID"
-```
+Do NOT post the review yourself. Do NOT run `glab mr note` or `glab mr approve`.
 
 ## Review Guidelines
 

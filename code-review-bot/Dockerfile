@@ -36,10 +36,11 @@ RUN mkdir -p /root/.config/opencode/skills
 COPY skills/github-code-review /root/.config/opencode/skills/github-code-review
 COPY skills/gitlab-code-review /root/.config/opencode/skills/gitlab-code-review
 
-# Copy entrypoint scripts
+# Copy scripts
+COPY should_review.sh /usr/local/bin/
 COPY github_code_review.sh /usr/local/bin/
 COPY gitlab_code_review.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/github_code_review.sh /usr/local/bin/gitlab_code_review.sh
+RUN chmod +x /usr/local/bin/should_review.sh /usr/local/bin/github_code_review.sh /usr/local/bin/gitlab_code_review.sh
 
 WORKDIR /workspace
 

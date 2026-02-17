@@ -34,22 +34,11 @@ cat -n path/to/file
 
 Do NOT read files that are fully shown in the diff.
 
-## Step 3: Post Your Review
+## Step 3: Write Your Review
 
-Pick exactly ONE action based on your assessment:
+Write your complete review to `.bots/review-body.md`. The harness will post it.
 
-```bash
-# Approve — code is good
-gh pr review "$PULL_REQUEST_NUMBER" --approve --body "Your review here"
-
-# Request changes — issues must be fixed
-gh pr review "$PULL_REQUEST_NUMBER" --request-changes --body "Your review here"
-
-# Comment only — feedback but no blocking verdict
-gh pr review "$PULL_REQUEST_NUMBER" --comment --body "Your review here"
-```
-
-Do NOT run more than one of these.
+Do NOT post the review yourself. Do NOT run `gh pr review` or `gh pr comment`.
 
 ## Review Guidelines
 

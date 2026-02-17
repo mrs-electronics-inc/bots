@@ -8,6 +8,7 @@
 #
 # Optional environment variables:
 #   - REVIEW_MODEL: Model to use (default: google/gemini-3-flash-preview)
+#   - DELTA_LINE_THRESHOLD: Min lines changed to trigger re-review (default: 20)
 
 set -euo pipefail
 
@@ -29,12 +30,57 @@ mkdir -p .bots
 # Fix git safe.directory for containers where checkout uid != running uid
 git config --global --add safe.directory "$(pwd)"
 
+# Fetch full history so we can compute deltas
+git fetch origin --quiet 2>/dev/null || true
+
 echo "=== GitHub Code Review Bot ==="
 echo "PR: #${PULL_REQUEST_NUMBER}"
 echo "Model: ${REVIEW_MODEL}"
 echo ""
 
-# Pre-fetch PR data so the agent doesn't have to figure out CLI flags
+# --- Find existing bot comment and extract last reviewed SHA ---
+BOT_COMMENT_ID=""
+LAST_REVIEWED_SHA=""
+
+echo "Checking for existing bot review..."
+BOT_COMMENTS=$(gh pr view "$PULL_REQUEST_NUMBER" \
+    --json comments \
+    --jq '.comments[] | select(.author.login == "github-actions") | {id: .id, body: .body}' \
+    2>/dev/null || true)
+
+if [ -n "$BOT_COMMENTS" ]; then
+    # Find the most recent comment with a reviewed-sha marker
+    while IFS= read -r comment_json; do
+        [ -z "$comment_json" ] && continue
+        body=$(echo "$comment_json" | jq -r '.body // ""')
+        sha=$(echo "$body" | grep -oP '(?<=<!-- reviewed-sha:)[a-f0-9]+(?= -->)' || true)
+        if [ -n "$sha" ]; then
+            BOT_COMMENT_ID=$(echo "$comment_json" | jq -r '.id // ""')
+            LAST_REVIEWED_SHA="$sha"
+        fi
+    done <<< "$BOT_COMMENTS"
+fi
+
+if [ -n "$LAST_REVIEWED_SHA" ]; then
+    echo "Found previous review at commit $LAST_REVIEWED_SHA (comment: $BOT_COMMENT_ID)"
+else
+    echo "No previous review found."
+fi
+
+# --- Check if we should run a full review ---
+REVIEW_DECISION=$(should_review.sh "$LAST_REVIEWED_SHA")
+REVIEW_EXIT=$?
+
+echo "$REVIEW_DECISION"
+
+if [ $REVIEW_EXIT -ne 0 ]; then
+    echo ""
+    echo "=== Skipping review ==="
+    exit 0
+fi
+
+# --- Pre-fetch PR data ---
+echo ""
 echo "Fetching PR metadata..."
 gh pr view "$PULL_REQUEST_NUMBER" \
     --json number,title,body,author,state,baseRefName,headRefName,additions,deletions,changedFiles \
@@ -64,7 +110,7 @@ fi
 echo "PR data fetched. Starting review..."
 echo ""
 
-# Build the prompt
+# --- Build the prompt ---
 PROMPT="Review pull request #${PULL_REQUEST_NUMBER} using the github-code-review skill.
 
 PR data has been pre-fetched to these files:
@@ -73,7 +119,8 @@ PR data has been pre-fetched to these files:
 - .bots/pr-comments.txt — existing comments (truncated)
 - .bots/pr-reviews.txt — existing reviews (truncated)
 
-Start by reading these files. Do NOT re-fetch them with gh CLI."
+Start by reading these files. Do NOT re-fetch them with gh CLI.
+Write your review to .bots/review-body.md. Do NOT post it yourself."
 
 if [ -n "$REPO_INSTRUCTIONS" ]; then
     PROMPT="${PROMPT}
@@ -85,12 +132,38 @@ You MUST follow these instructions:
 ${REPO_INSTRUCTIONS}"
 fi
 
-# Run opencode
-# Model format: provider/model (e.g. openrouter/google/gemini-3-flash-preview)
+# --- Run opencode ---
 opencode run \
     -m "openrouter/${REVIEW_MODEL}" \
     "$PROMPT" \
     2>&1 | tee .bots/review-output.log
+
+# --- Post or update the review comment ---
+if [ ! -f .bots/review-body.md ]; then
+    echo "ERROR: Agent did not produce .bots/review-body.md"
+    exit 1
+fi
+
+# Append the reviewed-sha marker
+HEAD_SHA=$(git rev-parse HEAD)
+echo "" >> .bots/review-body.md
+echo "<!-- reviewed-sha:${HEAD_SHA} -->" >> .bots/review-body.md
+
+REVIEW_BODY=$(cat .bots/review-body.md)
+
+if [ -n "$BOT_COMMENT_ID" ]; then
+    echo "Updating existing review comment ($BOT_COMMENT_ID)..."
+    # GitHub GraphQL node IDs start with IC_ for issue comments
+    gh api graphql -f query='
+        mutation($id: ID!, $body: String!) {
+            updateIssueComment(input: {id: $id, body: $body}) {
+                issueComment { id }
+            }
+        }' -f id="$BOT_COMMENT_ID" -f body="$REVIEW_BODY"
+else
+    echo "Posting new review comment..."
+    gh pr comment "$PULL_REQUEST_NUMBER" --body "$REVIEW_BODY"
+fi
 
 echo ""
 echo "=== Code review complete ==="
