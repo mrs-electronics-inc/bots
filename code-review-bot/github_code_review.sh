@@ -88,7 +88,7 @@ echo ""
 echo "Fetching PR metadata..."
 gh pr view "$PULL_REQUEST_NUMBER" \
     --json number,title,body,author,state,baseRefName,headRefName,additions,deletions,changedFiles \
-    > .bots/pr-metadata.json
+    | jq . > .bots/pr-metadata.json
 
 echo "Fetching PR diff..."
 gh pr diff "$PULL_REQUEST_NUMBER" > .bots/pr-diff.txt
