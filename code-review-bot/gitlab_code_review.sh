@@ -38,9 +38,9 @@ echo ""
 PROMPT="Review merge request !${CI_MERGE_REQUEST_IID} using the gitlab-code-review skill."
 
 # Run opencode
+# Model format: provider/model (e.g. openrouter/google/gemini-3-flash-preview)
 opencode run \
-    --model "$REVIEW_MODEL" \
-    --provider openrouter \
+    -m "openrouter/${REVIEW_MODEL}" \
     "$PROMPT" \
     2>&1 | tee .bots/review-output.log
 
