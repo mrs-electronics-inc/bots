@@ -8,7 +8,7 @@
 #   - CI_PROJECT_ID: Project ID (auto-set in GitLab CI)
 #
 # Optional environment variables:
-#   - REVIEW_MODEL: Model to use (default: minimax/minimax-m2.5:nitro)
+#   - REVIEW_MODEL: Model to use (default: minimax/minimax-m2.5)
 #   - DELTA_LINE_THRESHOLD: Min lines changed to trigger re-review (default: 20)
 
 set -euo pipefail
@@ -23,7 +23,7 @@ export OPENROUTER_API_KEY="${OPENROUTER_KEY:-${OPENROUTER_API_KEY:-}}"
 : "${CI_PROJECT_ID:?CI_PROJECT_ID is required}"
 
 # Set default model if not specified
-export REVIEW_MODEL="${REVIEW_MODEL:-minimax/minimax-m2.5:nitro}"
+export REVIEW_MODEL="${REVIEW_MODEL:-minimax/minimax-m2.5}"
 
 # Authenticate with GitLab
 echo "Authenticating with GitLab..."

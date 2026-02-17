@@ -94,7 +94,7 @@ The line threshold is configurable via the `DELTA_LINE_THRESHOLD` environment va
 | Setting | How to set | Default | Description |
 |---|---|---|---|
 | Repo-specific instructions | `.bots/instructions.md` file in your repo | *(none)* | Extra context appended to the agent's system prompt. See [example](/.bots/instructions.md). |
-| Review model | `REVIEW_MODEL` env var | `minimax/minimax-m2.5:nitro` | Override the LLM used for reviews. |
+| Review model | `REVIEW_MODEL` env var | `minimax/minimax-m2.5` | Override the LLM used for reviews. |
 | Delta line threshold | `DELTA_LINE_THRESHOLD` env var | `20` | Minimum changed lines to trigger a review (below this the run is skipped). |
 
 ## RC Process

@@ -7,7 +7,7 @@
 #   - PULL_REQUEST_NUMBER: PR number to review
 #
 # Optional environment variables:
-#   - REVIEW_MODEL: Model to use (default: minimax/minimax-m2.5:nitro)
+#   - REVIEW_MODEL: Model to use (default: minimax/minimax-m2.5)
 #   - DELTA_LINE_THRESHOLD: Min lines changed to trigger re-review (default: 20)
 
 set -euo pipefail
@@ -22,7 +22,7 @@ export OPENROUTER_API_KEY="${OPENROUTER_KEY:-${OPENROUTER_API_KEY:-}}"
 : "${PULL_REQUEST_NUMBER:?PULL_REQUEST_NUMBER is required}"
 
 # Set default model if not specified
-export REVIEW_MODEL="${REVIEW_MODEL:-minimax/minimax-m2.5:nitro}"
+export REVIEW_MODEL="${REVIEW_MODEL:-minimax/minimax-m2.5}"
 
 # Create output directory
 mkdir -p .bots
