@@ -5,7 +5,7 @@
 - [#77](https://github.com/mrs-electronics-inc/bots/pull/77) - chore(deps-dev): bump js-yaml from 3.14.1 to 3.14.2 in /issue-bot
 - [#76](https://github.com/mrs-electronics-inc/bots/pull/76) - chore(deps): bump glob from 10.4.5 to 10.5.0 in /issue-bot
 - [#75](https://github.com/mrs-electronics-inc/bots/pull/75) - chore(deps): bump qs from 6.14.0 to 6.15.0 in /issue-bot
-- [#74](https://github.com/mrs-electronics-inc/bots/pull/74) - refactor: replace Python code-review-bot with OpenCode + skills
+- [#74](https://github.com/mrs-electronics-inc/bots/pull/74) - refactor(code-review): replace Python implementation with OpenCode + skills
 
 ## v0.13.0
 
