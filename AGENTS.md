@@ -15,6 +15,10 @@ The code-review-bot uses [OpenCode](https://opencode.ai) as the AI agent runtime
 - **Skip logic** (`should_review.sh`) — shared script that determines if a review is needed based on delta analysis since the last reviewed commit
 - **Comment lifecycle** — the harness creates or updates a single bot comment, embedding `<!-- reviewed-sha:... -->` to track what was reviewed
 
+## Git Rules
+
+- Never force push. If a commit is already pushed, make a new commit instead of amending.
+
 ## RC Process for Docker Image Changes
 
 When working on changes to Docker-based bots (e.g., code-review-bot):
