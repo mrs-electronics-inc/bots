@@ -147,7 +147,7 @@ opencode run \
     -f .bots/pr-diff.txt \
     -f .bots/pr-comments.txt \
     -f .bots/pr-reviews.txt \
-    "$PROMPT" \
+    -- "$PROMPT" \
     2>&1 | tee .bots/review-output.log
 
 # --- Post or update the review comment ---

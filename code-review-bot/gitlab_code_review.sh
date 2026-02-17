@@ -138,7 +138,7 @@ opencode run \
     -f .bots/mr-metadata.txt \
     -f .bots/mr-diff.txt \
     -f .bots/mr-comments.txt \
-    "$PROMPT" \
+    -- "$PROMPT" \
     2>&1 | tee .bots/review-output.log
 
 # --- Post or update the review comment ---
