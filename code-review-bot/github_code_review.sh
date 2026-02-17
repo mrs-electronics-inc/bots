@@ -139,6 +139,7 @@ fi
 # --- Run opencode ---
 opencode run \
     -m "openrouter/${REVIEW_MODEL}" \
+    --title "Code Review: ${GITHUB_REPOSITORY}#${PULL_REQUEST_NUMBER}" \
     --thinking \
     --share \
     --print-logs --log-level DEBUG \
