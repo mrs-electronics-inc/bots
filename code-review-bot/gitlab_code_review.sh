@@ -131,7 +131,7 @@ fi
 # --- Run opencode ---
 opencode run \
     -m "openrouter/${REVIEW_MODEL}" \
-    --title "Code Review: ${CI_PROJECT_PATH}!${CI_MERGE_REQUEST_IID}" \
+    --title "Code Review: ${CI_PROJECT_PATH}!${CI_MERGE_REQUEST_IID} @ ${CURRENT_SHA:0:7}" \
     --thinking \
     --share \
     --print-logs --log-level DEBUG \
