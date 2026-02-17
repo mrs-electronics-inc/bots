@@ -1,3 +1,20 @@
+# Agent Guidance
+
+## Repo Structure
+
+- `code-review-bot/` — Docker image that runs AI-powered code reviews on PRs/MRs
+- `issue-bot/` — Docker image for issue triage (GitLab only)
+- `docs/` — Setup guides for each bot
+
+## Code Review Bot Architecture
+
+The code-review-bot uses [OpenCode](https://opencode.ai) as the AI agent runtime with markdown skills.
+
+- **Shell harness** (`github_code_review.sh`, `gitlab_code_review.sh`) — owns the entire lifecycle: pre-fetches data, decides whether to skip, launches the agent, posts/updates the comment
+- **Skills** (`skills/*/SKILL.md`) — markdown instructions that tell the agent how to review. The agent reads pre-fetched files and writes its review to `.bots/review-body.md`. It does NOT post comments itself.
+- **Skip logic** (`should_review.sh`) — shared script that determines if a review is needed based on delta analysis since the last reviewed commit
+- **Comment lifecycle** — the harness creates or updates a single bot comment, embedding `<!-- reviewed-sha:... -->` to track what was reviewed
+
 ## RC Process for Docker Image Changes
 
 When working on changes to Docker-based bots (e.g., code-review-bot):
