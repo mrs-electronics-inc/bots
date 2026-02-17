@@ -1,7 +1,6 @@
 name: Code Review Bot
 
 on:
-  workflow_dispatch:
   pull_request:
     types: [opened, reopened, synchronize]
 
