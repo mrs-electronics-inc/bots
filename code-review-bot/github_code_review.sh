@@ -55,6 +55,12 @@ gh pr view "$PULL_REQUEST_NUMBER" \
     --jq '.reviews[] | "\(.author.login) (\(.state)): \(.body[0:200])"' \
     > .bots/pr-reviews.txt 2>/dev/null || true
 
+# Read repo-specific instructions (if present)
+REPO_INSTRUCTIONS=""
+if [ -f .bots/instructions.md ]; then
+    REPO_INSTRUCTIONS=$(cat .bots/instructions.md)
+fi
+
 echo "PR data fetched. Starting review..."
 echo ""
 
@@ -66,9 +72,18 @@ PR data has been pre-fetched to these files:
 - .bots/pr-diff.txt — full diff
 - .bots/pr-comments.txt — existing comments (truncated)
 - .bots/pr-reviews.txt — existing reviews (truncated)
-- .bots/instructions.md — repo-specific review instructions (if present)
 
 Start by reading these files. Do NOT re-fetch them with gh CLI."
+
+if [ -n "$REPO_INSTRUCTIONS" ]; then
+    PROMPT="${PROMPT}
+
+## Repo-Specific Review Instructions (from .bots/instructions.md)
+
+You MUST follow these instructions:
+
+${REPO_INSTRUCTIONS}"
+fi
 
 # Run opencode
 # Model format: provider/model (e.g. openrouter/google/gemini-3-flash-preview)

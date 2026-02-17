@@ -22,7 +22,6 @@ cat .bots/pr-metadata.json   # PR title, author, branches, stats
 cat .bots/pr-diff.txt         # Full diff
 cat .bots/pr-comments.txt    # Existing comments (may be empty)
 cat .bots/pr-reviews.txt     # Existing reviews (may be empty)
-cat .bots/instructions.md 2>/dev/null || echo "No repo-specific instructions."
 ```
 
 ## Step 2: Read Files for Context (if needed)

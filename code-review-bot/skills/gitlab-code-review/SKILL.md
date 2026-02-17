@@ -21,7 +21,6 @@ The harness has already fetched MR data into `.bots/`. Read these files first â€
 cat .bots/mr-metadata.txt    # MR title, author, description, branches
 cat .bots/mr-diff.txt         # Full diff
 cat .bots/mr-comments.txt    # Existing comments (may be empty)
-cat .bots/instructions.md 2>/dev/null || echo "No repo-specific instructions."
 ```
 
 ## Step 2: Read Files for Context (if needed)
