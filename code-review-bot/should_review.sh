@@ -54,8 +54,8 @@ CHANGED_FILES=$(git diff --name-only "$LAST_REVIEWED_SHA" "$CURRENT_SHA")
 HAS_CODE_FILES=false
 while IFS= read -r file; do
     case "$file" in
-        *.md|*.txt|*.json|*.yaml|*.yml|*.toml|*.cfg|*.ini|*.lock|\
-        *.csv|*.svg|*.png|*.jpg|*.gif|*.ico|\
+        *.txt|*.csv|*.lock|\
+        *.svg|*.png|*.jpg|*.gif|*.ico|\
         CHANGELOG*|LICENSE*|README*|.gitignore|.gitattributes|\
         .editorconfig|.prettierrc*|.eslintrc*)
             ;; # non-code, skip
