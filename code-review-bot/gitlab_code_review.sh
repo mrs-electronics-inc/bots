@@ -71,8 +71,12 @@ else
     echo "No previous review found."
 fi
 
+# Get the actual MR source branch head SHA
+CURRENT_SHA=$(glab api "projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID" --jq '.sha')
+echo "Current MR head: $CURRENT_SHA"
+
 # --- Check if we should run a full review ---
-REVIEW_DECISION=$(should_review.sh "$LAST_REVIEWED_SHA")
+REVIEW_DECISION=$(should_review.sh "$LAST_REVIEWED_SHA" "$CURRENT_SHA")
 REVIEW_EXIT=$?
 
 echo "$REVIEW_DECISION"
@@ -136,8 +140,8 @@ if [ ! -f .bots/review-body.md ]; then
     exit 1
 fi
 
-# Append the reviewed-sha marker
-HEAD_SHA=$(git rev-parse HEAD)
+# Append the reviewed-sha marker using the actual MR source branch head
+HEAD_SHA=$(glab api "projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID" --jq '.sha')
 echo "" >> .bots/review-body.md
 echo "<!-- reviewed-sha:${HEAD_SHA} -->" >> .bots/review-body.md
 

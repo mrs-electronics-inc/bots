@@ -67,8 +67,12 @@ else
     echo "No previous review found."
 fi
 
+# Get the actual PR branch head SHA (not the merge commit)
+CURRENT_SHA=$(gh pr view "$PULL_REQUEST_NUMBER" --json headRefOid --jq '.headRefOid')
+echo "Current PR head: $CURRENT_SHA"
+
 # --- Check if we should run a full review ---
-REVIEW_DECISION=$(should_review.sh "$LAST_REVIEWED_SHA")
+REVIEW_DECISION=$(should_review.sh "$LAST_REVIEWED_SHA" "$CURRENT_SHA")
 REVIEW_EXIT=$?
 
 echo "$REVIEW_DECISION"
@@ -144,8 +148,8 @@ if [ ! -f .bots/review-body.md ]; then
     exit 1
 fi
 
-# Append the reviewed-sha marker
-HEAD_SHA=$(git rev-parse HEAD)
+# Append the reviewed-sha marker using the actual PR branch head (not the merge commit)
+HEAD_SHA=$(gh pr view "$PULL_REQUEST_NUMBER" --json headRefOid --jq '.headRefOid')
 echo "" >> .bots/review-body.md
 echo "<!-- reviewed-sha:${HEAD_SHA} -->" >> .bots/review-body.md
 
