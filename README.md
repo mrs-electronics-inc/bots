@@ -26,7 +26,7 @@ A collection of helpful agents that automate and streamline our software develop
 
 This is a Docker image with built-in tools and scripts for LLM-powered code review. It is designed to be run in CI/CD in either GitHub or GitLab.
 
-Find instructions on how to set it up [here](/docs/code-review-bot-setup.md).
+Find instructions on how to set it up [here](/docs/code-review-bot.md).
 
 ## Issue Management 📋🚩
 

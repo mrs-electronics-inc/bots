@@ -7,7 +7,7 @@
 #   - PULL_REQUEST_NUMBER: PR number to review
 #
 # Optional environment variables:
-#   - REVIEW_MODEL: Model to use (default: google/gemini-3-flash-preview)
+#   - REVIEW_MODEL: Model to use (default: minimax/minimax-m2.5:nitro)
 #   - DELTA_LINE_THRESHOLD: Min lines changed to trigger re-review (default: 20)
 
 set -euo pipefail
@@ -22,7 +22,7 @@ export OPENROUTER_API_KEY="${OPENROUTER_KEY:-${OPENROUTER_API_KEY:-}}"
 : "${PULL_REQUEST_NUMBER:?PULL_REQUEST_NUMBER is required}"
 
 # Set default model if not specified
-export REVIEW_MODEL="${REVIEW_MODEL:-google/gemini-3-flash-preview}"
+export REVIEW_MODEL="${REVIEW_MODEL:-minimax/minimax-m2.5:nitro}"
 
 # Create output directory
 mkdir -p .bots
@@ -142,7 +142,6 @@ opencode run \
     --title "Code Review: ${GITHUB_REPOSITORY}#${PULL_REQUEST_NUMBER} @ ${CURRENT_SHA:0:7}" \
     --thinking \
     --share \
-    --print-logs --log-level DEBUG \
     -f .bots/pr-metadata.json \
     -f .bots/pr-diff.txt \
     -f .bots/pr-comments.txt \
@@ -156,8 +155,16 @@ if [ ! -f .bots/review-body.md ]; then
     exit 1
 fi
 
+# Extract share link from opencode output
+SHARE_LINK=$(grep -oP 'https://opncd\.ai/share/\S+' .bots/review-output.log | head -1 || true)
+
 # Append the reviewed-sha marker using the actual PR branch head (not the merge commit)
 HEAD_SHA=$(gh pr view "$PULL_REQUEST_NUMBER" --json headRefOid --jq '.headRefOid')
+echo "" >> .bots/review-body.md
+if [ -n "$SHARE_LINK" ]; then
+    echo "---" >> .bots/review-body.md
+    echo "🔗 [OpenCode Session]($SHARE_LINK)" >> .bots/review-body.md
+fi
 echo "" >> .bots/review-body.md
 echo "<!-- reviewed-sha:${HEAD_SHA} -->" >> .bots/review-body.md
 

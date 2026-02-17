@@ -8,7 +8,7 @@
 #   - CI_PROJECT_ID: Project ID (auto-set in GitLab CI)
 #
 # Optional environment variables:
-#   - REVIEW_MODEL: Model to use (default: google/gemini-3-flash-preview)
+#   - REVIEW_MODEL: Model to use (default: minimax/minimax-m2.5:nitro)
 #   - DELTA_LINE_THRESHOLD: Min lines changed to trigger re-review (default: 20)
 
 set -euo pipefail
@@ -23,7 +23,7 @@ export OPENROUTER_API_KEY="${OPENROUTER_KEY:-${OPENROUTER_API_KEY:-}}"
 : "${CI_PROJECT_ID:?CI_PROJECT_ID is required}"
 
 # Set default model if not specified
-export REVIEW_MODEL="${REVIEW_MODEL:-google/gemini-3-flash-preview}"
+export REVIEW_MODEL="${REVIEW_MODEL:-minimax/minimax-m2.5:nitro}"
 
 # Authenticate with GitLab
 echo "Authenticating with GitLab..."
@@ -134,7 +134,6 @@ opencode run \
     --title "Code Review: ${CI_PROJECT_PATH}!${CI_MERGE_REQUEST_IID} @ ${CURRENT_SHA:0:7}" \
     --thinking \
     --share \
-    --print-logs --log-level DEBUG \
     -f .bots/mr-metadata.txt \
     -f .bots/mr-diff.txt \
     -f .bots/mr-comments.txt \
@@ -147,8 +146,16 @@ if [ ! -f .bots/review-body.md ]; then
     exit 1
 fi
 
+# Extract share link from opencode output
+SHARE_LINK=$(grep -oP 'https://opncd\.ai/share/\S+' .bots/review-output.log | head -1 || true)
+
 # Append the reviewed-sha marker using the actual MR source branch head
 HEAD_SHA=$(glab api "projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID" | jq -r '.sha')
+echo "" >> .bots/review-body.md
+if [ -n "$SHARE_LINK" ]; then
+    echo "---" >> .bots/review-body.md
+    echo "🔗 [OpenCode Session]($SHARE_LINK)" >> .bots/review-body.md
+fi
 echo "" >> .bots/review-body.md
 echo "<!-- reviewed-sha:${HEAD_SHA} -->" >> .bots/review-body.md
 
