@@ -15,6 +15,11 @@ The code-review-bot uses [OpenCode](https://opencode.ai) as the AI agent runtime
 - **Skip logic** (`should_review.sh`) — shared script that determines if a review is needed based on delta analysis since the last reviewed commit
 - **Comment lifecycle** — the harness creates or updates a single bot comment, embedding `<!-- reviewed-sha:... -->` to track what was reviewed
 
+## Changelog
+
+- Update `CHANGELOG.md` with each PR. One line per PR, no sub-bullets.
+- Format: `- [#N](url) - description`
+
 ## Git Rules
 
 - Never force push. If a commit is already pushed, make a new commit instead of amending.
