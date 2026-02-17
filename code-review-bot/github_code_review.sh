@@ -26,13 +26,49 @@ export REVIEW_MODEL="${REVIEW_MODEL:-google/gemini-3-flash-preview}"
 # Create output directory
 mkdir -p .bots
 
+# Fix git safe.directory for containers where checkout uid != running uid
+git config --global --add safe.directory "$(pwd)"
+
 echo "=== GitHub Code Review Bot ==="
 echo "PR: #${PULL_REQUEST_NUMBER}"
 echo "Model: ${REVIEW_MODEL}"
 echo ""
 
+# Pre-fetch PR data so the agent doesn't have to figure out CLI flags
+echo "Fetching PR metadata..."
+gh pr view "$PULL_REQUEST_NUMBER" \
+    --json number,title,body,author,state,baseRefName,headRefName,additions,deletions,changedFiles \
+    > .bots/pr-metadata.json
+
+echo "Fetching PR diff..."
+gh pr diff "$PULL_REQUEST_NUMBER" > .bots/pr-diff.txt
+
+echo "Fetching existing comments..."
+gh pr view "$PULL_REQUEST_NUMBER" \
+    --json comments \
+    --jq '.comments[] | "\(.author.login): \(.body[0:200])"' \
+    > .bots/pr-comments.txt 2>/dev/null || true
+
+echo "Fetching existing reviews..."
+gh pr view "$PULL_REQUEST_NUMBER" \
+    --json reviews \
+    --jq '.reviews[] | "\(.author.login) (\(.state)): \(.body[0:200])"' \
+    > .bots/pr-reviews.txt 2>/dev/null || true
+
+echo "PR data fetched. Starting review..."
+echo ""
+
 # Build the prompt
-PROMPT="Review pull request #${PULL_REQUEST_NUMBER} using the github-code-review skill."
+PROMPT="Review pull request #${PULL_REQUEST_NUMBER} using the github-code-review skill.
+
+PR data has been pre-fetched to these files:
+- .bots/pr-metadata.json — PR title, author, branches, stats
+- .bots/pr-diff.txt — full diff
+- .bots/pr-comments.txt — existing comments (truncated)
+- .bots/pr-reviews.txt — existing reviews (truncated)
+- .bots/instructions.md — repo-specific review instructions (if present)
+
+Start by reading these files. Do NOT re-fetch them with gh CLI."
 
 # Run opencode
 # Model format: provider/model (e.g. openrouter/google/gemini-3-flash-preview)

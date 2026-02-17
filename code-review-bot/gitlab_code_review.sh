@@ -29,13 +29,37 @@ glab auth login --token "$GITLAB_TOKEN" --hostname gitlab.com
 # Create output directory
 mkdir -p .bots
 
+# Fix git safe.directory for containers where checkout uid != running uid
+git config --global --add safe.directory "$(pwd)"
+
 echo "=== GitLab Code Review Bot ==="
 echo "MR: !${CI_MERGE_REQUEST_IID}"
 echo "Model: ${REVIEW_MODEL}"
 echo ""
 
+# Pre-fetch MR data so the agent doesn't have to figure out CLI flags
+echo "Fetching MR metadata..."
+glab mr view "$CI_MERGE_REQUEST_IID" > .bots/mr-metadata.txt
+
+echo "Fetching MR diff..."
+glab mr diff "$CI_MERGE_REQUEST_IID" > .bots/mr-diff.txt
+
+echo "Fetching existing comments..."
+glab mr view "$CI_MERGE_REQUEST_IID" --comments > .bots/mr-comments.txt 2>/dev/null || true
+
+echo "MR data fetched. Starting review..."
+echo ""
+
 # Build the prompt
-PROMPT="Review merge request !${CI_MERGE_REQUEST_IID} using the gitlab-code-review skill."
+PROMPT="Review merge request !${CI_MERGE_REQUEST_IID} using the gitlab-code-review skill.
+
+MR data has been pre-fetched to these files:
+- .bots/mr-metadata.txt — MR title, author, description, branches
+- .bots/mr-diff.txt — full diff
+- .bots/mr-comments.txt — existing comments (may be empty)
+- .bots/instructions.md — repo-specific review instructions (if present)
+
+Start by reading these files. Do NOT re-fetch them with glab CLI."
 
 # Run opencode
 # Model format: provider/model (e.g. openrouter/google/gemini-3-flash-preview)
