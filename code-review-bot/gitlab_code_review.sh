@@ -110,12 +110,12 @@ echo ""
 # --- Build the prompt ---
 PROMPT="Review merge request !${CI_MERGE_REQUEST_IID} using the gitlab-code-review skill.
 
-MR data has been pre-fetched to these files:
-- .bots/mr-metadata.txt — MR title, author, description, branches
-- .bots/mr-diff.txt — full diff
-- .bots/mr-comments.txt — existing comments (may be empty)
+MR data is attached to this message:
+- mr-metadata.txt — MR title, author, description, branches
+- mr-diff.txt — full diff
+- mr-comments.txt — existing comments (may be empty)
 
-Start by reading these files. Do NOT re-fetch them with glab CLI.
+Do NOT re-fetch this data with glab CLI.
 Write your review to .bots/review-body.md. Do NOT post it yourself."
 
 if [ -n "$REPO_INSTRUCTIONS" ]; then
@@ -134,6 +134,9 @@ opencode run \
     --thinking \
     --share \
     --print-logs --log-level DEBUG \
+    -f .bots/mr-metadata.txt \
+    -f .bots/mr-diff.txt \
+    -f .bots/mr-comments.txt \
     "$PROMPT" \
     2>&1 | tee .bots/review-output.log
 

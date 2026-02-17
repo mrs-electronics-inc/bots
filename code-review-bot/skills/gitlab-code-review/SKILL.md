@@ -13,15 +13,14 @@ You are an expert code reviewer. Review the merge request thoroughly and provide
 - `CI_PROJECT_PATH` — the project path
 - `GITLAB_TOKEN` is already set; `glab` CLI is authenticated.
 
-## Step 1: Read Pre-Fetched MR Data
+## Step 1: Review Attached MR Data
 
-The harness has already fetched MR data into `.bots/`. Read these files first — do NOT re-fetch with `glab`:
+The harness has attached MR data to your prompt:
+- **mr-metadata.txt** — MR title, author, description, branches
+- **mr-diff.txt** — full diff
+- **mr-comments.txt** — existing comments (may be empty)
 
-```bash
-cat .bots/mr-metadata.txt    # MR title, author, description, branches
-cat .bots/mr-diff.txt         # Full diff
-cat .bots/mr-comments.txt    # Existing comments (may be empty)
-```
+This data is already in your context. Do NOT re-fetch it with `glab`.
 
 ## Step 2: Read Files for Context (if needed)
 

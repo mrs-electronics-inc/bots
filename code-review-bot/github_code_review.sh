@@ -117,13 +117,13 @@ echo ""
 # --- Build the prompt ---
 PROMPT="Review pull request #${PULL_REQUEST_NUMBER} using the github-code-review skill.
 
-PR data has been pre-fetched to these files:
-- .bots/pr-metadata.json — PR title, author, branches, stats
-- .bots/pr-diff.txt — full diff
-- .bots/pr-comments.txt — existing comments (truncated)
-- .bots/pr-reviews.txt — existing reviews (truncated)
+PR data is attached to this message:
+- pr-metadata.json — PR title, author, branches, stats
+- pr-diff.txt — full diff
+- pr-comments.txt — existing comments (truncated)
+- pr-reviews.txt — existing reviews (truncated)
 
-Start by reading these files. Do NOT re-fetch them with gh CLI.
+Do NOT re-fetch this data with gh CLI.
 Write your review to .bots/review-body.md. Do NOT post it yourself."
 
 if [ -n "$REPO_INSTRUCTIONS" ]; then
@@ -142,6 +142,10 @@ opencode run \
     --thinking \
     --share \
     --print-logs --log-level DEBUG \
+    -f .bots/pr-metadata.json \
+    -f .bots/pr-diff.txt \
+    -f .bots/pr-comments.txt \
+    -f .bots/pr-reviews.txt \
     "$PROMPT" \
     2>&1 | tee .bots/review-output.log
 
