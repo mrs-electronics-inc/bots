@@ -3,7 +3,7 @@
 #
 # Required environment variables:
 #   - OPENROUTER_KEY: API key for OpenRouter (also accepts OPENROUTER_API_KEY)
-#   - GITHUB_TOKEN: GitHub token for gh CLI (also accepts GH_TOKEN)
+#   - GH_TOKEN: GitHub token for gh CLI
 #   - PULL_REQUEST_NUMBER: PR number to review
 #
 # Optional environment variables:
@@ -14,11 +14,11 @@ set -euo pipefail
 
 # Map to the env vars the tools expect, preferring the simpler names
 export OPENROUTER_API_KEY="${OPENROUTER_KEY:-${OPENROUTER_API_KEY:-}}"
-export GH_TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+
 
 # Validate required environment variables
 : "${OPENROUTER_API_KEY:?OPENROUTER_KEY or OPENROUTER_API_KEY is required}"
-: "${GH_TOKEN:?GITHUB_TOKEN or GH_TOKEN is required}"
+: "${GH_TOKEN:?GH_TOKEN is required}"
 : "${PULL_REQUEST_NUMBER:?PULL_REQUEST_NUMBER is required}"
 
 # Set default model if not specified
