@@ -44,7 +44,7 @@ jobs:
 
 ## GitLab Pipeline
 
-Here is a minimal example of using the Code Review Bot in a GitLab job. It is set up to run on every merge request event, but requires a manual trigger to avoid filling up the merge request comments.
+Here is a minimal example of using the Code Review Bot in a GitLab job. It is set up to run on every merge request event.
 
 Be sure to use the name "Code Review Bot" for your code review bot's token.
 
@@ -54,8 +54,6 @@ run_code_review_bot:
   image: ghcr.io/mrs-electronics-inc/bots/code-review:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
-      allow_failure: true # Necessary so that GitLab doesn't block the pipeline
   variables:
     OPENROUTER_KEY: $API_KEY_CODE_REVIEW_BOT
     GITLAB_TOKEN: $TOKEN_CODE_REVIEW_BOT
