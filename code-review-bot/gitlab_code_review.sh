@@ -35,8 +35,8 @@ mkdir -p .bots
 # Fix git safe.directory for containers where checkout uid != running uid
 git config --global --add safe.directory "$(pwd)"
 
-# Fetch full history so we can compute deltas
-git fetch origin --quiet 2>/dev/null || true
+# Fetch the MR source branch history so we can resolve old reviewed SHAs for delta comparison
+git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-}" --quiet 2>/dev/null || true
 
 echo "=== GitLab Code Review Bot ==="
 echo "MR: !${CI_MERGE_REQUEST_IID}"

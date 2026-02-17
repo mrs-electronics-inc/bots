@@ -30,8 +30,8 @@ mkdir -p .bots
 # Fix git safe.directory for containers where checkout uid != running uid
 git config --global --add safe.directory "$(pwd)"
 
-# Fetch full history so we can compute deltas
-git fetch origin --quiet 2>/dev/null || true
+# Fetch the PR branch history so we can resolve old reviewed SHAs for delta comparison
+git fetch origin "pull/${PULL_REQUEST_NUMBER}/head" --quiet 2>/dev/null || true
 
 echo "=== GitHub Code Review Bot ==="
 echo "PR: #${PULL_REQUEST_NUMBER}"
