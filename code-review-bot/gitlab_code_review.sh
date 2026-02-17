@@ -90,7 +90,7 @@ fi
 # --- Pre-fetch MR data ---
 echo ""
 echo "Fetching MR metadata..."
-glab mr view "$CI_MERGE_REQUEST_IID" > .bots/mr-metadata.txt
+glab mr view "$CI_MERGE_REQUEST_IID" -F json | jq . > .bots/mr-metadata.json
 
 echo "Fetching MR diff..."
 glab mr diff "$CI_MERGE_REQUEST_IID" > .bots/mr-diff.txt
@@ -111,7 +111,7 @@ echo ""
 PROMPT="Review merge request !${CI_MERGE_REQUEST_IID} using the gitlab-code-review skill.
 
 MR data is attached to this message:
-- mr-metadata.txt — MR title, author, description, branches
+- mr-metadata.json — MR title, author, description, branches
 - mr-diff.txt — full diff
 - mr-comments.txt — existing comments (may be empty)
 
@@ -134,7 +134,7 @@ opencode run \
     --title "Code Review: ${CI_PROJECT_PATH}!${CI_MERGE_REQUEST_IID} @ ${CURRENT_SHA:0:7}" \
     --thinking \
     --share \
-    -f .bots/mr-metadata.txt \
+    -f .bots/mr-metadata.json \
     -f .bots/mr-diff.txt \
     -f .bots/mr-comments.txt \
     -- "$PROMPT" \

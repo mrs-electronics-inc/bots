@@ -16,7 +16,7 @@ You are an expert code reviewer. Review the merge request thoroughly and provide
 ## Step 1: Review Attached MR Data
 
 The harness has attached MR data to your prompt:
-- **mr-metadata.txt** — MR title, author, description, branches
+- **mr-metadata.json** — MR title, author, description, branches
 - **mr-diff.txt** — full diff
 - **mr-comments.txt** — existing comments (may be empty)
 
