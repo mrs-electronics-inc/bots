@@ -4,6 +4,7 @@
 # Usage: should_review.sh <last-reviewed-sha> [current-sha]
 #   If last-reviewed-sha is empty, always returns "review needed" (first review).
 #   current-sha defaults to HEAD if not provided.
+#   If the current commit message contains [review], always reviews.
 #
 # Exit codes:
 #   0 = review needed
@@ -16,6 +17,13 @@ set -euo pipefail
 LAST_REVIEWED_SHA="${1:-}"
 CURRENT_SHA="${2:-HEAD}"
 DELTA_LINE_THRESHOLD="${DELTA_LINE_THRESHOLD:-20}"
+
+# --- Force review via commit message tag ---
+COMMIT_MSG=$(git log -1 --format=%s "$CURRENT_SHA" 2>/dev/null || true)
+if echo "$COMMIT_MSG" | grep -qi '\[review\]'; then
+    echo "Commit message contains [review] tag. Forcing full review."
+    exit 0
+fi
 
 # --- First review: always run ---
 if [ -z "$LAST_REVIEWED_SHA" ]; then
