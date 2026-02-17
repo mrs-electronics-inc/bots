@@ -72,8 +72,8 @@ CURRENT_SHA=$(gh pr view "$PULL_REQUEST_NUMBER" --json headRefOid --jq '.headRef
 echo "Current PR head: $CURRENT_SHA"
 
 # --- Check if we should run a full review ---
-REVIEW_DECISION=$(should_review.sh "$LAST_REVIEWED_SHA" "$CURRENT_SHA")
-REVIEW_EXIT=$?
+REVIEW_DECISION=$(should_review.sh "$LAST_REVIEWED_SHA" "$CURRENT_SHA") || REVIEW_EXIT=$?
+REVIEW_EXIT=${REVIEW_EXIT:-0}
 
 echo "$REVIEW_DECISION"
 

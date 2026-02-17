@@ -76,8 +76,8 @@ CURRENT_SHA=$(glab api "projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST
 echo "Current MR head: $CURRENT_SHA"
 
 # --- Check if we should run a full review ---
-REVIEW_DECISION=$(should_review.sh "$LAST_REVIEWED_SHA" "$CURRENT_SHA")
-REVIEW_EXIT=$?
+REVIEW_DECISION=$(should_review.sh "$LAST_REVIEWED_SHA" "$CURRENT_SHA") || REVIEW_EXIT=$?
+REVIEW_EXIT=${REVIEW_EXIT:-0}
 
 echo "$REVIEW_DECISION"
 
