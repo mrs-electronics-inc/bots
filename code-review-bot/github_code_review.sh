@@ -139,6 +139,9 @@ fi
 # --- Run opencode ---
 opencode run \
     -m "openrouter/${REVIEW_MODEL}" \
+    --thinking \
+    --share \
+    --print-logs --log-level DEBUG \
     "$PROMPT" \
     2>&1 | tee .bots/review-output.log
 
