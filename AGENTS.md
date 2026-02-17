@@ -18,7 +18,8 @@ The code-review-bot uses [OpenCode](https://opencode.ai) as the AI agent runtime
 ## Changelog
 
 - Update `CHANGELOG.md` with each PR. One line per PR, no sub-bullets.
-- Format: `- [#N](url) - description`
+- Description should match the PR title.
+- Format: `- [#N](url) - PR title here`
 
 ## Git Rules
 
