@@ -32,4 +32,4 @@ Learn more about it [here](/docs/code-review-bot.md).
 
 This is a Docker image with built-in scripts for performing various triage operations on issues. It is currently only designed to be run in GitLab CI/CD. We may add GitHub support in the future.
 
-Learn more about it [here](/docs/issue-bot-setup.md).
+Learn more about it [here](/docs/issue-bot.md).

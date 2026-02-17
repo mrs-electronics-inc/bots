@@ -1,6 +1,6 @@
 # Code Review Bot
 
-An automated code review bot that runs as a container in CI/CD pipelines. It uses an OpenCode agent to analyze pull/merge request diffs and post review comments.
+An automated code review bot that runs as a container in CI/CD pipelines. It uses an [OpenCode](https://opencode.ai) agent to analyze pull/merge request diffs and post review comments.
 
 ## Architecture
 
@@ -11,7 +11,7 @@ The bot is split into two layers:
 
 The agent writes its review to `.bots/review-body.md`. The harness then posts that file as a PR/MR comment. Each bot comment includes a `<!-- reviewed-sha:abc123 -->` marker so the harness can track what has already been reviewed and decide whether to skip on the next run.
 
-Review comments include an OpenCode session-sharing link so developers can continue the conversation with the agent interactively.
+Review comments include an OpenCode session-sharing link, for easy analysis of the code review.
 
 ## Setup
 
@@ -77,25 +77,25 @@ run_code_review_bot:
 
 The harness decides whether to run a full review or skip on each trigger. The rules are evaluated in order:
 
-| Condition | Result |
-|---|---|
-| No prior review comment found | **Review** |
-| Commit message contains `[review]` | **Review** (force) |
+| Condition                                                          | Result     |
+| ------------------------------------------------------------------ | ---------- |
+| No prior review comment found                                      | **Review** |
+| Commit message contains `[review]`                                 | **Review** |
 | Previously reviewed SHA not found in history (force push / rebase) | **Review** |
-| No changes since the last reviewed SHA | **Skip** |
-| Delta is under the line threshold (default: 20 lines) | **Skip** |
-| Only non-code files changed (images, lock files, etc.) | **Skip** |
-| Otherwise | **Review** |
+| No changes since the last reviewed SHA                             | **Skip**   |
+| Delta is under the line threshold (default: 20 lines)              | **Skip**   |
+| Only non-code files changed (images, lock files, etc.)             | **Skip**   |
+| Otherwise                                                          | **Review** |
 
 The line threshold is configurable via the `DELTA_LINE_THRESHOLD` environment variable (see [Configuration](#configuration)).
 
 ## Configuration
 
-| Setting | How to set | Default | Description |
-|---|---|---|---|
-| Repo-specific instructions | `.bots/instructions.md` file in your repo | *(none)* | Extra context appended to the agent's system prompt. See [example](/.bots/instructions.md). |
-| Review model | `REVIEW_MODEL` env var | `minimax/minimax-m2.5` | Override the LLM used for reviews. |
-| Delta line threshold | `DELTA_LINE_THRESHOLD` env var | `20` | Minimum changed lines to trigger a review (below this the run is skipped). |
+| Setting                    | How to set                                | Default                | Description                                                                                 |
+| -------------------------- | ----------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------- |
+| Repo-specific instructions | `.bots/instructions.md` file in your repo | _(none)_               | Extra context appended to the agent's system prompt. See [example](/.bots/instructions.md). |
+| Review model               | `REVIEW_MODEL` env var                    | `minimax/minimax-m2.5` | Override the LLM used for reviews.                                                          |
+| Delta line threshold       | `DELTA_LINE_THRESHOLD` env var            | `20`                   | Minimum changed lines to trigger a review (below this the run is skipped).                  |
 
 ## RC Process
 

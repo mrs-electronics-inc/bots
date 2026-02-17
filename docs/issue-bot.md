@@ -1,14 +1,20 @@
-# Setting Up the Issue Bot
+# Issue Bot
 
-This page shows examples of how to set up the Issue Bot in GitLab CI/CD and configure its operation.
+An automated issue organization bot that runs as a container in CI/CD pipelines, triggered by issue events.
 
-## GitHub Workflow
+## Architecture
 
 Coming soon...
 
-## GitLab Pipeline
+## Set Up
 
-### Token and Webhook Setup
+### GitHub Workflow
+
+Coming soon...
+
+### GitLab Pipeline
+
+#### Token and Webhook Setup
 
 To run the issue bot, you will first need to set up an access token so that it's able to access your GitLab projects. Create the token at the group level so that only one token is needed.
 
@@ -33,9 +39,9 @@ Note that webhooks have to be created at the project/repo level, not the group l
 4. Now, go to **Settings > Webhooks**.
 5. Click on **Add new webhook**. Name it "Issue Bot".
 6. Set the URL using this format: `https://gitlab.com/api/v4/projects/<project-id>/ref/<branch>/trigger/pipeline?token=<trigger-token>`
-    - `project-id` can be found in **Settings > General**. It is the unique ID for your GitLab project.
-    - `branch` should be whatever branch you want pipelines to run on. Typically this will be your default branch.
-    - `trigger-token` is the pipeline trigger token you just created.
+   - `project-id` can be found in **Settings > General**. It is the unique ID for your GitLab project.
+   - `branch` should be whatever branch you want pipelines to run on. Typically this will be your default branch.
+   - `trigger-token` is the pipeline trigger token you just created.
 7. Set the triggers for the webhook. For this issue bot you will just need `Issue events`.
 8. Make sure SSL verification is enabled, then click **Add webhook** to finish.
 
@@ -53,7 +59,7 @@ Here are some helpful links if you want more information:
 - Pipeline trigger tokens: https://docs.gitlab.com/ci/triggers/#create-a-pipeline-trigger-token
 - Webhooks: https://docs.gitlab.com/ci/triggers/#use-a-webhook, https://docs.gitlab.com/user/project/integrations/webhooks/
 
-### Pipeline Job Setup
+#### Pipeline Job Setup
 
 Here is a minimal example of using the Issue Bot in a GitLab job. It is set up to run when triggered by the webhook you just created.
 
@@ -97,8 +103,8 @@ An example file might look like this:
     "Priority::Normal",
     "Priority::Important",
     "Priority::Must Have",
-    "Priority::Hot Fix",
+    "Priority::Hot Fix"
   ],
-  "defaultPriorityLabel": "Priority::Normal",
+  "defaultPriorityLabel": "Priority::Normal"
 }
 ```
