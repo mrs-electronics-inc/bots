@@ -1,10 +1,6 @@
 name: Test code-review-bot
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'code-review-bot/**'
   pull_request:
     branches: [ main ]
     paths:
