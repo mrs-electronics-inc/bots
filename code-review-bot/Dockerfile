@@ -1,38 +1,47 @@
-FROM python:3.12-slim
+FROM node:22-slim
 
 SHELL ["/bin/bash", "-c"]
 
 # Install core packages
-RUN apt update \
-    && apt install -y git wget gpg curl jq gettext file bat
-
-# Install python packages
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-RUN rm requirements.txt
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+        curl \
+        ca-certificates \
+        jq \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install GitHub CLI
-RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
-    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-    && apt update && apt install -y gh;
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+        | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+        | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends gh \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install GitLab CLI
-RUN wget https://gitlab.com/gitlab-org/cli/-/releases/v1.74.0/downloads/glab_1.74.0_linux_amd64.deb \
-    && dpkg -i glab_1.74.0_linux_amd64.deb
-RUN rm glab_1.74.0_linux_amd64.deb
+RUN GLAB_VERSION="1.85.3" \
+    && curl -fsSL "https://gitlab.com/gitlab-org/cli/-/releases/v${GLAB_VERSION}/downloads/glab_${GLAB_VERSION}_linux_amd64.deb" -o /tmp/glab.deb \
+    && dpkg -i /tmp/glab.deb || (apt-get update && apt-get install -y --no-install-recommends -f && rm -rf /var/lib/apt/lists/*) \
+    && rm -f /tmp/glab.deb
 
-# Clean up to reduce image size
-RUN rm -rf /var/lib/apt/lists/*
+# Install opencode
+RUN npm install -g opencode-ai@latest
 
-# Add scripts
-COPY gitlab_code_review.sh /bin
-COPY github_code_review.sh /bin
-COPY gitlab_tools.py /bin
-COPY github_tools.py /bin
-COPY tools.py /bin
-COPY utils.py /bin
-COPY generate_llm_review.sh /bin
-COPY generate_llm_review.py /bin
-COPY system-prompts /bots/system-prompts
+# Create skill directories
+RUN mkdir -p /root/.config/opencode/skills
+
+# Copy skills
+COPY skills/github-code-review /root/.config/opencode/skills/github-code-review
+COPY skills/gitlab-code-review /root/.config/opencode/skills/gitlab-code-review
+
+# Copy scripts
+COPY should_review.sh /usr/local/bin/
+COPY github_code_review.sh /usr/local/bin/
+COPY gitlab_code_review.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/should_review.sh /usr/local/bin/github_code_review.sh /usr/local/bin/gitlab_code_review.sh
+
+WORKDIR /workspace
 
 CMD ["/bin/bash"]

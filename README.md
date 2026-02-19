@@ -26,10 +26,10 @@ A collection of helpful agents that automate and streamline our software develop
 
 This is a Docker image with built-in tools and scripts for LLM-powered code review. It is designed to be run in CI/CD in either GitHub or GitLab.
 
-Find instructions on how to set it up [here](/docs/code-review-bot-setup.md).
+Learn more about it [here](/docs/code-review-bot.md).
 
 ## Issue Management 📋🚩
 
 This is a Docker image with built-in scripts for performing various triage operations on issues. It is currently only designed to be run in GitLab CI/CD. We may add GitHub support in the future.
 
-Find instructions on how to set it up [here](/docs/issue-bot-setup.md).
+Learn more about it [here](/docs/issue-bot.md).
