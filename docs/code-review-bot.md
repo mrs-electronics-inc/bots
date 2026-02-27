@@ -63,6 +63,8 @@ run_code_review_bot:
   image: ghcr.io/mrs-electronics-inc/bots/code-review:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      # Make sure pipelines still continue/pass even if the bot fails for some reason
+      allow_failure: true
   variables:
     OPENROUTER_KEY: $API_KEY_CODE_REVIEW_BOT
     GITLAB_TOKEN: $TOKEN_CODE_REVIEW_BOT
@@ -72,6 +74,12 @@ run_code_review_bot:
     paths:
       - ".bots/"
 ```
+
+> **NOTE:** when integrating the code review bot (or other bots) into GitLab CI/CD, it is important to consider stage ordering. We recommend placing the `bot` stage _after_ any stages containing linters/formatters/other static checks; if there is a static analysis error then there is no point is running the bot and wasting LLM usage.
+>
+> However, avoid running long unit test suites before the bot, as this will increase the length of the feedback loop.
+>
+> Example of a good stage order: `check`, `bot`, `test`, `build`, `deploy`
 
 ## Skip Logic
 
