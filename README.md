@@ -1,5 +1,7 @@
 # Bots 🤖
 
+> Development for this project has been moved to https://gitlab.com/mrs-electronics/ci/components/ai-code-reviewer
+
 _Benevolent Orchestrators of Technological Systems_
 
 A collection of helpful agents that automate and streamline our software development processes.
